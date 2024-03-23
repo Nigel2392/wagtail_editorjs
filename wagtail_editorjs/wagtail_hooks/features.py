@@ -169,7 +169,7 @@ class LinkFeature(InlineEditorJSFeature):
             {"id": f"editorjs-page-chooser-{context['widget']['attrs']['id']}"}
         )
     
-    
+
     def build_element(self, soup, element: EditorJSElement, matches: dict[str, Any], block_data):
         super().build_element(soup, element, matches, block_data)
         for item, attrs in matches.items():
@@ -232,6 +232,14 @@ class ImageFeature(EditorJSFeature):
 
         if block["data"].get("backgroundColor"):
             styles["background-color"] = block["data"]["backgroundColor"]
+
+        attrs = {}
+        if classlist:
+            attrs["class"] = classlist
+
+        if styles:
+            attrs["style"] = styles
+
         
         # Caption last - we are wrapping the image in a figure tag
         if block["data"].get("usingCaption"):
@@ -239,10 +247,7 @@ class ImageFeature(EditorJSFeature):
             wrapper = EditorJSElement(
                 "figure",
                 close_tag=True,
-                attrs={
-                    "class": classlist,
-                    "style": styles,
-                },
+                attrs=attrs,
             )
             img = EditorJSElement(
                 "img",
@@ -268,10 +273,37 @@ class ImageFeature(EditorJSFeature):
             attrs={
                 "src": image.file.url,
                 "alt": block["data"].get("alt"),
-                "class": classlist,
-                "style": styles,
+                **attrs,
             },
         )
+
+
+class TableFeature(EditorJSFeature):
+    def validate(self, data: Any):
+        super().validate(data)
+
+        if not data:
+            return
+        
+        if "data" not in data:
+            raise ValueError("Invalid data format")
+        
+        if "content" not in data["data"]:
+            raise ValueError("Invalid content value")
+        
+        if "withHeadings" not in data["data"]:
+            raise ValueError("Invalid withHeadings value")
+
+    def render_block_data(self, block: EditorJSBlock) -> EditorJSElement:
+        table = []
+        for i, row in enumerate(block["data"]["content"]):
+            tr = []
+            for cell in row:
+                tag = "th" if block["data"]["withHeadings"] and i == 0 else "td"
+                tr.append(wrap_tag(tag, {}, cell))
+            table.append(wrap_tag("tr", {}, "".join(tr)))
+
+        return EditorJSElement("table", "".join(table))
 
 
 class AlignmentBlockTune(EditorJSTune):
@@ -458,7 +490,7 @@ def register_editor_js_features(registry: EditorJSFeatures):
     )
     registry.register(
         "table",
-        EditorJSFeature(
+        TableFeature(
             "table",
             "Table",
             js = [

@@ -1,40 +1,32 @@
-.wagtail-editorjs-richtext ol {
-    list-style-type: none;
+ol {
     counter-reset: item;
-    margin: 0;
-    padding: 0;
 }
-  
-.wagtail-editorjs-richtext ol > li {
-    display: table;
+ol li {
+    display: block;
+    position: relative;
+}
+ol li:before {
+    content: counters(item, ".")".";
     counter-increment: item;
-    margin-bottom: 0.6em;
-}
-  
-.wagtail-editorjs-richtext ol > li:before {
-    content: counters(item, ".") ". ";
-    display: table-cell;
-    padding-right: 0.6em;    
-}
-  
-.wagtail-editorjs-richtext li ol > li {
-    margin: 0;
-}
-  
-.wagtail-editorjs-richtext li ol > li:before {
-    content: counters(item, ".") " ";
+    position: absolute;
+    margin-right: 100%;
+    right: 10px; /* space between number and text */
 }
 .wagtail-editorjs-richtext figure {
     margin: 0;
     margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    padding: 0.5em;
 }
 .wagtail-editorjs-richtext figure figcaption {
+    padding: 0.5rem 0;
     font-size: 0.8rem;
     text-align: center;
-    margin-top: 0.5rem;
-    color: #777;
+    color: #f3f3f3;
+    background-color: rgba(0, 0, 0, 0.4);
 }
-.wagtail-editorjs-richtext img {
+.wagtail-editorjs-richtext :not(figure) > img {
     padding-top: 1rem;
     padding-bottom: 1rem;
 }
@@ -47,4 +39,55 @@
 .wagtail-editorjs-richtext figure.stretched img,
 .wagtail-editorjs-richtext img.stretched {
     width: 100%;
+}
+
+.wagtail-editorjs-richtext .align-content-left {
+    text-align: left;
+}
+.wagtail-editorjs-richtext .align-content-center {
+    text-align: center;
+}
+.wagtail-editorjs-richtext .align-content-right {
+    text-align: right;
+}
+
+.wagtail-editorjs-richtext img.align-content-left {
+    display: block;
+    margin-left: 0;
+    margin-right: auto;
+
+}
+
+.wagtail-editorjs-richtext img.align-content-right {
+    display: block;
+    margin-left: auto;
+    margin-right: 0;
+
+}
+
+.wagtail-editorjs-richtext img.align-content-center {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.wagtail-editorjs-richtext table {
+    width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+    margin: 0.5rem 0;
+}
+.wagtail-editorjs-richtext table th,
+.wagtail-editorjs-richtext table td {
+    padding: 0.5rem;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+.wagtail-editorjs-richtext table th {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+.wagtail-editorjs-richtext table tr:nth-child(even) {
+    background-color: rgba(0, 0, 0, 0.01);
+}
+.wagtail-editorjs-richtext table tr:nth-child(odd) {
+    background-color: rgba(0, 0, 0, 0.03);
 }
