@@ -72,3 +72,8 @@
 .ce-tune-alignment--right .wagtail-image-tool {
     align-items: flex-end;
 }
+
+.codex-editor {
+    border-radius: 0.25rem;
+    border: 1px solid var(--w-color-primary);
+}
