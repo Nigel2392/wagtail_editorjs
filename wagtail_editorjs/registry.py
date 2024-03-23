@@ -133,7 +133,7 @@ class EditorJSFeature(BaseEditorJSFeature):
         if "data" not in data:
             raise ValueError("Invalid data format")
     
-    def render_block_data(self, block: EditorJSBlock) -> "EditorJSElement":
+    def render_block_data(self, block: EditorJSBlock, context = None) -> "EditorJSElement":
         return EditorJSElement(
             "div",
             block["data"].get("text")
@@ -146,7 +146,7 @@ class EditorJSTune(BaseEditorJSFeature):
         Handles validation differently.
     """
 
-    def tune_element(self, element: "EditorJSElement", tune_value: Any) -> "EditorJSElement":
+    def tune_element(self, element: "EditorJSElement", tune_value: Any, context = None) -> "EditorJSElement":
         return element
 
 
@@ -162,11 +162,11 @@ class InlineEditorJSFeature(BaseEditorJSFeature):
         return True
     
 
-    def build_element(self, soup, element: EditorJSElement, matches: dict[str, Any], block_data):
+    def build_element(self, soup, element: EditorJSElement, matches: dict[str, Any], block_data, context = None):
         pass
     
 
-    def parse_inline_data(self, element: EditorJSElement, data: Any) -> EditorJSElement:
+    def parse_inline_data(self, element: EditorJSElement, data: Any, context = None) -> EditorJSElement:
         content = element.content
         matches: dict[Any, dict[str, Any]] = {}
         soup = bs4.BeautifulSoup(content, "html.parser")
@@ -204,7 +204,7 @@ class InlineEditorJSFeature(BaseEditorJSFeature):
             for item in soup.find_all(*arguments):
                 matches[item] = item.get(key)
         
-        self.build_element(soup=soup, element=element, matches=matches, block_data=data)
+        self.build_element(soup=soup, element=element, matches=matches, block_data=data, context=context)
         content = soup.prettify()
         element.content = content
         return element

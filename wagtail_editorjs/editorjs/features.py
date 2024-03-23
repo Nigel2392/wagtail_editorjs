@@ -73,7 +73,7 @@ class NestedListFeature(EditorJSFeature):
         if data["data"]["style"] not in ["ordered", "unordered"]:
             raise ValueError("Invalid style value")
     
-    def render_block_data(self, block: EditorJSBlock) -> EditorJSElement:
+    def render_block_data(self, block: EditorJSBlock, context = None) -> EditorJSElement:
         element = "ol" if block["data"]["style"] == "ordered" else "ul"
         return parse_list(block["data"]["items"], element)
 
@@ -92,7 +92,7 @@ class CheckListFeature(EditorJSFeature):
             if "text" not in item:
                 raise ValueError("Invalid text value")
     
-    def render_block_data(self, block: EditorJSBlock) -> EditorJSElement:
+    def render_block_data(self, block: EditorJSBlock, context = None) -> EditorJSElement:
         s = []
         for item in block["data"]["items"]:
             class_ = "checklist-item"
@@ -110,11 +110,11 @@ class CodeFeature(EditorJSFeature):
         if 'code' not in data['data']:
             raise ValueError('Invalid code value')
     
-    def render_block_data(self, block: EditorJSBlock) -> EditorJSElement:
+    def render_block_data(self, block: EditorJSBlock, context = None) -> EditorJSElement:
         return EditorJSElement("code", block["data"]["code"], attrs={"class": "code"})
 
 class DelimiterFeature(EditorJSFeature):
-    def render_block_data(self, block: EditorJSBlock) -> EditorJSElement:
+    def render_block_data(self, block: EditorJSBlock, context = None) -> EditorJSElement:
         return EditorJSElement("hr", close_tag=False, attrs={"class": "delimiter"})
 
 class HeaderFeature(EditorJSFeature):
@@ -125,7 +125,7 @@ class HeaderFeature(EditorJSFeature):
         if level > 6 or level < 1:
             raise ValueError("Invalid level value")
     
-    def render_block_data(self, block: EditorJSBlock) -> EditorJSElement:
+    def render_block_data(self, block: EditorJSBlock, context = None) -> EditorJSElement:
         return EditorJSElement(
             "h" + str(block["data"]["level"]),
             block["data"].get("text")
@@ -138,7 +138,7 @@ class HTMLFeature(EditorJSFeature):
         if "html" not in data["data"]:
             raise ValueError("Invalid html value")
     
-    def render_block_data(self, block: EditorJSBlock) -> EditorJSElement:
+    def render_block_data(self, block: EditorJSBlock, context = None) -> EditorJSElement:
         return EditorJSElement("div", block["data"]["html"], attrs={"class": "html"})
 
 class WarningFeature(EditorJSFeature):
@@ -151,7 +151,7 @@ class WarningFeature(EditorJSFeature):
         if "message" not in data["data"]:
             raise ValueError("Invalid message value")
     
-    def render_block_data(self, block: EditorJSBlock) -> EditorJSElement:
+    def render_block_data(self, block: EditorJSBlock, context = None) -> EditorJSElement:
         return EditorJSElement(
             "div",
             attrs={
@@ -196,10 +196,9 @@ class LinkFeature(InlineEditorJSFeature):
         )
     
 
-    def build_element(self, soup, element: EditorJSElement, matches: dict[str, Any], block_data):
-        super().build_element(soup, element, matches, block_data)
+    def build_element(self, soup, element: EditorJSElement, matches: dict[str, Any], block_data, context = None):
+        super().build_element(soup, element, matches, block_data, context=context)
         for item, attrs in matches.items():
-            
 
             pageId = attrs["data-id"]
             # parentId = attrs["data-parent-id"]
@@ -239,7 +238,7 @@ class ImageFeature(EditorJSFeature):
             {"id": widget_id}
         )
     
-    def render_block_data(self, block: EditorJSBlock) -> EditorJSElement:
+    def render_block_data(self, block: EditorJSBlock, context = None) -> EditorJSElement:
         image = block["data"].get("imageId")
         image = Image.objects.get(id=image)
 
@@ -310,7 +309,7 @@ class TableFeature(EditorJSFeature):
         if "withHeadings" not in data["data"]:
             raise ValueError("Invalid withHeadings value")
 
-    def render_block_data(self, block: EditorJSBlock) -> EditorJSElement:
+    def render_block_data(self, block: EditorJSBlock, context = None) -> EditorJSElement:
         table = []
         for i, row in enumerate(block["data"]["content"]):
             tr = []
@@ -333,7 +332,7 @@ class BlockQuoteFeature(EditorJSFeature):
             raise ValueError("Invalid caption value")
         
     
-    def render_block_data(self, block: EditorJSBlock) -> EditorJSElement:
+    def render_block_data(self, block: EditorJSBlock, context = None) -> EditorJSElement:
         text = block["data"]["text"]
         caption = block["data"]["caption"]
         return EditorJSElement(
@@ -362,7 +361,7 @@ class AttachesFeature(EditorJSFeature):
         if "title" not in data["data"]["file"]:
             raise ValueError("Invalid title value")
         
-    def render_block_data(self, block: EditorJSBlock) -> EditorJSElement:
+    def render_block_data(self, block: EditorJSBlock, context = None) -> EditorJSElement:
 
         if "id" in block["data"]["file"] and block["data"]["file"]["id"]:
             document_id = block["data"]["file"]["id"]
@@ -398,8 +397,8 @@ class AlignmentBlockTune(EditorJSTune):
         if alignment not in ["left", "center", "right"]:
             raise ValueError("Invalid alignment value")
         
-    def tune_element(self, element: EditorJSElement, tune_value: Any) -> EditorJSElement:
-        element = super().tune_element(element, tune_value)
+    def tune_element(self, element: EditorJSElement, tune_value: Any, context = None) -> EditorJSElement:
+        element = super().tune_element(element, tune_value, context=context)
         element.add_attributes(class_=f"align-content-{tune_value['alignment'].strip()}")
         return element
 
@@ -417,8 +416,8 @@ class TextVariantTune(EditorJSTune):
             ]:
             raise ValueError("Invalid text variant value")
         
-    def tune_element(self, element: EditorJSElement, tune_value: Any) -> EditorJSElement:
-        element = super().tune_element(element, tune_value)
+    def tune_element(self, element: EditorJSElement, tune_value: Any, context = None) -> EditorJSElement:
+        element = super().tune_element(element, tune_value, context=context)
         return EditorJSElement(
             "div",
             element,
