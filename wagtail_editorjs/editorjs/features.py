@@ -196,22 +196,42 @@ class LinkFeature(InlineEditorJSFeature):
         )
     
 
-    def build_element(self, soup, element: EditorJSElement, matches: dict[str, Any], block_data, context = None):
-        super().build_element(soup, element, matches, block_data, context=context)
-        for item, attrs in matches.items():
+    def build_elements(self, inline_data: list, context: dict[str, Any] = None) -> list:
+        """
+            Process the bulk data; fetch all pages in one go
+            and build the elements.
+        """
+        super().build_elements(inline_data, context=context)
+        pageIds = []
+        element_soups = []
+        for data in inline_data:
+            # soup: BeautifulSoup
+            # element: EditorJSElement
+            # matches: dict[bs4.elementType, dict[str, Any]]
+            # data: dict[str, Any] # Block data.
+            soup, element, matches, data = data
 
-            pageId = attrs["data-id"]
-            # parentId = attrs["data-parent-id"]
-            page = Page.objects.get(id=pageId)
+            # Store element and soup for later replacement of content.
+            element_soups.append((soup, element))
 
-            # delete all attributes
-            for key in list(item.attrs.keys()):
-                del item[key]
+            # Item is bs4 tag, attrs are must_have_attrs
+            for (item, attrs) in matches.items():
+                pageId = attrs["data-id"]
+                pageIds.append((item, pageId))
 
-            item["href"] = page.get_url()
+                # delete all attributes
+                for key in list(item.attrs.keys()):
+                    del item[key]
+        
+        pages = Page.objects.in_bulk([pageId for item, pageId in pageIds])
+        for item, pageId in pageIds:
+            item["href"] = pages[int(pageId)].get_url()
             item["class"] = "wagtail-link"
-            # item["data-parent-id"] = parentId
-            # item["data-id"] = pageId
+
+        # Replace the element's content with the new soup
+        for soup, element in element_soups:
+            element.content = soup.prettify()
+
 
 class ImageFeature(EditorJSFeature):
     def get_config(self, context: dict[str, Any]):

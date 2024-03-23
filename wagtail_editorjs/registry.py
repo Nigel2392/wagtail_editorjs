@@ -162,11 +162,23 @@ class InlineEditorJSFeature(BaseEditorJSFeature):
         return True
     
 
-    def build_element(self, soup, element: EditorJSElement, matches: dict[str, Any], block_data, context = None):
+    def build_elements(self, inline_data: list, context: dict[str, Any] = None) -> list:
+        """
+            Builds the elements for the inline data.
+
+            See the LinkFeature class for an example.
+        """
         pass
     
 
-    def parse_inline_data(self, element: EditorJSElement, data: Any, context = None) -> EditorJSElement:
+    def parse_inline_data(self, element: EditorJSElement, data: Any, context = None) -> tuple[bs4.BeautifulSoup, EditorJSElement, dict[Any, dict[str, Any]], Any]:
+        """
+            Finds inline elements by the must_have_attrs and can_have_attrs.
+            Designed to be database-efficient; allowing for gathering of all data before
+            making a database request.
+
+            I.E. For a link; this would gather all page ID's and fetch them in a single query.
+        """
         content = element.content
         matches: dict[Any, dict[str, Any]] = {}
         soup = bs4.BeautifulSoup(content, "html.parser")
@@ -181,7 +193,7 @@ class InlineEditorJSFeature(BaseEditorJSFeature):
 
             found = soup.find_all(*arguments)
             if not found:
-                return element
+                return None
             
             if not matches:
                 matches = {
@@ -204,10 +216,8 @@ class InlineEditorJSFeature(BaseEditorJSFeature):
             for item in soup.find_all(*arguments):
                 matches[item] = item.get(key)
         
-        self.build_element(soup=soup, element=element, matches=matches, block_data=data, context=context)
-        content = soup.prettify()
-        element.content = content
-        return element
+        
+        return (soup, element, matches, data)
 
 def get_features(features: list[str] = None):
     if not features:
@@ -233,10 +243,10 @@ class EditorJSFeatures:
         return tool_name in self.features
 
 
-    def __getitem__(self, tool_name: str) -> EditorJSFeature:
+    def __getitem__(self, tool_name: str) -> Union[EditorJSFeature, EditorJSTune, InlineEditorJSFeature]:
         self._look_for_features()
 
-        if isinstance(tool_name, EditorJSFeature):
+        if isinstance(tool_name, BaseEditorJSFeature):
             return tool_name
 
         return self.features[tool_name]
