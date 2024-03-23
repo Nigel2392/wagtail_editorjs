@@ -11,11 +11,11 @@ from .hooks import (
 )
 from .registry import (
     EDITOR_JS_FEATURES,
+    get_features,
     TemplateNotSpecifiedError,
 )
 
 
-from .render import render_editorjs_html
 
 class EditorJSWidget(widgets.Input):
     template_name = 'wagtail_editorjs/widgets/editorjs.html'
@@ -24,15 +24,7 @@ class EditorJSWidget(widgets.Input):
     def __init__(self, features: list[str] = None, attrs: dict = None):
         super().__init__(attrs)
 
-        if not features:
-            features = list(EDITOR_JS_FEATURES.keys())
-
-        for feature in features:
-            if feature not in EDITOR_JS_FEATURES:
-                raise ValueError(f"Unknown feature: {feature}")
-
-        self.features = features
-
+        self.features = get_features(features)
         self.autofocus = self.attrs.get('autofocus', False)
         self.placeholder = self.attrs.get('placeholder', "")
 
@@ -94,7 +86,7 @@ class EditorJSWidget(widgets.Input):
 
 class EditorJSFormField(formfields.JSONField):
     def __init__(self, features: list[str] = None, *args, **kwargs):
-        self.features = features
+        self.features = get_features(features)
         super().__init__(*args, **kwargs)
 
     @cached_property
@@ -106,12 +98,8 @@ class EditorJSFormField(formfields.JSONField):
     def to_python(self, value):
         value = super().to_python(value)
         value = EDITOR_JS_FEATURES.to_python(
-            self.widget.features, value
+            self.features, value
         )
-
-        print("Rendering editorjs html")
-        print(render_editorjs_html(self.widget.features, value))
-        print("End rendering editorjs html")
 
         return value
     
@@ -123,7 +111,7 @@ class EditorJSFormField(formfields.JSONField):
             return value
         
         value = EDITOR_JS_FEATURES.prepare_value(
-            self.widget.features, value
+            self.features, value
         )
 
         return super().prepare_value(value)
@@ -137,7 +125,7 @@ class EditorJSFormField(formfields.JSONField):
             raise forms.ValidationError("Invalid JSON object")
         
         EDITOR_JS_FEATURES.validate_for_tools(
-            self.widget.features, value
+            self.features, value
         )
 
 

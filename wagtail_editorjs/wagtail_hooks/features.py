@@ -11,9 +11,13 @@ from ..registry import (
 )
 from ..editorjs.features import (
     AttachesFeature,
+    BlockQuoteFeature,
     CheckListFeature,
+    CodeFeature,
+    DelimiterFeature,
     WarningFeature,
     HeaderFeature,
+    HTMLFeature,
     ImageFeature,
     LinkFeature,
     NestedListFeature,
@@ -56,7 +60,7 @@ def register_editor_js_features(registry: EditorJSFeatures):
     )
     registry.register(
         "code",
-        EditorJSFeature(
+        CodeFeature(
             "code",
             "CodeTool",
             "wagtail_editorjs/vendor/tools/code.js",
@@ -66,20 +70,10 @@ def register_editor_js_features(registry: EditorJSFeatures):
     )
     registry.register(
         "delimiter",
-        EditorJSFeature(
+        DelimiterFeature(
             "delimiter",
             "Delimiter",
             "wagtail_editorjs/vendor/tools/delimiter.js",
-            inlineToolbar = True,
-        
-        ),
-    )
-    registry.register(
-        "embed",
-        EditorJSFeature(
-            "embed",
-            "Embed",
-            "wagtail_editorjs/vendor/tools/embed.js",
             inlineToolbar = True,
         
         ),
@@ -155,7 +149,7 @@ def register_editor_js_features(registry: EditorJSFeatures):
     )
     registry.register(
         "quote",
-        EditorJSFeature(
+        BlockQuoteFeature(
             "quote",
             "Quote",
             js = [
@@ -167,7 +161,7 @@ def register_editor_js_features(registry: EditorJSFeatures):
     )
     registry.register(
         "raw",
-        EditorJSFeature(
+        HTMLFeature(
             "raw",
             "RawTool",
             js = [

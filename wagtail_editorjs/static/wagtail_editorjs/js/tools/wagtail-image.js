@@ -55,7 +55,6 @@ class SimpleToggleSetting extends Setting {
     }
 
     isActive() {
-        console.log(this.tuneName, this.tool.data[this.tuneName], this.tool.data);
         return !!this.tool.data[this.tuneName];
     }
 }

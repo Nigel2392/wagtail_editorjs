@@ -33,7 +33,7 @@ class EditorJSElement:
     def content(self):
         if isinstance(self._content, list):
             return "".join([str(item) for item in self._content])
-        return self._content
+        return str(self._content)
     
     @content.setter
     def content(self, value):

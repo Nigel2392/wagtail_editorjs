@@ -209,6 +209,15 @@ class InlineEditorJSFeature(BaseEditorJSFeature):
         element.content = content
         return element
 
+def get_features(features: list[str] = None):
+    if not features:
+        features = list(EDITOR_JS_FEATURES.keys())
+
+    for feature in features:
+        if feature not in EDITOR_JS_FEATURES:
+            raise ValueError(f"Unknown feature: {feature}")
+
+    return features
 
 class EditorJSFeatures:
     def __init__(self):

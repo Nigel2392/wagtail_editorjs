@@ -152,27 +152,88 @@
     margin: 0;
     padding: 0;
 }
-
-.wagtail-editorjs-richtext .call-out {
-    padding: 1rem 0;
+.wagtail-editorjs-richtext .text-variant-details {
+    margin: 0.5rem 0;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    border: 1px solid rgba(34, 70, 136, 0.8);
+    background-color: rgba(34, 70, 136, 0.1);
+    color: rgba(34, 70, 136, 1);
+    font-size: 0.9rem;
+}
+.wagtail-editorjs-richtext .text-variant-call-out {
+    padding: 1rem 1.5rem;
     border-radius: 0.25rem;
     border: 1px solid rgba(255, 0, 0, 0.5);
 }
-
-.wagtail-editorjs-richtext .nested-list.call-out {
-    padding-left: 1rem;
+.wagtail-editorjs-richtext .text-variant-citation {
+    margin: 0.5rem 0;
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+    border: 1px solid rgba(0, 0, 0, 0.5);
+    position: relative;
 }
-.wagtail-editorjs-richtext .nested-list {
+.wagtail-editorjs-richtext blockquote {
+    padding: 0.5rem 1rem;
+    margin: 0.5rem 0;
+    border-left: 0.25rem solid rgba(0, 0, 0, 0.1);
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 0.25rem;
+    position: relative;
+}
+.wagtail-editorjs-richtext blockquote footer {
+    font-size: 0.8rem;
+    color: rgba(0, 0, 0, 0.5);
+}
+.wagtail-editorjs-richtext .text-variant-citation:before,
+.wagtail-editorjs-richtext blockquote:before {
+    content: "“";
+    font-size: 2rem;
+    color: rgba(0, 0, 0, 0.5);
+    position: absolute;
+    top: 0;
+    right: 1rem;
+}
+
+.wagtail-editorjs-richtext hr {
+    margin: 1rem 0;
+    border: 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+
+}
+
+.wagtail-editorjs-richtext .inline-code {
+    padding: 0.25rem;
+    margin: 0.5rem 0.25rem;
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: 0.25rem;
+    font-family: monospace;
+    font-size: 0.9rem;
+}
+
+.wagtail-editorjs-richtext code.code {
+    padding: 0.25rem;
+    margin: 0.5rem 0;
+    display: flex;
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: 0.25rem;
+    font-family: monospace;
+    font-size: 0.9rem;
+    white-space: pre-wrap;
+}
+
+
+.wagtail-editorjs-richtext ol.nested-list {
     --d: var(--depth, 0);
     counter-reset: item;
     list-style-type: none;
     padding-left: calc(var(--d) * 1em);
 }
-.wagtail-editorjs-richtext .nested-list li {
+.wagtail-editorjs-richtext ol.nested-list li {
     display: block;
     position: relative;
 }
-.wagtail-editorjs-richtext .nested-list li:before {
+.wagtail-editorjs-richtext ol.nested-list li:before {
     content: counters(item, ".") ". ";
     counter-increment: item;
     position: absolute;

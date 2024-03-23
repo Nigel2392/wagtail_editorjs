@@ -13,6 +13,9 @@
 .cdx-block {
     max-width: 100% !important;
 }
+.ce-code__textarea.ce-code__textarea {
+    min-height: 150px;
+}
 .wagtail-link-tool-actions {
     gap: 0.25rem;
 }

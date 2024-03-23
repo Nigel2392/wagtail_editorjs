@@ -63,12 +63,6 @@ class NestedListFeature(EditorJSFeature):
     def validate(self, data: Any):
         super().validate(data)
 
-        if not data:
-            return
-        
-        if "data" not in data:
-            raise ValueError("Invalid data format")
-        
         items = data["data"].get("items")
         if not items:
             raise ValueError("Invalid items value")
@@ -109,16 +103,24 @@ class CheckListFeature(EditorJSFeature):
 
         return EditorJSElement("ul", "\n\t".join(s), attrs={"class": "checklist"})
 
+class CodeFeature(EditorJSFeature):
+    def validate(self, data: Any):
+        super().validate(data)
+
+        if 'code' not in data['data']:
+            raise ValueError('Invalid code value')
+    
+    def render_block_data(self, block: EditorJSBlock) -> EditorJSElement:
+        return EditorJSElement("code", block["data"]["code"], attrs={"class": "code"})
+
+class DelimiterFeature(EditorJSFeature):
+    def render_block_data(self, block: EditorJSBlock) -> EditorJSElement:
+        return EditorJSElement("hr", close_tag=False, attrs={"class": "delimiter"})
+
 class HeaderFeature(EditorJSFeature):
     def validate(self, data: Any):
         super().validate(data)
 
-        if not data:
-            return
-        
-        if "data" not in data:
-            raise ValueError("Invalid data format")
-        
         level = data["data"].get("level")
         if level > 6 or level < 1:
             raise ValueError("Invalid level value")
@@ -128,7 +130,17 @@ class HeaderFeature(EditorJSFeature):
             "h" + str(block["data"]["level"]),
             block["data"].get("text")
         )
+
+class HTMLFeature(EditorJSFeature):
+    def validate(self, data: Any):
+        super().validate(data)
+
+        if "html" not in data["data"]:
+            raise ValueError("Invalid html value")
     
+    def render_block_data(self, block: EditorJSBlock) -> EditorJSElement:
+        return EditorJSElement("div", block["data"]["html"], attrs={"class": "html"})
+
 class WarningFeature(EditorJSFeature):
     def validate(self, data: Any):
         super().validate(data)
@@ -214,12 +226,6 @@ class ImageFeature(EditorJSFeature):
     def validate(self, data: Any):
         super().validate(data)
 
-        if not data:
-            return
-        
-        if "data" not in data:
-            raise ValueError("Invalid data format")
-        
         d = data["data"]
         if "imageId" not in d:
             raise ValueError("Invalid imageId value")
@@ -298,12 +304,6 @@ class TableFeature(EditorJSFeature):
     def validate(self, data: Any):
         super().validate(data)
 
-        if not data:
-            return
-        
-        if "data" not in data:
-            raise ValueError("Invalid data format")
-        
         if "content" not in data["data"]:
             raise ValueError("Invalid content value")
         
@@ -320,6 +320,32 @@ class TableFeature(EditorJSFeature):
             table.append(wrap_tag("tr", {}, "".join(tr)))
 
         return EditorJSElement("table", "".join(table))
+
+
+class BlockQuoteFeature(EditorJSFeature):
+    def validate(self, data: Any):
+        super().validate(data)
+
+        if "text" not in data["data"]:
+            raise ValueError("Invalid text value")
+        
+        if "caption" not in data["data"]:
+            raise ValueError("Invalid caption value")
+        
+    
+    def render_block_data(self, block: EditorJSBlock) -> EditorJSElement:
+        text = block["data"]["text"]
+        caption = block["data"]["caption"]
+        return EditorJSElement(
+            "blockquote",
+            [
+                text,
+                wrap_tag("footer", {}, caption),
+            ],
+            {
+                "class": "blockquote",
+            }
+        )
 
 
 class AttachesFeature(EditorJSFeature):
@@ -393,5 +419,8 @@ class TextVariantTune(EditorJSTune):
         
     def tune_element(self, element: EditorJSElement, tune_value: Any) -> EditorJSElement:
         element = super().tune_element(element, tune_value)
-        element.add_attributes(class_=tune_value)
-        return element
+        return EditorJSElement(
+            "div",
+            element,
+            attrs={"class": f"text-variant-{tune_value}"},
+        )

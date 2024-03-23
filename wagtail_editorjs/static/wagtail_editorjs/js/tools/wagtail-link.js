@@ -81,7 +81,6 @@ class WagtailLinkTool {
     set state(state) {
         this._state = state;
         this.button.classList.toggle(this.api.styles.inlineToolButtonActive, state);
-        console.log(this._state);
     }
 
     render() {
