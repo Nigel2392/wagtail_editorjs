@@ -218,7 +218,67 @@ class LazyInlineEditorJSFeature(BaseInlineEditorJSFeature):
         
         
         return (soup, element, matches, data)
+
+class LazyModelInlineEditorJSFeature(LazyInlineEditorJSFeature):
+    model = None
+    tag_name = "a"
+    id_attr = "data-id"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, tag_name=self.tag_name, **kwargs)
+        self.must_have_attrs = self.must_have_attrs | {
+            self.id_attr: None,
+            f"data-{self.model._meta.model_name}": None,
+        }
+
+    def get_id(self, item, attrs: dict[str, Any], context: dict[str, Any] = None):
+        return int(attrs[self.id_attr])
     
+    def build_element(self, item, obj, context: dict[str, Any] = None):
+        """
+            Build the element from the object.
+
+            item:    bs4.element.Tag
+            obj:     Model
+            context: RequestContext | None
+        """
+
+    def build_elements(self, inline_data: list, context: dict[str, Any] = None) -> list:
+        """
+            Process the bulk data; fetch all pages in one go
+            and build the elements.
+        """
+        super().build_elements(inline_data, context=context)
+        ids = []
+        element_soups = []
+        for data in inline_data:
+            # soup: BeautifulSoup
+            # element: EditorJSElement
+            # matches: dict[bs4.elementType, dict[str, Any]]
+            # data: dict[str, Any] # Block data.
+            soup, element, matches, data = data
+
+            # Store element and soup for later replacement of content.
+            element_soups.append((soup, element))
+
+            # Item is bs4 tag, attrs are must_have_attrs
+            for (item, attrs) in matches.items():
+                id = self.get_id(item, attrs, context)
+                ids.append((item, id))
+
+                # delete all attributes
+                for key in list(item.attrs.keys()):
+                    del item[key]
+        
+        # Fetch all objects
+        objects = self.model.objects.in_bulk([id for item, id in ids])
+        for item, id in ids:
+            self.build_element(item, objects[id], context)
+
+        # Replace the element's content with the new soup
+        for soup, element in element_soups:
+            element.content = soup.prettify()
+
 class InlineEditorJSFeature(BaseInlineEditorJSFeature):
     """
         Builds the elements for the inline data immediately.

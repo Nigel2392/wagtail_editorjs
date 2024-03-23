@@ -57,14 +57,15 @@ def render_editorjs_html(features: list[str], data: dict, context=None) -> str:
             
             # InlineEditorJSFeature is a special case, as it is not lazy.
             # It DOES inherit from LazyInlineEditorJSFeature, but it is not lazy.
-            if isinstance(ret, InlineEditorJSFeature):
+            if isinstance(inline, InlineEditorJSFeature):
                 continue
 
             # Only store lazy features for bulk processing.
             # Otherwise (if not lazy) the element is built 
             # immediately by caling parse_inline_data (which calls build_element internally).
-            elif isinstance(ret, LazyInlineEditorJSFeature):
+            elif isinstance(inline, LazyInlineEditorJSFeature):
                 soup, element, matches, d = ret
+                print(soup, element, matches, d)
                 if matches:
                     inline_matches.setdefault(inline, [])\
                         .append((soup, element, matches, d))
