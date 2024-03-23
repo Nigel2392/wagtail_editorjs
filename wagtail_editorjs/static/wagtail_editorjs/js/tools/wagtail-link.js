@@ -10,6 +10,7 @@ function setDataOnWrapper(wrapperTag, data) {
         return;
     }
     wrapperTag.href                   = data.url;
+    wrapperTag.dataset.page           = true;
     delete data.url;
 
     for (const key in data) {
@@ -74,6 +75,7 @@ class WagtailLinkTool {
                 "data-admin-title": true,
                 "data-edit-url": true,
                 "data-parent-id": true,
+                "data-page": true,
             },
         };
     }
@@ -259,6 +261,7 @@ class WagtailLinkTool {
 
         this.pageURLInput = document.createElement('input');
         this.pageURLInput.type = 'text';
+        this.pageURLInput.disabled = true;
         this.pageURLInput.placeholder = this.api.i18n.t('URL');
         this.pageURLInput.classList.add(
             this.api.styles.input,

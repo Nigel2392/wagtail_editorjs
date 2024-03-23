@@ -28,7 +28,7 @@ from ..editorjs.features import (
 
 @hooks.register(BUILD_CONFIG_HOOK)
 def build_editorjs_config(widget, context, config):
-    config["minHeight"] = 30
+    config["minHeight"] = 150
 
 
 @hooks.register(REGISTER_HOOK_NAME)
