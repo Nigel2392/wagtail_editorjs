@@ -1,0 +1,12 @@
+<div class="wagtail-editorjs-wrapper" id="{{ widget.attrs.id }}-wagtail-editorjs-widget-wrapper">
+    {% include "django/forms/widgets/hidden.html" with widget=widget %}
+    {{ widget.config|json_script:"wagtail-editorjs-config" }}
+    <div class="wagtail-editorjs-widget-container" data-widget="{{ widget.name }}" id="{{ widget.attrs.id }}-wagtail-editorjs-widget">
+
+    </div>
+    <div class="wagtail-editorjs-display-none">
+        {% for tpl in widget.inclusion_templates %}
+            {{ tpl|safe }}
+        {% endfor %}
+    </div>
+</div>

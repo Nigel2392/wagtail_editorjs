@@ -1,0 +1,71 @@
+.wagtail-editorjs-widget-container {
+    max-width: 840px;
+}
+.wagtail-editorjs-display-none {
+    display: none;
+}
+.ce-block__content {
+    max-width:calc(100% - 80px) !important;
+}
+.ce-toolbar__content {
+    max-width:calc(100% - 60px) !important;
+}
+.cdx-block {
+    max-width: 100% !important;
+}
+.wagtail-link-tool-actions {
+    gap: 0.25rem;
+}
+.wagtail-link-tool-actions:not(.column) {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+.wagtail-link-tool-actions svg {
+    vertical-align: middle;
+}
+.wagtail-link-tool-actions.column {
+    display: flex;
+    flex-direction: column;
+    padding: 0.25rem;
+}
+:not(.wagtail-link-tool-actions) > .ce-inline-tool > .bi {
+    width: 14px;
+    height: 14px;
+}
+.wagtail-image-button {
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+.wagtail-image-button__color-picker {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+.wagtail-image-tool {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1rem;
+    gap: 0.5rem;
+}
+.wagtail-image-tool img {
+    height: auto;
+}
+.wagtail-image-tool img {
+    width: 60%;
+}
+.wagtail-image-tool.stretched img {
+    width: 100%;
+}
+.wagtail-image-tool.withBorder img {
+    border: 1px solid var(--w-color-text-context);
+}
+.ce-tune-alignment--center .wagtail-image-tool {
+    align-items: center;
+}
+.ce-tune-alignment--right .wagtail-image-tool {
+    align-items: flex-end;
+}

@@ -1,0 +1,50 @@
+.wagtail-editorjs-richtext ol {
+    list-style-type: none;
+    counter-reset: item;
+    margin: 0;
+    padding: 0;
+}
+  
+.wagtail-editorjs-richtext ol > li {
+    display: table;
+    counter-increment: item;
+    margin-bottom: 0.6em;
+}
+  
+.wagtail-editorjs-richtext ol > li:before {
+    content: counters(item, ".") ". ";
+    display: table-cell;
+    padding-right: 0.6em;    
+}
+  
+.wagtail-editorjs-richtext li ol > li {
+    margin: 0;
+}
+  
+.wagtail-editorjs-richtext li ol > li:before {
+    content: counters(item, ".") " ";
+}
+.wagtail-editorjs-richtext figure {
+    margin: 0;
+    margin-bottom: 1rem;
+}
+.wagtail-editorjs-richtext figure figcaption {
+    font-size: 0.8rem;
+    text-align: center;
+    margin-top: 0.5rem;
+    color: #777;
+}
+.wagtail-editorjs-richtext img {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+.wagtail-editorjs-richtext img {
+    height: auto;
+}
+.wagtail-editorjs-richtext img {
+    width: 60%;
+}
+.wagtail-editorjs-richtext figure.stretched img,
+.wagtail-editorjs-richtext img.stretched {
+    width: 100%;
+}

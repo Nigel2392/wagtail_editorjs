@@ -1,0 +1,7 @@
+include LICENSE
+include README.md
+recursive-include wagtail_editorjs/static *
+recursive-include wagtail_editorjs/templates *
+recursive-include wagtail_editorjs/locale *
+recursive-include wagtail_editorjs/migrations *
+recursive-include wagtail_editorjs/templatetags *
