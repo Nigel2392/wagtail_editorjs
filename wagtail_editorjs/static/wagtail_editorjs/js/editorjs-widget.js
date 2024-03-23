@@ -36,7 +36,7 @@ class EditorJSWidget {
             this.editor.save().then((outputData) => {
                 this.element.value = JSON.stringify(outputData);
                 clickedFormSaveButton = true;
-                e.target.click();
+                e.currentTarget.click();
             });
         });
 

@@ -96,7 +96,7 @@ class CheckListFeature(EditorJSFeature):
 
             s.append(wrap_tag("li", {"class": class_}, item["text"]))
 
-        return EditorJSElement("ul", "\n\t".join(s))
+        return EditorJSElement("ul", "\n\t".join(s), attrs={"class": "checklist"})
 
 class HeaderFeature(EditorJSFeature):
     def validate(self, data: Any):
@@ -116,6 +116,34 @@ class HeaderFeature(EditorJSFeature):
         return EditorJSElement(
             "h" + str(block["data"]["level"]),
             block["data"].get("text")
+        )
+    
+class WarningFeature(EditorJSFeature):
+    def validate(self, data: Any):
+        super().validate(data)
+
+        if "title" not in data["data"]:
+            raise ValueError("Invalid title value")
+        
+        if "message" not in data["data"]:
+            raise ValueError("Invalid message value")
+    
+    def render_block_data(self, block: EditorJSBlock) -> EditorJSElement:
+        return EditorJSElement(
+            "div",
+            attrs={
+                "class": "warning",
+            },
+            content=[
+                EditorJSElement(
+                    "h2",
+                    block["data"]["title"],
+                ),
+                EditorJSElement(
+                    "p",
+                    block["data"]["message"],
+                ),
+            ]
         )
 
 class LinkFeature(InlineEditorJSFeature):
@@ -208,6 +236,7 @@ class ImageFeature(EditorJSFeature):
 
         if block["data"].get("backgroundColor"):
             styles["background-color"] = block["data"]["backgroundColor"]
+            classlist.append("with-background")
 
         attrs = {}
         if classlist:

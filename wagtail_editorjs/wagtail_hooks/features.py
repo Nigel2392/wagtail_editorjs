@@ -12,6 +12,7 @@ from ..registry import (
 from ..editorjs.features import (
     AttachesFeature,
     CheckListFeature,
+    WarningFeature,
     HeaderFeature,
     ImageFeature,
     LinkFeature,
@@ -202,7 +203,7 @@ def register_editor_js_features(registry: EditorJSFeatures):
     )
     registry.register(
         "warning",
-        EditorJSFeature(
+        WarningFeature(
             "warning",
             "Warning",
             js = [

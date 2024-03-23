@@ -17,7 +17,17 @@ ol li:before {
     margin-bottom: 1rem;
     display: flex;
     flex-direction: column;
+    padding: 0.5em 0;
+}
+.wagtail-editorjs-richtext figure.with-background {
     padding: 0.5em;
+}
+.wagtail-editorjs-richtext figure:not(.stretched):has(img) {
+    width: 60%;
+}
+.wagtail-editorjs-richtext figure:not(.stretched):has(img) img {
+    width: 100%;
+    height: auto;
 }
 .wagtail-editorjs-richtext figure figcaption {
     padding: 0.5rem 0;
@@ -51,6 +61,7 @@ ol li:before {
     text-align: right;
 }
 
+.wagtail-editorjs-richtext figure.align-content-left,
 .wagtail-editorjs-richtext img.align-content-left {
     display: block;
     margin-left: 0;
@@ -58,13 +69,14 @@ ol li:before {
 
 }
 
+.wagtail-editorjs-richtext figure.align-content-right,
 .wagtail-editorjs-richtext img.align-content-right {
-    display: block;
     margin-left: auto;
     margin-right: 0;
 
 }
 
+.wagtail-editorjs-richtext figure.align-content-center,
 .wagtail-editorjs-richtext img.align-content-center {
     display: block;
     margin-left: auto;
@@ -101,4 +113,56 @@ ol li:before {
     border-radius: 0.25rem;
     text-decoration: none;
     color: inherit;
+}
+
+
+.wagtail-editorjs-richtext .checklist li {
+    list-style-type: none;
+    position: relative;
+    padding-left: 1.5em;
+}
+
+.wagtail-editorjs-richtext .checklist li:before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 1em;
+    height: 1em;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 0.25em;
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.wagtail-editorjs-richtext .checklist li.checked:before {
+    content: "✔";
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1em;
+    color: #07d800;
+    background-color: rgba(0, 0, 0, 0.5);
+    border: 1px solid #333;
+}
+
+.wagtail-editorjs-richtext .warning {
+    padding: 1rem 1.5rem;
+    margin: 0.5rem 0;
+    font-size: 0.9rem;
+    background-color: rgba(255, 0, 0, 0.05);
+    border: 1px solid rgba(255, 0, 0, 0.5);
+    color: rgba(255, 0, 0, 1);
+    border-radius: 0.25rem;
+}
+
+.wagtail-editorjs-richtext .warning h2 {
+    margin: 0;
+    margin-bottom: 0.2rem;
+    padding: 0;
+    font-size: 1.2rem;
+}
+
+.wagtail-editorjs-richtext .warning p {
+    margin: 0;
+    padding: 0;
 }
