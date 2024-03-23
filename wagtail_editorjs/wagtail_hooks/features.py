@@ -2,10 +2,12 @@ from typing import Any
 from wagtail import hooks
 
 from django.urls import reverse
+from django.middleware import csrf
 from wagtail.models import Page
 from wagtail.admin.widgets import AdminPageChooser
 from wagtail.images.widgets import AdminImageChooser
 from wagtail.images import get_image_model
+from wagtail.documents import get_document_model
 
 from ..hooks import (
     REGISTER_HOOK_NAME,
@@ -24,6 +26,7 @@ from ..registry import (
 
 
 Image = get_image_model()
+Document = get_document_model()
 
 
 # EDITOR_JS_EditorJSFeatureS = {
@@ -306,6 +309,38 @@ class TableFeature(EditorJSFeature):
         return EditorJSElement("table", "".join(table))
 
 
+class AttachesFeature(EditorJSFeature):
+
+    def validate(self, data: Any):
+        super().validate(data)
+
+        if "file" not in data:
+            raise ValueError("Invalid file value")
+        
+        if "id" not in data["file"]:
+            raise ValueError("Invalid id value")
+        
+        if "title" not in data["file"]:
+            raise ValueError("Invalid title value")
+        
+        if "url" not in data["file"]:
+            raise ValueError("Invalid url value")
+
+    def render_block_data(self, block: EditorJSBlock) -> EditorJSElement:
+
+        document_id = block["data"]["file"]["id"]
+        document = Document.objects.get(id=document_id)
+
+        return EditorJSElement(
+            "a",
+            block["data"]["file"]["title"],
+            close_tag=True,
+            attrs={
+                "href": document.url,
+                "data-id": block["data"]["file"]["id"],
+            },
+        )
+
 class AlignmentBlockTune(EditorJSTune):
     def validate(self, data: Any):
         super().validate(data)
@@ -347,12 +382,17 @@ def register_editor_js_features(registry: EditorJSFeatures):
 
     registry.register(
         "attaches",
-        EditorJSFeature(
+        AttachesFeature(
             "attaches",
-            "AttachesTool",
-            "wagtail_editorjs/vendor/tools/attaches.js",
+            "CSRFAttachesTool",
+            js=[
+                "wagtail_editorjs/vendor/tools/attaches.js",
+                "wagtail_editorjs/js/tools/attaches.js",
+            ],
             inlineToolbar = True,
-        
+            config={
+                "endpoint": reverse("wagtail_editorjs:attaches_upload"),
+            },
         ),
     )
     registry.register(
