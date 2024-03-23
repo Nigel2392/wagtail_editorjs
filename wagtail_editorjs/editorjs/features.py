@@ -10,7 +10,7 @@ from wagtail.documents import get_document_model
 from .utils import wrap_tag
 from ..registry import (
     EditorJSFeature,
-    InlineEditorJSFeature,
+    LazyInlineEditorJSFeature,
     EditorJSTune,
     EditorJSElement,
     EditorJSBlock,
@@ -169,7 +169,7 @@ class WarningFeature(EditorJSFeature):
             ]
         )
 
-class LinkFeature(InlineEditorJSFeature):
+class LinkFeature(LazyInlineEditorJSFeature):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, tag_name="a", **kwargs)

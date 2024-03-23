@@ -3,6 +3,8 @@ from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 from .registry import (
     EditorJSElement,
+    BaseInlineEditorJSFeature,
+    LazyInlineEditorJSFeature,
     InlineEditorJSFeature,
     EDITOR_JS_FEATURES,
 )
@@ -24,7 +26,7 @@ def render_editorjs_html(features: list[str], data: dict, context=None) -> str:
     inlines = [
         feature
         for feature in feature_mappings.values()
-        if isinstance(feature, InlineEditorJSFeature)
+        if isinstance(feature, BaseInlineEditorJSFeature)
     ]
 
     html = []
@@ -44,7 +46,7 @@ def render_editorjs_html(features: list[str], data: dict, context=None) -> str:
 
         for inline in inlines:
             # Parse the inline data.
-            # Gather all data nescessary for building elements.
+            # Gather all data nescessary for building elements if the inline is lazy.
             # This data is passed in bulk to the build_elements method.
             # This allows for more efficient building of elements by limiting
             # database queries and other expensive operations.
@@ -52,12 +54,15 @@ def render_editorjs_html(features: list[str], data: dict, context=None) -> str:
             ret = inline.parse_inline_data(element, block, context)
             if not ret:
                 continue
-
-            soup, element, matches, d = ret
             
-            if matches:
-                inline_matches.setdefault(inline, [])\
-                    .append((soup, element, matches, d))
+            # Only store lazy features for bulk processing.
+            # Otherwise (if not lazy) the element is built 
+            # immediately by caling parse_inline_data (which calls build_element internally).
+            if isinstance(ret, LazyInlineEditorJSFeature):
+                soup, element, matches, d = ret
+                if matches:
+                    inline_matches.setdefault(inline, [])\
+                        .append((soup, element, matches, d))
 
         html.append(element)
 

@@ -135,7 +135,7 @@ class EditorJSFeature(BaseEditorJSFeature):
     
     def render_block_data(self, block: EditorJSBlock, context = None) -> "EditorJSElement":
         return EditorJSElement(
-            "div",
+            "p",
             block["data"].get("text")
         )
 
@@ -150,17 +150,17 @@ class EditorJSTune(BaseEditorJSFeature):
         return element
 
 
-class InlineEditorJSFeature(BaseEditorJSFeature):
+class BaseInlineEditorJSFeature(BaseEditorJSFeature):
+    pass
+
+
+class LazyInlineEditorJSFeature(BaseInlineEditorJSFeature):
     def __init__(self, tool_name: str, klass: str, tag_name: str, must_have_attrs: dict = None, can_have_attrs: dict = None, js: Union[str, list[str]] = None, css: Union[str, list[str]] = None, include_template: str = None, config: dict = None, **kwargs):
         super().__init__(tool_name, klass, js, css, include_template, config, **kwargs)
         self.tag_name = tag_name
         self.must_have_attrs = must_have_attrs or {}
         self.can_have_attrs = can_have_attrs or {}
 
-
-    def is_inline(self):
-        return True
-    
 
     def build_elements(self, inline_data: list, context: dict[str, Any] = None) -> list:
         """
@@ -218,6 +218,22 @@ class InlineEditorJSFeature(BaseEditorJSFeature):
         
         
         return (soup, element, matches, data)
+    
+class InlineEditorJSFeature(BaseInlineEditorJSFeature):
+    """
+        Builds the elements for the inline data immediately.
+        Does not allow for lazy prefetching of all data.
+    """
+
+    def build_elements(self, soup: bs4.BeautifulSoup, element: EditorJSElement, matches: dict[Any, dict[str, Any]], block_data: Any, context = None):
+        pass
+
+    def parse_inline_data(self, element: EditorJSElement, data: Any, context=None) -> tuple[bs4.BeautifulSoup, EditorJSElement, dict[Any, dict[str, Any]], Any]:
+        soup, element, matches, block_data = super().parse_inline_data(element, data, context)
+        self.build_elements(soup=soup, element=element, matches=matches, block_data=block_data, context=context)
+        element.content = soup.prettify()
+        return element    
+            
 
 def get_features(features: list[str] = None):
     if not features:
@@ -265,7 +281,7 @@ class EditorJSFeatures:
 
     def register(self, tool_name: str, feature: EditorJSFeature):
         self.features[tool_name] = feature
-        if isinstance(feature, InlineEditorJSFeature):
+        if isinstance(feature, BaseInlineEditorJSFeature):
             self.inline_features.append(feature)
 
 
