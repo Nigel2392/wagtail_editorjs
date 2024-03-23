@@ -65,7 +65,6 @@ def render_editorjs_html(features: list[str], data: dict, context=None) -> str:
             # immediately by caling parse_inline_data (which calls build_element internally).
             elif isinstance(inline, LazyInlineEditorJSFeature):
                 soup, element, matches, d = ret
-                print(soup, element, matches, d)
                 if matches:
                     inline_matches.setdefault(inline, [])\
                         .append((soup, element, matches, d))
