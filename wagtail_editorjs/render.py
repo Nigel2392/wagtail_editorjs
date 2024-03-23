@@ -15,17 +15,22 @@ def render_editorjs_html(features: list[str], data: dict, context=None) -> str:
     if "blocks" not in data:
         data["blocks"] = []
 
+    feature_mappings = {
+        feature: EDITOR_JS_FEATURES[feature]
+        for feature in features
+    }
+
     html = []
     for block in data["blocks"]:
 
         feature = block["type"]
         tunes = block.get("tunes", {})
-        feature_mapping = EDITOR_JS_FEATURES[feature]
+        feature_mapping = feature_mappings[feature]
 
         element: EditorJSElement = feature_mapping.render_block_data(block, context)
 
         for tune_name, tune_value in tunes.items():
-            element = EDITOR_JS_FEATURES[tune_name].tune_element(element, tune_value, context)
+            element = feature_mappings[tune_name].tune_element(element, tune_value, context)
 
         for inline in EDITOR_JS_FEATURES.inline_features:
             inline: InlineEditorJSFeature

@@ -418,6 +418,10 @@ class TextVariantTune(EditorJSTune):
         
     def tune_element(self, element: EditorJSElement, tune_value: Any, context = None) -> EditorJSElement:
         element = super().tune_element(element, tune_value, context=context)
+
+        if not tune_value:
+            return element
+
         return EditorJSElement(
             "div",
             element,

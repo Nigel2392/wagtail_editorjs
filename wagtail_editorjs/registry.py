@@ -235,6 +235,10 @@ class EditorJSFeatures:
 
     def __getitem__(self, tool_name: str) -> EditorJSFeature:
         self._look_for_features()
+
+        if isinstance(tool_name, EditorJSFeature):
+            return tool_name
+
         return self.features[tool_name]
 
     def keys(self):
