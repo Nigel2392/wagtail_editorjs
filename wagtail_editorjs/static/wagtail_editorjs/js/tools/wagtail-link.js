@@ -153,6 +153,11 @@ class WagtailLinkTool {
     
     checkState() {
         const wrapperTag = this.api.selection.findParentTag(this.tag, this.tagClass);
+        if (!wrapperTag) {
+            return
+        }
+        
+
         this.state = !!wrapperTag;
 
         if (this.state) {

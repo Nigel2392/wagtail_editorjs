@@ -179,7 +179,7 @@ class LinkFeature(InlineEditorJSFeature):
             
 
             pageId = attrs["data-id"]
-            parentId = attrs["data-parent-id"]
+            # parentId = attrs["data-parent-id"]
             page = Page.objects.get(id=pageId)
 
             # delete all attributes
@@ -187,8 +187,9 @@ class LinkFeature(InlineEditorJSFeature):
                 del item[key]
 
             item["href"] = page.get_url()
-            item["data-parent-id"] = parentId
-            item["data-id"] = pageId
+            item["class"] = "wagtail-link"
+            # item["data-parent-id"] = parentId
+            # item["data-id"] = pageId
 
 class ImageFeature(EditorJSFeature):
     def get_config(self, context: dict[str, Any]):
@@ -314,30 +315,32 @@ class AttachesFeature(EditorJSFeature):
     def validate(self, data: Any):
         super().validate(data)
 
-        if "file" not in data:
+        if "file" not in data["data"]:
             raise ValueError("Invalid file value")
         
-        if "id" not in data["file"]:
-            raise ValueError("Invalid id value")
+        if "id" not in data["data"]["file"] and not data["data"]["file"]["id"] and "url" not in data["data"]["file"]:
+            raise ValueError("Invalid id/url value")
         
-        if "title" not in data["file"]:
+        if "title" not in data["data"]["file"]:
             raise ValueError("Invalid title value")
         
-        if "url" not in data["file"]:
-            raise ValueError("Invalid url value")
-
     def render_block_data(self, block: EditorJSBlock) -> EditorJSElement:
 
-        document_id = block["data"]["file"]["id"]
-        document = Document.objects.get(id=document_id)
+        if "id" in block["data"]["file"] and block["data"]["file"]["id"]:
+            document_id = block["data"]["file"]["id"]
+            document = Document.objects.get(id=document_id)
+            url = document.url
+        else:
+            url = block["data"]["file"]["url"]
 
         return EditorJSElement(
             "a",
             block["data"]["file"]["title"],
             close_tag=True,
             attrs={
-                "href": document.url,
-                "data-id": block["data"]["file"]["id"],
+                "href": url,
+                "class": "attaches-link",
+                # "data-id": block["data"]["file"]["id"],
             },
         )
 
@@ -389,7 +392,6 @@ def register_editor_js_features(registry: EditorJSFeatures):
                 "wagtail_editorjs/vendor/tools/attaches.js",
                 "wagtail_editorjs/js/tools/attaches.js",
             ],
-            inlineToolbar = True,
             config={
                 "endpoint": reverse("wagtail_editorjs:attaches_upload"),
             },
