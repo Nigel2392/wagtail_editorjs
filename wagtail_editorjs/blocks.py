@@ -1,5 +1,4 @@
 from django.utils.functional import cached_property
-from django.utils.safestring import mark_safe
 from wagtail import blocks
 
 from .render import render_editorjs_html

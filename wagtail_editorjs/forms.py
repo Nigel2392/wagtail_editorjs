@@ -19,6 +19,7 @@ from .registry import (
 
 class EditorJSWidget(widgets.Input):
     template_name = 'wagtail_editorjs/widgets/editorjs.html'
+    accepts_features = True
     input_type = 'hidden'
 
     def __init__(self, features: list[str] = None, attrs: dict = None):

@@ -58,7 +58,7 @@ def render_editorjs_html(features: list[str], data: dict, context=None) -> str:
             # InlineEditorJSFeature is a special case, as it is not lazy.
             # It DOES inherit from LazyInlineEditorJSFeature, but it is not lazy.
             if isinstance(inline, InlineEditorJSFeature):
-                continue
+                continue # Skip as processing is done in parse_inline_data.
 
             # Only store lazy features for bulk processing.
             # Otherwise (if not lazy) the element is built 
@@ -73,9 +73,13 @@ def render_editorjs_html(features: list[str], data: dict, context=None) -> str:
 
     # Build all inlines.
     for inline, data in inline_matches.items():
+        inline: LazyInlineEditorJSFeature
         inline.build_elements(data, context)
 
-    return render_to_string("wagtail_editorjs/rich_text.html", {"html": mark_safe("".join([str(h) for h in html]))})
+    return render_to_string(
+        "wagtail_editorjs/rich_text.html",
+        {"html": mark_safe("".join([str(h) for h in html]))}
+    )
 
 
 

@@ -202,7 +202,12 @@ class LinkFeature(LazyModelInlineEditorJSFeature):
         for key in list(item.attrs.keys()):
             del item[key]
 
-        item["href"] = obj.get_url()
+        request = None
+        if context:
+            request = context.get("request")
+            item["href"] = obj.get_full_url(request)
+        else:
+            item["href"] = obj.get_url()
         item["class"] = "wagtail-link"
 
 
@@ -255,7 +260,12 @@ class ImageFeature(EditorJSFeature):
         if styles:
             attrs["style"] = styles
 
-        
+        url = image.file.url
+        if not any([url.startswith(i) for i in ["http://", "https://", "//"]]) and context:
+            request = context.get("request")
+            if request:
+                url = request.build_absolute_uri(url)
+
         # Caption last - we are wrapping the image in a figure tag
         if block["data"].get("usingCaption"):
             caption = block["data"].get("alt")
@@ -268,7 +278,7 @@ class ImageFeature(EditorJSFeature):
                 "img",
                 close_tag=False,
                 attrs={
-                    "src": image.file.url,
+                    "src": url,
                     "alt": caption,
                 },
             )
@@ -286,12 +296,11 @@ class ImageFeature(EditorJSFeature):
             block["data"].get("caption"),
             close_tag=False,
             attrs={
-                "src": image.file.url,
+                "src": url,
                 "alt": block["data"].get("alt"),
                 **attrs,
             },
         )
-
 
 class TableFeature(EditorJSFeature):
     def validate(self, data: Any):
@@ -364,6 +373,11 @@ class AttachesFeature(EditorJSFeature):
         else:
             document = None
             url = block["data"]["file"]["url"]
+
+        if not any([url.startswith(i) for i in ["http://", "https://", "//"]]) and context:
+            request = context.get("request")
+            if request:
+                url = request.build_absolute_uri(url)
 
         if block["data"]["file"]["title"]:
             title = block["data"]["file"]["title"]
