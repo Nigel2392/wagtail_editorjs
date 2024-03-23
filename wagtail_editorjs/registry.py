@@ -3,14 +3,16 @@
 """
 
 from collections import defaultdict
-from typing import Any, Union, Tuple
+from typing import Any, Union
 from django.utils.safestring import mark_safe
 from django.template.loader import render_to_string
-from django.utils.functional import cached_property
 from wagtail import hooks
 
-import copy, datetime, re
+import copy, datetime, bs4
 
+from .editorjs.element import (
+    EditorJSElement,
+)
 from .hooks import (
     REGISTER_HOOK_NAME,
 )
@@ -19,131 +21,6 @@ from .hooks import (
 class TemplateNotSpecifiedError(Exception):
     pass
 
-
-
-def make_attrs(attrs: dict[str, Any]) -> str:
-    return " ".join([f'{key}="{value}"' for key, value in attrs.items()])
-
-
-def wrap_tag(tag_name, attrs, content = None, close_tag = True):
-    attrs = attrs or {}
-    attributes = f" {make_attrs(attrs)}" if attrs else ""
-    if content is None and close_tag:
-        return f"<{tag_name}{attributes}></{tag_name}>"
-    elif content is None:
-        return f"<{tag_name}{attributes}/>"
-    return f"<{tag_name}{attributes}>{content}</{tag_name}>"
-
-
-
-class EditorJSElementAttribute:
-    def __init__(self, value: Union[str, list[str]], delimiter: str = " "):
-        if not isinstance(value, (list, dict)):
-            value = [value]
-
-        self.value = value
-        self.delimiter = delimiter
-
-    def extend(self, value: Any):
-        if isinstance(value, list):
-            self.value.extend(value)
-        else:
-            self.value.append(value)
-
-    def __str__(self):
-        return self.delimiter.join([str(item) for item in self.value])
-    
-
-class EditorJSStyleAttribute(EditorJSElementAttribute):
-    def __init__(self, value: dict):
-        super().__init__(value, ";")
-
-    def extend(self, value: dict = None, **kwargs):
-        if value:
-            if not isinstance(value, dict):
-                raise ValueError("Value must be a dictionary")
-            self.value.update(value)
-
-        self.value.update(kwargs)
-
-    def __str__(self):
-        return self.delimiter.join([f'{key}: {value}' for key, value in self.value.items()])
-
-
-def add_attributes(element: "EditorJSElement", **attrs: Union[str, list[str], dict[str, Any]]):
-    """
-        Adds attributes to the element.
-    """
-    for key, value in attrs.items():
-        if key.endswith("_"):
-            key = key[:-1]
-
-        if key in element.attrs:
-            element.attrs[key].extend(value)
-        else:
-            element.attrs[key] = _make_attr(value)
-    
-    return element
-
-def _make_attr(value: Union[str, list[str], dict[str, Any]]):
-
-    if isinstance(value, EditorJSElementAttribute):
-        return value
-
-    if isinstance(value, dict):
-        return EditorJSStyleAttribute(value)
-
-    return EditorJSElementAttribute(value)
-
-class EditorJSElement:
-    """
-        Base class for all elements.
-    """
-    
-    def __init__(self, tag: str, content: Union[str, list[str]] = None, attrs: dict[str, EditorJSElementAttribute] = None, close_tag: bool = True):
-        attrs = attrs or {}
-        content = content or []
-
-        if not isinstance(attrs, EditorJSElementAttribute):
-            attrs = {
-                key: _make_attr(value)
-                for key, value in attrs.items()
-            }
-
-        if isinstance(content, str):
-            content = [content]
-                
-        self.tag = tag
-        self._content = content
-        self.attrs = attrs
-        self.close_tag = close_tag
-
-    def add_attributes(self, **attrs: Union[str, list[str], dict[str, Any]]):
-        return add_attributes(self, **attrs)
-    
-    @property
-    def content(self):
-        if isinstance(self._content, list):
-            return "".join([str(item) for item in self._content])
-        return self._content
-    
-    @content.setter
-    def content(self, value):
-        if isinstance(value, list):
-            self._content = value
-        else:
-            self._content = [value]
-    
-    def append(self, element: "EditorJSElement"):
-        self._content.append(element)
-
-    def __str__(self):
-        return wrap_tag(
-            self.tag,
-            attrs = self.attrs,
-            content = self.content,
-            close_tag = self.close_tag
-        )
 
 
 class EditorJSValue(dict):
@@ -272,8 +149,6 @@ class EditorJSTune(BaseEditorJSFeature):
     def tune_element(self, element: "EditorJSElement", tune_value: Any) -> "EditorJSElement":
         return element
 
-
-import bs4
 
 class InlineEditorJSFeature(BaseEditorJSFeature):
     def __init__(self, tool_name: str, klass: str, tag_name: str, must_have_attrs: dict = None, can_have_attrs: dict = None, js: Union[str, list[str]] = None, css: Union[str, list[str]] = None, include_template: str = None, config: dict = None, **kwargs):

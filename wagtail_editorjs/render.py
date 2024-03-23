@@ -1,8 +1,6 @@
 from .registry import (
     EditorJSElement,
-    EditorJSFeature,
     InlineEditorJSFeature,
-    EditorJSTune,
     EDITOR_JS_FEATURES,
 )
 
