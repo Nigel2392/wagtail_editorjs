@@ -30,23 +30,34 @@ class NestedListElement(EditorJSElement):
 
     def __str__(self):
         return wrap_tag(self.tag, self.attrs, "".join([str(item) for item in self.items]), self.close_tag)
+    
+    @property
+    def content(self):
+        return "".join([str(item) for item in self.items])
+    
+    @content.setter
+    def content(self, value):
+        if isinstance(value, list):
+            self.items = value
+        else:
+            self.items = [value]
 
     def append(self, item: "NestedListElement"):
         self.items.append(item)
 
 
-def parse_list(items: list[dict[str, Any]], element: str) -> NestedListElement:
+def parse_list(items: list[dict[str, Any]], element: str, depth = 0) -> NestedListElement:
     s = []
 
     for item in items:
         content = item.get("content")
         items = item.get("items")
-        s.append(f"<li>{content}\n")
+        s.append(f"<li>{content}")
         if items:
-            s.append(parse_list(items, element))
+            s.append(parse_list(items, element, depth + 1))
         s.append(f"</li>")
 
-    return NestedListElement(element, s)
+    return NestedListElement(element, s, attrs={"class": "nested-list", "style": f"--depth: {depth}"})
 
 class NestedListFeature(EditorJSFeature):
     def validate(self, data: Any):
@@ -332,11 +343,20 @@ class AttachesFeature(EditorJSFeature):
             document = Document.objects.get(id=document_id)
             url = document.url
         else:
+            document = None
             url = block["data"]["file"]["url"]
+
+        if block["data"]["file"]["title"]:
+            title = block["data"]["file"]["title"]
+        else:
+            if document:
+                title = document.title
+            else:
+                title = url
 
         return EditorJSElement(
             "a",
-            block["data"]["file"]["title"],
+            title,
             close_tag=True,
             attrs={
                 "href": url,

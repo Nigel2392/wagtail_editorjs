@@ -1,17 +1,3 @@
-ol {
-    counter-reset: item;
-}
-ol li {
-    display: block;
-    position: relative;
-}
-ol li:before {
-    content: counters(item, ".")".";
-    counter-increment: item;
-    position: absolute;
-    margin-right: 100%;
-    right: 10px; /* space between number and text */
-}
 .wagtail-editorjs-richtext figure {
     margin: 0;
     margin-bottom: 1rem;
@@ -165,4 +151,30 @@ ol li:before {
 .wagtail-editorjs-richtext .warning p {
     margin: 0;
     padding: 0;
+}
+
+.wagtail-editorjs-richtext .call-out {
+    padding: 1rem 0;
+    border-radius: 0.25rem;
+    border: 1px solid rgba(255, 0, 0, 0.5);
+}
+
+.wagtail-editorjs-richtext .nested-list.call-out {
+    padding-left: 1rem;
+}
+.wagtail-editorjs-richtext .nested-list {
+    --d: var(--depth, 0);
+    counter-reset: item;
+    list-style-type: none;
+    padding-left: calc(var(--d) * 1em);
+}
+.wagtail-editorjs-richtext .nested-list li {
+    display: block;
+    position: relative;
+}
+.wagtail-editorjs-richtext .nested-list li:before {
+    content: counters(item, ".") ". ";
+    counter-increment: item;
+    position: absolute;
+    left: 0;
 }
