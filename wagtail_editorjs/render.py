@@ -1,9 +1,10 @@
+from django.template.loader import render_to_string
+from django.utils.safestring import mark_safe
 from .registry import (
     EditorJSElement,
     InlineEditorJSFeature,
     EDITOR_JS_FEATURES,
 )
-
 
 
 def render_editorjs_html(features: list[str], data: dict, context=None) -> str:
@@ -32,8 +33,7 @@ def render_editorjs_html(features: list[str], data: dict, context=None) -> str:
 
         html.append(element)
 
-    return "\n".join([str(item) for item in html])
-
+    return render_to_string("wagtail_editorjs/rich_text.html", {"html": mark_safe("".join([str(h) for h in html]))})
 
 
 

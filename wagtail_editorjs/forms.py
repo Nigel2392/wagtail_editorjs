@@ -62,6 +62,7 @@ class EditorJSWidget(widgets.Input):
         ]
         css = [
             "wagtail_editorjs/css/editorjs-widget.css",
+            # "wagtail_editorjs/css/frontend.css",
         ]
 
         for feature in self.features:

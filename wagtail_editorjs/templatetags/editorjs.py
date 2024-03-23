@@ -8,5 +8,4 @@ register = template.Library()
 
 @register.simple_tag(takes_context=True, name="editorjs")
 def render_editorjs(context, data: dict):
-    html = render_editorjs_html(list(EDITOR_JS_FEATURES.keys()), data, context=context)
-    return render_to_string("wagtail_editorjs/rich_text.html", {"html": mark_safe(html)})
+    return render_editorjs_html(list(EDITOR_JS_FEATURES.keys()), data, context=context)
