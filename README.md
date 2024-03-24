@@ -35,36 +35,39 @@ Quick start
        editor_field = EditorJSField(
            # All supported features
            features=[
-               'attaches',
-               'checklist',
-               'code',
-               'delimiter',
-               'header',
-               'image',
-               'inline-code',
-               'marker',
-               'nested-list',
-               'paragraph',
-               'quote',
-               'raw',
-               'table',
-               'underline',
-               'warning',
-               'link',
-               'text-alignment-tune',
-               'text-variant-tune'
-           ],
+                'attaches',
+                'checklist',
+                'code',
+                'delimiter',
+                'document',
+                'drag-drop',
+                'header',
+                'image',
+                'inline-code',
+                'link',
+                'marker',
+                'nested-list',
+                'paragraph',
+                'quote',
+                'raw',
+                'table',
+                'text-alignment-tune',
+                'text-variant-tune',
+                'underline',
+                'undo-redo',
+                'warning',
+            ],
            blank=True,
            null=True,
        )
 
    ```
-   
+
 ## Settings
 
 ### `EDITORJS_CLEAN_HTML`
-Default: `True`  
-Clean the HTML output on rendering.  
-This happens every time the field is rendered.  
-It might be smart to set up some sort of caching mechanism.
 
+Default: `True`
+Clean the HTML output on rendering.
+This happens every time the field is rendered.
+It might be smart to set up some sort of caching mechanism.
