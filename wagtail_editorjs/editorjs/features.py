@@ -7,6 +7,8 @@ from wagtail.images.widgets import AdminImageChooser
 from wagtail.images import get_image_model
 from wagtail.documents import get_document_model
 
+import bleach
+
 from .utils import wrap_tag
 from ..registry import (
     EditorJSFeature,
@@ -29,11 +31,11 @@ class NestedListElement(EditorJSElement):
         self.items = items
 
     def __str__(self):
-        return wrap_tag(self.tag, self.attrs, "".join([str(item) for item in self.items]), self.close_tag)
+        return wrap_tag(self.tag, self.attrs, "\n\t".join([str(item) for item in self.items]), self.close_tag)
     
     @property
     def content(self):
-        return "".join([str(item) for item in self.items])
+        return "\n\t".join([str(item) for item in self.items])
     
     @content.setter
     def content(self, value):
@@ -60,6 +62,9 @@ def parse_list(items: list[dict[str, Any]], element: str, depth = 0) -> NestedLi
     return NestedListElement(element, s, attrs={"class": "nested-list", "style": f"--depth: {depth}"})
 
 class NestedListFeature(EditorJSFeature):
+    allowed_tags = ["ul", "ol", "li"]
+    allowed_attributes = ["class", "style"]
+
     def validate(self, data: Any):
         super().validate(data)
 
@@ -78,6 +83,9 @@ class NestedListFeature(EditorJSFeature):
         return parse_list(block["data"]["items"], element)
 
 class CheckListFeature(EditorJSFeature):
+    allowed_tags = ["ul", "li"]
+    allowed_attributes = ["class"]
+
     def validate(self, data: Any):
         super().validate(data)
         
@@ -104,6 +112,9 @@ class CheckListFeature(EditorJSFeature):
         return EditorJSElement("ul", "\n\t".join(s), attrs={"class": "checklist"})
 
 class CodeFeature(EditorJSFeature):
+    allowed_tags = ["code"]
+    allowed_attributes = ["class"]
+
     def validate(self, data: Any):
         super().validate(data)
 
@@ -114,10 +125,16 @@ class CodeFeature(EditorJSFeature):
         return EditorJSElement("code", block["data"]["code"], attrs={"class": "code"})
 
 class DelimiterFeature(EditorJSFeature):
+    allowed_tags = ["hr"]
+    allowed_attributes = ["class"]
+
     def render_block_data(self, block: EditorJSBlock, context = None) -> EditorJSElement:
         return EditorJSElement("hr", close_tag=False, attrs={"class": "delimiter"})
 
 class HeaderFeature(EditorJSFeature):
+    allowed_tags = ["h1", "h2", "h3", "h4", "h5", "h6"]
+    allowed_attributes = ["class"]
+
     def validate(self, data: Any):
         super().validate(data)
 
@@ -132,6 +149,9 @@ class HeaderFeature(EditorJSFeature):
         )
 
 class HTMLFeature(EditorJSFeature):
+    allowed_tags = bleach.ALLOWED_TAGS
+    allowed_attributes = bleach.ALLOWED_ATTRIBUTES
+
     def validate(self, data: Any):
         super().validate(data)
 
@@ -142,6 +162,9 @@ class HTMLFeature(EditorJSFeature):
         return EditorJSElement("div", block["data"]["html"], attrs={"class": "html"})
 
 class WarningFeature(EditorJSFeature):
+    allowed_tags = ["div", "h2", "p"]
+    allowed_attributes = ["class"]
+
     def validate(self, data: Any):
         super().validate(data)
 
@@ -172,6 +195,8 @@ class WarningFeature(EditorJSFeature):
 
 
 class LinkFeature(LazyModelInlineEditorJSFeature):
+    allowed_tags = ["a"]
+    allowed_attributes = ["class", "href", "data-parent-id"]
     model = Page
 
     def __init__(self, *args, **kwargs):
@@ -213,6 +238,13 @@ class LinkFeature(LazyModelInlineEditorJSFeature):
 
 
 class ImageFeature(EditorJSFeature):
+    allowed_tags = ["img", "figure", "figcaption"]
+    allowed_attributes = {
+        "img": ["src", "alt", "class", "style"],
+        "figure": ["class", "style"],
+        "figcaption": ["class"],
+    }
+
     def get_config(self, context: dict[str, Any]):
         config = super().get_config() or {}
         config.setdefault("config", {})
@@ -303,6 +335,9 @@ class ImageFeature(EditorJSFeature):
         )
 
 class TableFeature(EditorJSFeature):
+    allowed_tags = ["table", "tr", "th", "td", "thead", "tbody", "tfoot"]
+    allowed_attributes = ["class"]
+
     def validate(self, data: Any):
         super().validate(data)
 
@@ -319,12 +354,15 @@ class TableFeature(EditorJSFeature):
             for cell in row:
                 tag = "th" if block["data"]["withHeadings"] and i == 0 else "td"
                 tr.append(wrap_tag(tag, {}, cell))
-            table.append(wrap_tag("tr", {}, "".join(tr)))
+            table.append(wrap_tag("tr", {}, "\t\t".join(tr)))
 
-        return EditorJSElement("table", "".join(table))
+        return EditorJSElement("table", "\t".join(table))
 
 
 class BlockQuoteFeature(EditorJSFeature):
+    allowed_tags = ["blockquote", "footer"]
+    allowed_attributes = ["class"]
+    
     def validate(self, data: Any):
         super().validate(data)
 
@@ -351,6 +389,8 @@ class BlockQuoteFeature(EditorJSFeature):
 
 
 class AttachesFeature(EditorJSFeature):
+    allowed_tags = ["a"]
+    allowed_attributes = ["class", "href", "data-id"]
 
     def validate(self, data: Any):
         super().validate(data)
@@ -397,8 +437,19 @@ class AttachesFeature(EditorJSFeature):
                 # "data-id": block["data"]["file"]["id"],
             },
         )
+    
+def clean_alignment_class(tag, name, value):
+    if name == "class":
+        if any([i in value for i in ["align-content-left", "align-content-center", "align-content-right"]]):
+            return value
+        return None
+    return value
 
 class AlignmentBlockTune(EditorJSTune):
+    allowed_attributes = {
+        "*": [clean_alignment_class],
+    }
+    
     def validate(self, data: Any):
         super().validate(data)
         alignment = data.get("alignment")
@@ -412,6 +463,9 @@ class AlignmentBlockTune(EditorJSTune):
 
 
 class TextVariantTune(EditorJSTune):
+    allowed_tags = ["div"]
+    allowed_attributes = ["class"]
+
     def validate(self, data: Any):
         super().validate(data)
         if not data:

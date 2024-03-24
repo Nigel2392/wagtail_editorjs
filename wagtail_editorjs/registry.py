@@ -71,6 +71,9 @@ class EditorJSBlock(dict):
 
 
 class BaseEditorJSFeature:
+    allowed_tags: list[str] = None
+    allowed_attributes: dict[str, list[str]] = None
+    
     def __init__(self,
             tool_name: str,
             klass: str,
@@ -79,6 +82,8 @@ class BaseEditorJSFeature:
             include_template: str = None,
             config: dict = None,
             weight: int = 0, # Weight is used to manage which features.js files are loaded first.
+            allowed_tags: list[str] = None,
+            allowed_attributes: dict[str, list[str]] = None,
             **kwargs
         ):
         
@@ -90,6 +95,35 @@ class BaseEditorJSFeature:
         self.kwargs = kwargs
         self.weight = weight
         self.include_template = include_template
+
+        if not isinstance(allowed_tags, (list, tuple, set)) and allowed_tags is not None:
+            raise ValueError("allowed_tags must be a list, tuple or set")
+        
+        if not isinstance(allowed_attributes, dict) and allowed_attributes is not None:
+            raise ValueError("allowed_attributes must be a dict")
+
+        allowed_tags = allowed_tags or []
+        allowed_attributes = allowed_attributes or dict()
+       
+        if self.allowed_tags:
+            allowed_tags.extend(self.allowed_tags)
+
+        if self.allowed_attributes:
+
+            if isinstance(self.allowed_attributes, dict):
+                for key, value in self.allowed_attributes.items():
+                    allowed_attributes[key] = set(allowed_attributes.get(key, []) + value)
+            elif isinstance(self.allowed_attributes, list):
+                if not self.allowed_tags:
+                    raise ValueError("Allowed attributes is specified as a list without allowed tags; provide allowed tags.")
+                
+                for tag in self.allowed_tags:
+                    allowed_attributes[tag] = set(allowed_attributes.get(tag, []) + self.allowed_attributes)
+            else:
+                raise ValueError("Invalid allowed attributes type, self.allowed_attributes must be dict or list")
+
+        self.allowed_tags = set(allowed_tags)
+        self.allowed_attributes = allowed_attributes
 
     def __repr__(self):
         return f"<EditorJSFeature \"{self.tool_name}\">"
@@ -110,6 +144,7 @@ class BaseEditorJSFeature:
         config = {
             "class": self.klass,
         }
+        
         if self.config:
             config["config"] = self.config
 
@@ -136,8 +171,8 @@ class BaseEditorJSFeature:
 
 
 class EditorJSJavascriptFeature(BaseEditorJSFeature):
-    def __init__(self, tool_name: str, js: Union[str, list[str]] = None, css: Union[str, list[str]] = None, weight: int = 0):
-        super().__init__(tool_name, None, js, css, None, {}, weight=weight)
+    def __init__(self, tool_name: str, js: Union[str, list[str]] = None, css: Union[str, list[str]] = None, weight: int = 0, allowed_tags: list[str] = None, allowed_attributes: dict[str, list[str]] = None):
+        super().__init__(tool_name, None, js, css, None, {}, weight=weight, allowed_tags=allowed_tags, allowed_attributes=allowed_attributes)
 
     def get_config(self, context: dict[str, Any] = None) -> dict:
         return None
@@ -173,8 +208,22 @@ class BaseInlineEditorJSFeature(BaseEditorJSFeature):
 
 
 class LazyInlineEditorJSFeature(BaseInlineEditorJSFeature):
-    def __init__(self, tool_name: str, klass: str, tag_name: str, must_have_attrs: dict = None, can_have_attrs: dict = None, js: Union[str, list[str]] = None, css: Union[str, list[str]] = None, include_template: str = None, config: dict = None, weight: int = 0, **kwargs):
-        super().__init__(tool_name, klass, js, css, include_template, config, weight=weight, **kwargs)
+    def __init__(self,
+            tool_name: str,
+            klass: str,
+            tag_name: str,
+            must_have_attrs: dict = None,
+            can_have_attrs: dict = None,
+            js: Union[str, list[str]] = None,
+            css: Union[str, list[str]] = None,
+            include_template: str = None,
+            config: dict = None,
+            weight: int = 0,
+            allowed_tags: list[str] = None,
+            allowed_attributes: dict[str, list[str]] = None,
+            **kwargs
+        ):
+        super().__init__(tool_name, klass, js, css, include_template, config, weight=weight, allowed_tags=allowed_tags, allowed_attributes=allowed_attributes, **kwargs)
         self.tag_name = tag_name
         self.must_have_attrs = must_have_attrs or {}
         self.can_have_attrs = can_have_attrs or {}
@@ -497,6 +546,7 @@ class EditorJSFeatures:
                 raise ValueError(f"Unknown feature: {tool}")
             
             tool_mapping = self.features[tool]
+
             for item in block_list:
                 if isinstance(tool_mapping, EditorJSTune):
                     tunes = item.get("tunes", {})

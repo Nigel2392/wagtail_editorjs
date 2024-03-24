@@ -66,7 +66,6 @@ def register_editor_js_features(registry: EditorJSFeatures):
             "CodeTool",
             "wagtail_editorjs/vendor/tools/code.js",
             inlineToolbar = True,
-        
         ),
     )
     registry.register(
@@ -76,7 +75,6 @@ def register_editor_js_features(registry: EditorJSFeatures):
             "Delimiter",
             "wagtail_editorjs/vendor/tools/delimiter.js",
             inlineToolbar = True,
-        
         ),
     )
     registry.register(
@@ -109,7 +107,6 @@ def register_editor_js_features(registry: EditorJSFeatures):
                 "wagtail_editorjs/vendor/tools/inline-code.js",
             ],
             inlineToolbar = True,
-        
         ),
     )
     registry.register(
@@ -121,7 +118,7 @@ def register_editor_js_features(registry: EditorJSFeatures):
                 "wagtail_editorjs/vendor/tools/marker.js",
             ],
             inlineToolbar = True,
-        
+            allowed_tags=["mark"],
         ),
     )
     registry.register(
@@ -133,7 +130,6 @@ def register_editor_js_features(registry: EditorJSFeatures):
                 "wagtail_editorjs/vendor/tools/nested-list.js",
             ],
             inlineToolbar = True,
-        
         ),
     )
     registry.register(
@@ -145,7 +141,7 @@ def register_editor_js_features(registry: EditorJSFeatures):
                 "wagtail_editorjs/vendor/tools/paragraph.umd.js",
             ],
             inlineToolbar = True,
-        
+            allowed_tags=["p"],
         ),
     )
     registry.register(
@@ -157,7 +153,6 @@ def register_editor_js_features(registry: EditorJSFeatures):
                 "wagtail_editorjs/vendor/tools/quote.js",
             ],
             inlineToolbar = True,
-        
         ),
     )
     registry.register(
@@ -169,7 +164,6 @@ def register_editor_js_features(registry: EditorJSFeatures):
                 "wagtail_editorjs/vendor/tools/raw.js",
             ],
             inlineToolbar = True,
-        
         ),
     )
     registry.register(
@@ -181,7 +175,6 @@ def register_editor_js_features(registry: EditorJSFeatures):
                 "wagtail_editorjs/vendor/tools/table.js",
             ],
             inlineToolbar = True,
-        
         ),
     )
     registry.register(
@@ -193,7 +186,6 @@ def register_editor_js_features(registry: EditorJSFeatures):
                 "wagtail_editorjs/vendor/tools/underline.js",
             ],
             inlineToolbar = True,
-        
         ),
     )
     registry.register(
@@ -205,7 +197,6 @@ def register_editor_js_features(registry: EditorJSFeatures):
                 "wagtail_editorjs/vendor/tools/warning.js",
             ],
             inlineToolbar = True,
-        
         ),
     )
 
@@ -219,7 +210,6 @@ def register_editor_js_features(registry: EditorJSFeatures):
                 "wagtail_editorjs/js/tools/wagtail-link.js",
             ],
             inlineToolbar = True,
-        
         ),
     )
 

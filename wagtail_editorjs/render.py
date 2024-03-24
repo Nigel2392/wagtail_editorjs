@@ -1,6 +1,8 @@
 from typing import Any
+from collections import defaultdict
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
+from . import settings
 from .registry import (
     EditorJSElement,
     BaseInlineEditorJSFeature,
@@ -8,7 +10,13 @@ from .registry import (
     InlineEditorJSFeature,
     EDITOR_JS_FEATURES,
 )
+import bleach
 
+
+class NullSanitizer:
+    @staticmethod
+    def sanitize_css(val):
+        return val
 
 def render_editorjs_html(features: list[str], data: dict, context=None) -> str:
     """
@@ -31,6 +39,7 @@ def render_editorjs_html(features: list[str], data: dict, context=None) -> str:
 
     html = []
     inline_matches = {}
+
     for block in data["blocks"]:
 
         feature: str = block["type"]
@@ -76,9 +85,31 @@ def render_editorjs_html(features: list[str], data: dict, context=None) -> str:
         inline: LazyInlineEditorJSFeature
         inline.build_elements(data, context)
 
+
+    html = "\n".join([str(h) for h in html])
+
+    if settings.CLEAN_HTML:
+        allowed_tags = set({
+            # Default inline tags.
+            "i", "b", "strong", "em", "u", "s", "strike"
+        })
+        allowed_attributes = defaultdict(set)
+
+        for feature in feature_mappings.values():
+            allowed_tags.update(feature.allowed_tags)
+            for key, value in feature.allowed_attributes.items():
+                allowed_attributes[key].update(value)
+
+        html = bleach.clean(
+            html,
+            tags=allowed_tags,
+            attributes=allowed_attributes,
+            css_sanitizer=NullSanitizer,
+        )
+
     return render_to_string(
         "wagtail_editorjs/rich_text.html",
-        {"html": mark_safe("".join([str(h) for h in html]))}
+        {"html": mark_safe(html)}
     )
 
 

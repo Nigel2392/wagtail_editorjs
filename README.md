@@ -59,3 +59,12 @@ Quick start
        )
 
    ```
+   
+## Settings
+
+### `EDITORJS_CLEAN_HTML`
+Default: `True`  
+Clean the HTML output on rendering.  
+This happens every time the field is rendered.  
+It might be smart to set up some sort of caching mechanism.
+

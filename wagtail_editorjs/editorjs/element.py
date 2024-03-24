@@ -32,7 +32,7 @@ class EditorJSElement:
     @property
     def content(self):
         if isinstance(self._content, list):
-            return "".join([str(item) for item in self._content])
+            return "\n".join([str(item) for item in self._content])
         return str(self._content)
     
     @content.setter
