@@ -8,6 +8,7 @@ from ..hooks import (
 from ..registry import (
     EditorJSFeature,
     EditorJSFeatures,
+    EditorJSJavascriptFeature,
 )
 from ..editorjs.features import (
     AttachesFeature,
@@ -250,6 +251,32 @@ def register_editor_js_features(registry: EditorJSFeatures):
         ),
     )
 
+    # Register initializers
+    registry.register(
+        "undo-redo",
+        EditorJSJavascriptFeature(
+            "undo-redo",
+            js = [
+                "wagtail_editorjs/vendor/tools/undo-redo.js",
+                "wagtail_editorjs/js/init/undo-redo.js",
+            ],
+            weight=0,
+        ),
+    )
+
+    registry.register(
+        "drag-drop",
+        EditorJSJavascriptFeature(
+            "drag-drop",
+            js = [
+                "wagtail_editorjs/vendor/tools/drag-drop.js",
+                "wagtail_editorjs/js/init/drag-drop.js",
+            ],
+            weight=1,
+        ),
+    )
+
+    # Add tunes
     registry.register_tune("text-alignment-tune")
     registry.register_tune("text-variant-tune")
 

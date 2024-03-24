@@ -1,4 +1,10 @@
+window.RegisteredEditorJSInitializers = window.RegisteredEditorJSInitializers || [];
 
+function registerInitializer(initializer) {
+    window.RegisteredEditorJSInitializers.push(initializer);
+};
+
+window.registerInitializer = registerInitializer;
 
 class EditorJSWidget {
     constructor(elementWrapper, hiddenInput, config) {
@@ -13,6 +19,15 @@ class EditorJSWidget {
             ...this.config,
             onReady: async () => {
                 this.element.value = JSON.stringify(await this.editor.save());
+
+                for (let i = 0; i < window.RegisteredEditorJSInitializers.length; i++) {
+                    const initializer = window.RegisteredEditorJSInitializers[i];
+                    try {
+                        initializer(this);
+                    } catch (e) {
+                        console.error(`Failed to initialize EditorJS widget (${i}): ${e}`);
+                    }
+                }
             },
             onChange: async () => {
                 this.element.value = JSON.stringify(await this.editor.save());
@@ -43,7 +58,7 @@ class EditorJSWidget {
         this.editor = new EditorJS(this.editorConfig);
 
         this.editor.isReady.then(() => {
-            // Initialized
+
         }).catch((reason) => {
             console.error(`Editor.js failed to initialize: ${reason}`);
             console.log(this.editorConfig)

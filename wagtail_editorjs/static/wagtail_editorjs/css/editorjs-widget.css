@@ -1,14 +1,36 @@
 .wagtail-editorjs-widget-container {
     max-width: 840px;
+    border-radius: 0.25rem;
+    border: 1px solid hsl(var(--w-color-primary-hue) calc(var(--w-color-primary-saturation) - 20%) calc(var(--w-color-primary-lightness) + 10%));
 }
 .wagtail-editorjs-display-none {
     display: none;
 }
-.ce-block__content {
-    max-width:calc(100% - 80px) !important;
-}
-.ce-toolbar__content {
-    max-width:calc(100% - 60px) !important;
+@media (min-width: 651px) {
+    .ce-block__content {
+        max-width:calc(100% - 80px) !important;
+    }
+    .ce-block__content:has(.stretched) {
+        max-width: 100% !important;
+    }
+    .ce-toolbar__content {
+        /* max-width:calc(100% - 60px) !important; */
+        margin-right: -26px;
+        max-width: 100%;
+    }
+    .wagtail-editorjs-widget-container .codex-editor--narrow .codex-editor__redactor {
+        margin-right: 0;
+    }
+    .ce-toolbar__actions {
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding-right: 0;
+    }
+    .ce-toolbar__actions > * {
+        margin-left: 0;
+        margin-right: 0;
+    }
 }
 .cdx-block {
     max-width: 100% !important;
@@ -71,9 +93,4 @@
 }
 .ce-tune-alignment--right .wagtail-image-tool {
     align-items: flex-end;
-}
-
-.codex-editor {
-    border-radius: 0.25rem;
-    border: 1px solid var(--w-color-primary);
 }

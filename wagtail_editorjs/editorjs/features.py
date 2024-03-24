@@ -361,7 +361,7 @@ class AttachesFeature(EditorJSFeature):
         if "id" not in data["data"]["file"] and not data["data"]["file"]["id"] and "url" not in data["data"]["file"]:
             raise ValueError("Invalid id/url value")
         
-        if "title" not in data["data"]["file"]:
+        if "title" not in data["data"]:
             raise ValueError("Invalid title value")
         
     def render_block_data(self, block: EditorJSBlock, context = None) -> EditorJSElement:
@@ -379,8 +379,8 @@ class AttachesFeature(EditorJSFeature):
             if request:
                 url = request.build_absolute_uri(url)
 
-        if block["data"]["file"]["title"]:
-            title = block["data"]["file"]["title"]
+        if block["data"]["title"]:
+            title = block["data"]["title"]
         else:
             if document:
                 title = document.title

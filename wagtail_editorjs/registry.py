@@ -2,7 +2,7 @@
     This module defines mappings from tools to the editorjs javascript side.
 """
 
-from collections import defaultdict
+from collections import defaultdict, OrderedDict
 from typing import Any, Union
 from django.utils.safestring import mark_safe
 from django.template.loader import render_to_string
@@ -71,7 +71,16 @@ class EditorJSBlock(dict):
 
 
 class BaseEditorJSFeature:
-    def __init__(self, tool_name: str, klass: str, js: Union[str, list[str]] = None, css: Union[str, list[str]] = None, include_template: str = None, config: dict = None, **kwargs):
+    def __init__(self,
+            tool_name: str,
+            klass: str,
+            js: Union[str, list[str]] = None,
+            css: Union[str, list[str]] = None,
+            include_template: str = None,
+            config: dict = None,
+            weight: int = 0, # Weight is used to manage which features.js files are loaded first.
+            **kwargs
+        ):
         
         self.tool_name = tool_name
         self.klass = klass
@@ -79,6 +88,7 @@ class BaseEditorJSFeature:
         self.css = css or []
         self.config = config or dict()
         self.kwargs = kwargs
+        self.weight = weight
         self.include_template = include_template
 
     def __repr__(self):
@@ -125,6 +135,14 @@ class BaseEditorJSFeature:
         return EditorJSBlock(data, tools)
 
 
+class EditorJSJavascriptFeature(BaseEditorJSFeature):
+    def __init__(self, tool_name: str, js: Union[str, list[str]] = None, css: Union[str, list[str]] = None, weight: int = 0):
+        super().__init__(tool_name, None, js, css, None, {}, weight=weight)
+
+    def get_config(self, context: dict[str, Any] = None) -> dict:
+        return None
+
+
 class EditorJSFeature(BaseEditorJSFeature):
     def validate(self, data: Any):
         if not data:
@@ -155,8 +173,8 @@ class BaseInlineEditorJSFeature(BaseEditorJSFeature):
 
 
 class LazyInlineEditorJSFeature(BaseInlineEditorJSFeature):
-    def __init__(self, tool_name: str, klass: str, tag_name: str, must_have_attrs: dict = None, can_have_attrs: dict = None, js: Union[str, list[str]] = None, css: Union[str, list[str]] = None, include_template: str = None, config: dict = None, **kwargs):
-        super().__init__(tool_name, klass, js, css, include_template, config, **kwargs)
+    def __init__(self, tool_name: str, klass: str, tag_name: str, must_have_attrs: dict = None, can_have_attrs: dict = None, js: Union[str, list[str]] = None, css: Union[str, list[str]] = None, include_template: str = None, config: dict = None, weight: int = 0, **kwargs):
+        super().__init__(tool_name, klass, js, css, include_template, config, weight=weight, **kwargs)
         self.tag_name = tag_name
         self.must_have_attrs = must_have_attrs or {}
         self.can_have_attrs = can_have_attrs or {}
@@ -367,6 +385,9 @@ class EditorJSFeatures:
 
             tool_mapping = self.features[tool]
             tool_config = tool_mapping.get_config(context)
+            if tool_config is None:
+                continue
+
             tool_config = copy.deepcopy(tool_config)
 
             if "tunes" in tool_config:
@@ -443,6 +464,25 @@ class EditorJSFeatures:
         data["blocks"] = list(filter(None, blocks))
         return data
 
+    def get_by_weight(self, tools: list[str]) -> OrderedDict[str, EditorJSFeature]:
+        """
+            Returns the tools sorted by weight.
+            Items with the lowest weight are first.
+        """
+        self._look_for_features()
+        od = OrderedDict()
+        
+        values = list(self.features.values())
+        values.sort(key=lambda x: x.weight)
+        
+        for value in values:
+            if value.tool_name in tools:
+                od[value.tool_name] = value
+        
+        return od
+    
+    def update_config(self, tool: str, config: dict):
+        self.features[tool].config.update(config)
 
     def validate_for_tools(self, tools: list[str], data: dict):
         """

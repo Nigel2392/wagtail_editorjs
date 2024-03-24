@@ -60,23 +60,27 @@ class EditorJSWidget(widgets.Input):
     def media(self):
         js = [
             "wagtail_editorjs/vendor/editorjs.umd.js",
+            "wagtail_editorjs/js/editorjs-widget.js",
         ]
         css = [
             "wagtail_editorjs/css/editorjs-widget.css",
             # "wagtail_editorjs/css/frontend.css",
         ]
 
-        for feature in self.features:
+        feature_mapping = EDITOR_JS_FEATURES.get_by_weight(
+            self.features,
+        )
+
+        for feature in feature_mapping.values():
             js.extend(
-                EDITOR_JS_FEATURES[feature].get_js()
+                feature.get_js()
             )
             css.extend(
-                EDITOR_JS_FEATURES[feature].get_css()
+                feature.get_css()
             )
 
         js.extend([
             "wagtail_editorjs/js/editorjs-widget-controller.js",
-            "wagtail_editorjs/js/editorjs-widget.js",
         ])
 
         return widgets.Media(
