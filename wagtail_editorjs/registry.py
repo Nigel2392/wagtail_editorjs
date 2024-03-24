@@ -3,7 +3,8 @@
 """
 
 from collections import defaultdict, OrderedDict
-from typing import Any, Union
+from typing import Any, Union, Callable
+from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
 from django.template.loader import render_to_string
 from wagtail import hooks
@@ -73,6 +74,7 @@ class EditorJSBlock(dict):
 class BaseEditorJSFeature:
     allowed_tags: list[str] = None
     allowed_attributes: dict[str, list[str]] = None
+    # cleaner_funcs: dict[str, dict[str, Callable[[str], bool]]] = {}
     
     def __init__(self,
             tool_name: str,
@@ -127,6 +129,10 @@ class BaseEditorJSFeature:
 
     def __repr__(self):
         return f"<EditorJSFeature \"{self.tool_name}\">"
+    
+    @classmethod
+    def get_test_data(cls):
+        return []
 
     def get_template_context(self, context: dict[str, Any] = None) -> dict:
         return context
@@ -191,7 +197,15 @@ class EditorJSFeature(BaseEditorJSFeature):
             "p",
             block["data"].get("text")
         )
-
+    
+    @classmethod
+    def get_test_data(cls):
+        return [
+            {
+                "text": "Hello, world!"
+            }
+        ]
+    
 
 class EditorJSTune(BaseEditorJSFeature):
     """
@@ -201,6 +215,10 @@ class EditorJSTune(BaseEditorJSFeature):
 
     def tune_element(self, element: "EditorJSElement", tune_value: Any, context = None) -> "EditorJSElement":
         return element
+    
+    @classmethod
+    def get_test_data(cls):
+        return None
 
 
 class BaseInlineEditorJSFeature(BaseEditorJSFeature):
@@ -288,6 +306,7 @@ class LazyInlineEditorJSFeature(BaseInlineEditorJSFeature):
 
 class LazyModelInlineEditorJSFeature(LazyInlineEditorJSFeature):
     model = None
+    chooser_class = None
     tag_name = "a"
     id_attr = "data-id"
 
@@ -296,11 +315,34 @@ class LazyModelInlineEditorJSFeature(LazyInlineEditorJSFeature):
         self.must_have_attrs = self.must_have_attrs | {
             self.id_attr: None,
             f"data-{self.model._meta.model_name}": None,
+            "class": f"wagtail-{self.model._meta.model_name}-link"
         }
+
+
+    @cached_property
+    def widget(self):
+        return self.chooser_class()
+
 
     def get_id(self, item, attrs: dict[str, Any], context: dict[str, Any] = None):
         return int(attrs[self.id_attr])
-    
+
+
+    def get_config(self, context: dict[str, Any]):
+        config = super().get_config() or {}
+        config.setdefault("config", {})
+        config["config"]["chooserId"] =\
+            f"editorjs-{self.model._meta.model_name}-chooser-{context['widget']['attrs']['id']}"
+        return config
+
+
+    def render_template(self, context: dict[str, Any] = None):
+        return self.widget.render_html(
+            f"editorjs-{self.model._meta.model_name}-chooser-{context['widget']['attrs']['id']}",
+            None,
+            {"id": f"editorjs-{self.model._meta.model_name}-chooser-{context['widget']['attrs']['id']}"}
+        )
+
     def build_element(self, item, obj, context: dict[str, Any] = None):
         """
             Build the element from the object.
@@ -309,6 +351,25 @@ class LazyModelInlineEditorJSFeature(LazyInlineEditorJSFeature):
             obj:     Model
             context: RequestContext | None
         """
+        # delete all attributes
+        for key in list(item.attrs.keys()):
+            del item[key]
+
+        request = None
+        if context:
+            request = context.get("request")
+            item["href"] = self.get_full_url(obj, request)
+        else:
+            item["href"] = self.get_url(obj)
+        item["class"] = f"{self.model._meta.model_name}-link"
+
+    
+    def get_url(self, instance):
+        return instance.url
+    
+    def get_full_url(self, instance, request):
+        return request.build_absolute_uri(self.get_url(instance))
+
 
     def build_elements(self, inline_data: list, context: dict[str, Any] = None) -> list:
         """
@@ -345,6 +406,18 @@ class LazyModelInlineEditorJSFeature(LazyInlineEditorJSFeature):
         # Replace the element's content with the new soup
         for soup, element in element_soups:
             element.content = soup.prettify()
+
+    def get_css(self):
+        return self.widget.media._css.get("all", []) + super().get_css()
+    
+    def get_js(self):
+        return (self.widget.media._js or []) + super().get_js()
+    
+    @classmethod
+    def get_test_data(cls):
+        return None
+
+            
 
 class InlineEditorJSFeature(BaseInlineEditorJSFeature):
     """
@@ -420,6 +493,7 @@ class EditorJSFeatures:
 
 
     def register_config(self, tool_name: str, config: dict):
+        self._look_for_features()
         self.features[tool_name].config.update(config)
 
 

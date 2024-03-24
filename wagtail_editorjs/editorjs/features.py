@@ -4,6 +4,7 @@ from django.urls import reverse
 from wagtail.models import Page
 from wagtail.admin.widgets import AdminPageChooser
 from wagtail.images.widgets import AdminImageChooser
+from wagtail.documents.widgets import AdminDocumentChooser
 from wagtail.images import get_image_model
 from wagtail.documents import get_document_model
 
@@ -31,11 +32,11 @@ class NestedListElement(EditorJSElement):
         self.items = items
 
     def __str__(self):
-        return wrap_tag(self.tag, self.attrs, "\n\t".join([str(item) for item in self.items]), self.close_tag)
+        return wrap_tag(self.tag, self.attrs, "".join([str(item) for item in self.items]), self.close_tag)
     
     @property
     def content(self):
-        return "\n\t".join([str(item) for item in self.items])
+        return "".join([str(item) for item in self.items])
     
     @content.setter
     def content(self, value):
@@ -82,6 +83,43 @@ class NestedListFeature(EditorJSFeature):
         element = "ol" if block["data"]["style"] == "ordered" else "ul"
         return parse_list(block["data"]["items"], element)
 
+    @classmethod
+    def get_test_data(cls):
+        return [
+            {
+                "style": "unordered",
+                "items": [
+                    {
+                        "content": "Item 1",
+                        "items": [
+                            {
+                                "content": "Item 1.1",
+                                "items": [
+                                    {
+                                        "content": "Item 1.1.1",
+                                        "items": [],
+                                    },
+                                    {
+                                        "content": "Item 1.1.2",
+                                        "items": [],
+                                    },
+                                ],
+                            },
+                            {
+                                "content": "Item 1.2",
+                                "items": [],
+                            },
+                        ],
+                    },
+                    {
+                        "content": "Item 2",
+                        "items": [],
+                    },
+                ],
+            },
+        ]
+
+
 class CheckListFeature(EditorJSFeature):
     allowed_tags = ["ul", "li"]
     allowed_attributes = ["class"]
@@ -109,7 +147,24 @@ class CheckListFeature(EditorJSFeature):
 
             s.append(wrap_tag("li", {"class": class_}, item["text"]))
 
-        return EditorJSElement("ul", "\n\t".join(s), attrs={"class": "checklist"})
+        return EditorJSElement("ul", "".join(s), attrs={"class": "checklist"})
+    
+    @classmethod
+    def get_test_data(cls):
+        return [
+            {
+                "items": [
+                    {
+                        "checked": True,
+                        "text": "Item 1",
+                    },
+                    {
+                        "checked": False,
+                        "text": "Item 2",
+                    },
+                ],
+            }
+        ]
 
 class CodeFeature(EditorJSFeature):
     allowed_tags = ["code"]
@@ -123,6 +178,14 @@ class CodeFeature(EditorJSFeature):
     
     def render_block_data(self, block: EditorJSBlock, context = None) -> EditorJSElement:
         return EditorJSElement("code", block["data"]["code"], attrs={"class": "code"})
+    
+    @classmethod
+    def get_test_data(cls):
+        return [
+            {
+                "code": "print('Hello, World!')",
+            }
+        ]
 
 class DelimiterFeature(EditorJSFeature):
     allowed_tags = ["hr"]
@@ -130,6 +193,10 @@ class DelimiterFeature(EditorJSFeature):
 
     def render_block_data(self, block: EditorJSBlock, context = None) -> EditorJSElement:
         return EditorJSElement("hr", close_tag=False, attrs={"class": "delimiter"})
+    
+    @classmethod
+    def get_test_data(cls):
+        return [{}]
 
 class HeaderFeature(EditorJSFeature):
     allowed_tags = ["h1", "h2", "h3", "h4", "h5", "h6"]
@@ -147,6 +214,16 @@ class HeaderFeature(EditorJSFeature):
             "h" + str(block["data"]["level"]),
             block["data"].get("text")
         )
+    
+    @classmethod
+    def get_test_data(cls):
+        return [
+            {
+                "level": heading,
+                "text": f"Header {heading}",
+            } for heading in range(1, 7)
+        ]
+
 
 class HTMLFeature(EditorJSFeature):
     allowed_tags = bleach.ALLOWED_TAGS
@@ -160,6 +237,14 @@ class HTMLFeature(EditorJSFeature):
     
     def render_block_data(self, block: EditorJSBlock, context = None) -> EditorJSElement:
         return EditorJSElement("div", block["data"]["html"], attrs={"class": "html"})
+    
+    @classmethod
+    def get_test_data(cls):
+        return [
+            {
+                "html": "<p>This is an HTML block.</p>",
+            }
+        ]
 
 class WarningFeature(EditorJSFeature):
     allowed_tags = ["div", "h2", "p"]
@@ -191,50 +276,36 @@ class WarningFeature(EditorJSFeature):
                 ),
             ]
         )
-
+    
+    @classmethod
+    def get_test_data(cls):
+        return [
+            {
+                "title": "Warning",
+                "message": "This is a warning message.",
+            }
+        ]
 
 
 class LinkFeature(LazyModelInlineEditorJSFeature):
     allowed_tags = ["a"]
     allowed_attributes = ["class", "href", "data-parent-id"]
+    chooser_class = AdminPageChooser
     model = Page
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.must_have_attrs = self.must_have_attrs | {
-            "class": "wagtail-link",
             "data-parent-id": None,
             "href": None,
         }
 
-    def get_config(self, context: dict[str, Any]):
-        config = super().get_config() or {}
-        config.setdefault("config", {})
-        config["config"]["pageChooserId"] =\
-            f"editorjs-page-chooser-{context['widget']['attrs']['id']}"
-        return config
 
-
-    def render_template(self, context: dict[str, Any] = None):
-        return AdminPageChooser().render_html(
-            f"editorjs-page-chooser-{context['widget']['attrs']['id']}",
-            None,
-            {"id": f"editorjs-page-chooser-{context['widget']['attrs']['id']}"}
-        )
-    
-    def build_element(self, item, obj, context: dict[str, Any] = None):
-        # delete all attributes
-        for key in list(item.attrs.keys()):
-            del item[key]
-
-        request = None
-        if context:
-            request = context.get("request")
-            item["href"] = obj.get_full_url(request)
-        else:
-            item["href"] = obj.get_url()
-        item["class"] = "wagtail-link"
-
+class DocumentFeature(LazyModelInlineEditorJSFeature):
+    allowed_tags = ["a"]
+    allowed_attributes = ["class", "href", "data-id"]
+    chooser_class = AdminDocumentChooser
+    model = Document
 
 
 class ImageFeature(EditorJSFeature):
@@ -333,6 +404,30 @@ class ImageFeature(EditorJSFeature):
                 **attrs,
             },
         )
+    
+    @classmethod
+    def get_test_data(cls):
+        # instance = Image.objects.first()
+        return [
+            # {
+            #     "imageId": instance.pk,
+            #     "withBorder": True,
+            #     "stretched": False,
+            #     "backgroundColor": "#000000",
+            #     "usingCaption": False,
+            #     "alt": "Image",
+            #     "caption": "Image",
+            # },
+            # {
+            #     "imageId": instance.pk,
+            #     "withBorder": False,
+            #     "stretched": True,
+            #     "backgroundColor": None,
+            #     "usingCaption": True,
+            #     "alt": "Image",
+            #     "caption": "Image",
+            # }
+        ]
 
 class TableFeature(EditorJSFeature):
     allowed_tags = ["table", "tr", "th", "td", "thead", "tbody", "tfoot"]
@@ -354,10 +449,31 @@ class TableFeature(EditorJSFeature):
             for cell in row:
                 tag = "th" if block["data"]["withHeadings"] and i == 0 else "td"
                 tr.append(wrap_tag(tag, {}, cell))
-            table.append(wrap_tag("tr", {}, "\t\t".join(tr)))
+            table.append(wrap_tag("tr", {}, "".join(tr)))
 
-        return EditorJSElement("table", "\t".join(table))
+        return EditorJSElement("table", "".join(table))
 
+    @classmethod
+    def get_test_data(cls):
+        return [
+            {
+                "withHeadings": False,
+                "content": [
+                    ["1", "2", "3"],
+                    ["4", "5", "6"],
+                    ["7", "8", "9"],
+                ],
+            },
+            {
+                "withHeadings": True,
+                "content": [
+                    ["Heading 1", "Heading 2", "Heading 3"],
+                    ["1", "2", "3"],
+                    ["4", "5", "6"],
+                    ["7", "8", "9"],
+                ],
+            }
+        ]
 
 class BlockQuoteFeature(EditorJSFeature):
     allowed_tags = ["blockquote", "footer"]
@@ -386,11 +502,20 @@ class BlockQuoteFeature(EditorJSFeature):
                 "class": "blockquote",
             }
         )
+    
+    @classmethod
+    def get_test_data(cls):
+        return [
+            {
+                "text": "This is a quote.",
+                "caption": "Anonymous",
+            }
+        ]
 
 
 class AttachesFeature(EditorJSFeature):
     allowed_tags = ["a"]
-    allowed_attributes = ["class", "href", "data-id"]
+    allowed_attributes = ["class", "href"] #, "data-id"
 
     def validate(self, data: Any):
         super().validate(data)
@@ -408,7 +533,7 @@ class AttachesFeature(EditorJSFeature):
 
         if "id" in block["data"]["file"] and block["data"]["file"]["id"]:
             document_id = block["data"]["file"]["id"]
-            document = Document.objects.get(id=document_id)
+            document = Document.objects.get(pk=document_id)
             url = document.url
         else:
             document = None
@@ -438,18 +563,33 @@ class AttachesFeature(EditorJSFeature):
             },
         )
     
-def clean_alignment_class(tag, name, value):
-    if name == "class":
-        if any([i in value for i in ["align-content-left", "align-content-center", "align-content-right"]]):
-            return value
-        return None
-    return value
+    @classmethod
+    def get_test_data(cls):
+        # instance = Document.objects.first()
+        return [
+            # {
+            #     "file": {
+            #         "id": instance.pk,
+            #     },
+            #     "title": "Document",
+            # },
+        ]
+    
+# def clean_alignment_class(value):
+#     if any([i in value for i in ["align-content-left", "align-content-center", "align-content-right"]]):
+#         return True
+#     return False
 
 class AlignmentBlockTune(EditorJSTune):
     allowed_attributes = {
-        "*": [clean_alignment_class],
+        "*": ["class"],
     }
-    
+    # cleaner_funcs = {
+    #     "*": {
+    #         "class": clean_alignment_class,
+    #     }
+    # }
+     
     def validate(self, data: Any):
         super().validate(data)
         alignment = data.get("alignment")
@@ -460,6 +600,20 @@ class AlignmentBlockTune(EditorJSTune):
         element = super().tune_element(element, tune_value, context=context)
         element.add_attributes(class_=f"align-content-{tune_value['alignment'].strip()}")
         return element
+    
+    # @classmethod
+    # def get_test_data(cls):
+        # return [
+            # {
+                # "alignment": "left",
+            # },
+            # {
+                # "alignment": "center",
+            # },
+            # {
+                # "alignment": "right",
+            # },
+        # ]
 
 
 class TextVariantTune(EditorJSTune):
@@ -489,3 +643,11 @@ class TextVariantTune(EditorJSTune):
             element,
             attrs={"class": f"text-variant-{tune_value}"},
         )
+    
+    # @classmethod
+    # def get_test_data(cls):
+        # return [
+            # "call-out",
+            # "citation",
+            # "details",
+        # ]

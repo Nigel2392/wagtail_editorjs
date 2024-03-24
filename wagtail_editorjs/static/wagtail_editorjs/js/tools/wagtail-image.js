@@ -5,12 +5,13 @@ const wagtailImageIcon = `<svg width="16" height="16" viewBox="0 0 17 15" xmlns=
 
 
 class Setting {
-    constructor(tuneName, iconName) {
+    constructor(tuneName, iconName, onClick = null) {
         this.tuneName = tuneName;
         this.icon = iconName;
         this.api = null;
         this.config = null;
         this.tool = null;
+        this._onClick = onClick;
     }
 
     setTool(api, config, tool) {
@@ -40,6 +41,9 @@ class Setting {
     }
 
     onClick() {
+        if (this._onClick) {
+            this._onClick(this.isActive());
+        }
     }
 
     onSave() {
@@ -50,8 +54,12 @@ class Setting {
 class SimpleToggleSetting extends Setting {
     onClick() {
         this.tool.data[this.tuneName] = !this.tool.data[this.tuneName];
-        this.tool.imageWrapper.classList.toggle(this.tuneName, this.tool.data[this.tuneName]);
+        const isActive = this.isActive();
+        this.tool.imageWrapper.classList.toggle(this.tuneName, isActive);
         this.tool.refreshActiveTunes();
+        if (this._onClick) {
+            this._onClick(isActive);
+        }
     }
 
     isActive() {
@@ -139,8 +147,28 @@ class TitleToggleSetting extends SimpleToggleSetting {
 }
 
 
+class ChangeImageSetting extends Setting {
+    onClick() {
+        this.tool.imageChooser.openChooserModal();
+        this.tool.imageChooser.input.addEventListener('change', () => {
+            const data = this.tool.imageChooser.getState();
+            this.tool.image.src = `${this.config.getImageUrl}${data.id}/`
+            this.tool.image.alt = data.title;
+            this.tool.imageWrapper.style.filter = 'blur(5px)';
+            this.tool.image.onload = () => {
+                this.tool.imageWrapper.style.filter = 'blur(0px)';
+                this.tool.image.onload = null;
+            }
+            this.tool.image.dataset.imageId = data.id;
+            this.tool.image.dataset.editUrl = data.edit_url;
+            this.tool.titleInput.value = data.title;
+        });
+    }
+}
+
+
 class WagtailImageTool {
-    constructor({ data, api, config }) {
+    constructor({ data, api, config, block }) {
         if (!config) {
             config = {
                 imageChooserId: null,
@@ -154,21 +182,30 @@ class WagtailImageTool {
 
         this.data = data;
         this.api = api;
+        this.block = block;
         this.config = config;
         this.imageChooser = new window.ImageChooser(config.imageChooserId);
         this.imageWrapper = null;
+        /*
+        Icons provided by bootstrap icons.
+        <!-- The MIT License (MIT) -->
+        <!-- Copyright (c) 2011-2024 The Bootstrap Authors -->
+        */
         this.settings = [
             new SimpleToggleSetting(
                 'withBorder', 
                 `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-border" viewBox="0 0 16 16">
                     <path d="M0 0h.969v.5H1v.469H.969V1H.5V.969H0zm2.844 1h-.938V0h.938zm1.875 0H3.78V0h.938v1zm1.875 0h-.938V0h.938zm.937 0V.969H7.5V.5h.031V0h.938v.5H8.5v.469h-.031V1zm2.813 0h-.938V0h.938zm1.875 0h-.938V0h.938zm1.875 0h-.938V0h.938zM15.5 1h-.469V.969H15V.5h.031V0H16v.969h-.5zM1 1.906v.938H0v-.938zm6.5.938v-.938h1v.938zm7.5 0v-.938h1v.938zM1 3.78v.938H0V3.78zm6.5.938V3.78h1v.938zm7.5 0V3.78h1v.938zM1 5.656v.938H0v-.938zm6.5.938v-.938h1v.938zm7.5 0v-.938h1v.938zM.969 8.5H.5v-.031H0V7.53h.5V7.5h.469v.031H1v.938H.969zm1.875 0h-.938v-1h.938zm1.875 0H3.78v-1h.938v1zm1.875 0h-.938v-1h.938zm1.875-.031V8.5H7.53v-.031H7.5V7.53h.031V7.5h.938v.031H8.5v.938zm1.875.031h-.938v-1h.938zm1.875 0h-.938v-1h.938zm1.875 0h-.938v-1h.938zm1.406 0h-.469v-.031H15V7.53h.031V7.5h.469v.031h.5v.938h-.5zM0 10.344v-.938h1v.938zm7.5 0v-.938h1v.938zm8.5-.938v.938h-1v-.938zM0 12.22v-.938h1v.938zm7.5 0v-.938h1v.938zm8.5-.938v.938h-1v-.938zM0 14.094v-.938h1v.938zm7.5 0v-.938h1v.938zm8.5-.938v.938h-1v-.938zM.969 16H0v-.969h.5V15h.469v.031H1v.469H.969zm1.875 0h-.938v-1h.938zm1.875 0H3.78v-1h.938v1zm1.875 0h-.938v-1h.938zm.937 0v-.5H7.5v-.469h.031V15h.938v.031H8.5v.469h-.031v.5zm2.813 0h-.938v-1h.938zm1.875 0h-.938v-1h.938zm1.875 0h-.938v-1h.938zm.937 0v-.5H15v-.469h.031V15h.469v.031h.5V16z"/>
-                </svg>`
+                </svg>`,
             ),
             new SimpleToggleSetting(
                 'stretched',
                 `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrows-fullscreen" viewBox="0 0 16 16">
                     <path fill-rule="evenodd" d="M5.828 10.172a.5.5 0 0 0-.707 0l-4.096 4.096V11.5a.5.5 0 0 0-1 0v3.975a.5.5 0 0 0 .5.5H4.5a.5.5 0 0 0 0-1H1.732l4.096-4.096a.5.5 0 0 0 0-.707m4.344 0a.5.5 0 0 1 .707 0l4.096 4.096V11.5a.5.5 0 1 1 1 0v3.975a.5.5 0 0 1-.5.5H11.5a.5.5 0 0 1 0-1h2.768l-4.096-4.096a.5.5 0 0 1 0-.707m0-4.344a.5.5 0 0 0 .707 0l4.096-4.096V4.5a.5.5 0 1 0 1 0V.525a.5.5 0 0 0-.5-.5H11.5a.5.5 0 0 0 0 1h2.768l-4.096 4.096a.5.5 0 0 0 0 .707m-4.344 0a.5.5 0 0 1-.707 0L1.025 1.732V4.5a.5.5 0 0 1-1 0V.525a.5.5 0 0 1 .5-.5H4.5a.5.5 0 0 1 0 1H1.732l4.096 4.096a.5.5 0 0 1 0 .707"/>
-                </svg>`
+                </svg>`,
+                (isActive) => {
+                    this.block.stretched = isActive;
+                }
             ),
             new BackgroundColorSetting(
                 'backgroundColor',
@@ -184,6 +221,10 @@ class WagtailImageTool {
                     <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0z"/>
                 </svg>`
             ),
+            new ChangeImageSetting(
+                'changeImage',
+                wagtailImageIcon,
+            )
         ];
 
         this.settings.forEach( tune => {
@@ -223,6 +264,7 @@ class WagtailImageTool {
             this.image.alt = this.data.alt;
             this.titleInput.value = this.data.alt;
             this.image.dataset.imageId = this.data.imageId;
+            this.image.dataset.editUrl = this.data.editUrl;
         } else {
             this.imageChooser.openChooserModal()
             this.imageChooser.input.addEventListener('change', chooserModalFunc);
@@ -234,6 +276,8 @@ class WagtailImageTool {
             if (e.ctrlKey) {
                 this.imageChooser.openChooserModal()
                 this.imageChooser.input.addEventListener('change', chooserModalFunc);
+            } else {
+                window.open(this.data.editUrl, '_blank');
             }
         });
 
@@ -271,6 +315,7 @@ class WagtailImageTool {
 
         return Object.assign(this.data, {
             imageId: image.dataset.imageId,
+            editUrl: image.dataset.editUrl,
             alt: titleInput.value,
         });
     }

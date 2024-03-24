@@ -21,6 +21,7 @@ from ..editorjs.features import (
     HTMLFeature,
     ImageFeature,
     LinkFeature,
+    DocumentFeature,
     NestedListFeature,
     TableFeature,
     AlignmentBlockTune,
@@ -85,17 +86,6 @@ def register_editor_js_features(registry: EditorJSFeatures):
             "wagtail_editorjs/vendor/tools/header.js",
             inlineToolbar = True,
         
-        ),
-    )
-    registry.register(
-        "image",
-        ImageFeature(
-            "image",
-            "WagtailImageTool",
-            js = [
-                "wagtail_editorjs/js/tools/wagtail-image.js",
-            ],
-            config={},
         ),
     )
     registry.register(
@@ -207,8 +197,35 @@ def register_editor_js_features(registry: EditorJSFeatures):
             "link",
             "WagtailLinkTool",
             js = [
+                "wagtail_editorjs/js/tools/wagtail-chooser-tool.js",
                 "wagtail_editorjs/js/tools/wagtail-link.js",
             ],
+            inlineToolbar = True,
+        ),
+    )
+
+    registry.register(
+        "image",
+        ImageFeature(
+            "image",
+            "WagtailImageTool",
+            js = [
+                "wagtail_editorjs/js/tools/wagtail-image.js",
+            ],
+            config={},
+        ),
+    )
+
+    registry.register(
+        "document",
+        DocumentFeature(
+            "document",
+            "WagtailDocumentTool",
+            js = [
+                "wagtail_editorjs/js/tools/wagtail-chooser-tool.js",
+                "wagtail_editorjs/js/tools/wagtail-document.js",
+            ],
+            config={},
             inlineToolbar = True,
         ),
     )

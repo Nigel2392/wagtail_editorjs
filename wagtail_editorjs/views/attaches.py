@@ -1,3 +1,4 @@
+from typing import TYPE_CHECKING
 from django.http import (
     JsonResponse,
 )
@@ -10,6 +11,9 @@ from wagtail.documents import (
 from wagtail.documents.forms import (
     get_document_form,
 )
+
+if TYPE_CHECKING:
+    from wagtail.documents.models import AbstractDocument
 
 
 Document = get_document_model()
@@ -32,15 +36,35 @@ def attaches_upload(request):
 
     form = DocumentForm({ 'title': title, 'collection': collection }, request.FILES)
     if form.is_valid():
-        document = form.save(commit=False)
+        document: AbstractDocument = form.save(commit=False)
+
+        hash = document.get_file_hash()
+        existing = Document.objects.filter(file_hash=hash)
+        if existing.exists():
+            exists: AbstractDocument = existing.first()
+            return JsonResponse({
+                'success': True,
+                'file': {
+                    'id': exists.pk,
+                    'title': exists.title,
+                    'size': exists.file.size,
+                    'url': exists.url,
+                    'upload_replaced': True,
+                    'reuploaded_by_user': request.user.pk,
+                }
+            })
+            
         document.uploaded_by_user = request.user
         document.save()
         return JsonResponse({
             'success': True,
             'file': {
-                'id': document.id,
+                'id': document.pk,
                 'title': document.title,
+                'size': document.file.size,
                 'url': document.url,
+                'upload_replaced': False,
+                'reuploaded_by_user': None,
             }
         })
     else:

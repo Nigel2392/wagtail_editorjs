@@ -5,168 +5,39 @@ const wagtailLinkIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="16" heig
     <path d="M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 1 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 1 0-4.243-4.243z"/>
 </svg>`;
 
-function setDataOnWrapper(wrapperTag, data) {
-    if (!data) {
-        return;
-    }
-    wrapperTag.href                   = data.url;
-    wrapperTag.dataset.page           = true;
-    delete data.url;
-
-    for (const key in data) {
-        if (data[key]) {
-            wrapperTag.dataset[key] = data[key];
-        } else {
-            delete wrapperTag.dataset[key];
-        }
-    }
-
-   //if (!wrapperTag.textContent && data.title) {
-   //    wrapperTag.textContent = data.title;
-   //}
-}
 
 
-class WagtailLinkTool {
+class WagtailLinkTool extends window.BaseWagtailChooserTool {
     constructor({ api, config }) {
-        if (!config) {
-            config = {
-                pageChooserId: null,
-            };
-        }
-
-        if (!config.pageChooserId) {
-            console.error('pageChooserId is required');
-            throw new Error('pageChooserId is required');
-        }
-
-        this.button = null;
-        this._state = false;
-        this.api = api;
-        this.tag = 'A';
-        this.tagClass = 'wagtail-link';
-        this.config = config;
-        this.chooser = null;
-        this.urlParams = {
-            page_type:           config.page_type || 'wagtailcore.page',
-            allow_external_link: config.allow_external_link || true,
-            allow_email_link:    config.allow_email_link || true,
-            allow_phone_link:    config.allow_phone_link || true,
-            allow_anchor_link:   config.allow_anchor_link || true,
-        };
+        super({ api, config })
         this.colorPicker = null;
     }
-    
-    static get isInline() {
-        return true;
+
+    get iconHTML() {
+        return wagtailLinkIcon;
     }
 
-    get state() {
-        return this._state;
+    static get chooserType() {
+        return 'page';
     }
 
-    static get sanitize() {
-        return {
-            a: {
-                "href": true,
-                "class": true,
-                "data-id": true,
-                "data-title": true,
-                "data-admin-title": true,
-                "data-edit-url": true,
-                "data-parent-id": true,
-                "data-page": true,
-            },
+    newChooser() {
+        let urlParams = {
+            page_type:           this.config.page_type || 'wagtailcore.page',
+            allow_external_link: this.config.allow_external_link || true,
+            allow_email_link:    this.config.allow_email_link || true,
+            allow_phone_link:    this.config.allow_phone_link || true,
+            allow_anchor_link:   this.config.allow_anchor_link || true,
         };
-    }
-    
-    set state(state) {
-        this._state = state;
-        this.button.classList.toggle(this.api.styles.inlineToolButtonActive, state);
-    }
 
-    render() {
-        this.button = document.createElement('button');
-        this.button.type = 'button';
-        this.button.innerHTML = wagtailLinkIcon;
-        this.button.dataset.chooserActionChoose = 'true';
-        this.button.classList.add(
-            this.api.styles.inlineToolButton,
-        )
-
-        // const selectedText = range.extractContents();
-        const chooserUrls = {
-            /** @deprecated RemovedInWagtail70 - Remove global.chooserUrls usage  */
-            ...window.chooserUrls,
-        };
-        let url = chooserUrls.pageChooser;
-      
         const cfg = {
-            url: url,
-            urlParams: this.urlParams,
+            url: window.chooserUrls.pageChooser,
+            urlParams: urlParams,
             onload: window.PAGE_CHOOSER_MODAL_ONLOAD_HANDLERS,
             modelNames: ['wagtailcore.page'],
         };
 
-        this.chooser = new window.PageChooser(this.config.pageChooserId, cfg);
-
-        return this.button;
-    }
-
-    surround(range) {
-        if (this.state) {
-            this.unwrap(range);
-            return;
-        }
-
-        // this.button.addEventListener('click', () => {
-        // });
-        let chooserEventListener = null;
-        chooserEventListener = (e) => {
-            const data = this.chooser.state;
-            this.wrap(range, data);
-            this.chooser.input.removeEventListener('change', chooserEventListener);
-        };
-        this.chooser.openChooserModal();
-        this.chooser.input.addEventListener('change', chooserEventListener);
-    }
-    
-    wrap(range, state) {
-        const selectedText = range.extractContents();
-        const wrapperTag = document.createElement(this.tag);
-
-        setDataOnWrapper(wrapperTag, state);
-
-        wrapperTag.classList.add(this.tagClass);
-        wrapperTag.appendChild(selectedText);
-        range.insertNode(wrapperTag);
-
-        this.api.selection.expandToTag(wrapperTag);
-    }
-    
-    unwrap(range) {
-        const wrapperTag = this.api.selection.findParentTag(this.tag, this.tagClass);
-        const text = range.extractContents();
-        wrapperTag.remove();
-        range.insertNode(text);
-    }
-    
-    
-    checkState() {
-        const wrapperTag = this.api.selection.findParentTag(this.tag, this.tagClass);
-        if (!wrapperTag) {
-            return
-        }
-        
-
-        this.state = !!wrapperTag;
-
-        if (this.state) {
-            this.showActions(wrapperTag);
-        } else {
-            this.hideActions();
-        }
-
+        return new window.PageChooser(this.config.chooserId, cfg);
     }
 
     showActions(wrapperTag) {
@@ -175,7 +46,7 @@ class WagtailLinkTool {
         let chooseNewPageFunc = null;
         chooseNewPageFunc = (e) => {
             const data = this.chooser.state;
-            setDataOnWrapper(wrapperTag, data);
+            this.setDataOnWrapper(wrapperTag, data);
             this.pageURLInput.value = data.url;
             this.chooser.input.removeEventListener('change', chooseNewPageFunc);
         };
@@ -183,17 +54,6 @@ class WagtailLinkTool {
         this.chooseNewPageButton.onclick = (() => {
             this.chooser.openChooserModal();
             this.chooser.input.addEventListener('change', chooseNewPageFunc);
-        });
-
-        this.pageURLInput.onchange = (() => {
-            setDataOnWrapper(wrapperTag, {
-                url:        this.pageURLInput.value,
-                id:         null,
-                title:      null,
-                adminTitle: null,
-                editUrl:    null,
-                parentId:   null,
-            });
         });
 
         this.targetSelect.onchange = (e) => {

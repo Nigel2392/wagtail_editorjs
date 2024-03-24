@@ -18,7 +18,7 @@ class NullSanitizer:
     def sanitize_css(val):
         return val
 
-def render_editorjs_html(features: list[str], data: dict, context=None) -> str:
+def render_editorjs_html(features: list[str], data: dict, context=None, clean: bool = None) -> str:
     """
         Renders the editorjs widget.
     """
@@ -88,15 +88,20 @@ def render_editorjs_html(features: list[str], data: dict, context=None) -> str:
 
     html = "\n".join([str(h) for h in html])
 
-    if settings.CLEAN_HTML:
+    if clean or (clean is None and settings.CLEAN_HTML):
         allowed_tags = set({
             # Default inline tags.
             "i", "b", "strong", "em", "u", "s", "strike"
         })
         allowed_attributes = defaultdict(set)
+        # cleaner_funcs = defaultdict(lambda: defaultdict(list))
 
         for feature in feature_mappings.values():
             allowed_tags.update(feature.allowed_tags)
+            # for key, value in feature.cleaner_funcs.items():
+            #     for name, func in value.items():
+            #         cleaner_funcs[key][name].append(func)
+
             for key, value in feature.allowed_attributes.items():
                 allowed_attributes[key].update(value)
 
@@ -114,3 +119,28 @@ def render_editorjs_html(features: list[str], data: dict, context=None) -> str:
 
 
 
+#         def parse_allowed_attributes(tag, name, value):
+#             if (
+#                 tag not in allowed_attributes\
+#                 and tag not in cleaner_funcs\
+#                 and "*" not in cleaner_funcs\
+#                 and "*" not in allowed_attributes
+#             ):
+#                 return False
+#             
+#             if "*" in cleaner_funcs and name in cleaner_funcs["*"] and any(
+#                 func(value) for func in cleaner_funcs["*"][name]
+#             ):
+#                 return True
+#             
+#             if tag in cleaner_funcs\
+#                     and name in cleaner_funcs[tag]\
+#                     and any(
+#                         func(value) for func in cleaner_funcs[tag][name]
+#                     ):
+#                 return True
+#             
+#             if name in allowed_attributes[tag] or name in allowed_attributes["*"]:
+#                 return True
+#             
+#             return False
