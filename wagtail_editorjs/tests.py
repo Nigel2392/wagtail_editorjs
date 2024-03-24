@@ -7,10 +7,10 @@ from .registry import (
 from .render import render_editorjs_html
 
 # Create your tests here.
-
 class TestEditorJSFeatures(TestCase):
 
     def test_editorjs_features(self):
+
         html = []
         test_data = []
         for feature in EDITOR_JS_FEATURES.features.values():

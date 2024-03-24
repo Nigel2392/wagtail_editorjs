@@ -1,6 +1,8 @@
 from typing import Any
 
 from django.urls import reverse
+from django.utils.translation import gettext_lazy as _
+from django.utils.safestring import mark_safe
 from wagtail.models import Page
 from wagtail.admin.widgets import AdminPageChooser
 from wagtail.images.widgets import AdminImageChooser
@@ -19,6 +21,14 @@ from ..registry import (
     EditorJSBlock,
 )
 
+BYTE_SIZE_STEPS = [_("Bytes"), _("Kilobytes"), _("Megabytes"), _("Gigabytes"), _("Terabytes")]
+
+def filesize_to_human_readable(size: int) -> str:
+    for unit in BYTE_SIZE_STEPS:
+        if size < 1024:
+            break
+        size /= 1024
+    return f"{size:.0f} {unit}"
 
 
 
@@ -196,7 +206,7 @@ class DelimiterFeature(EditorJSFeature):
     
     @classmethod
     def get_test_data(cls):
-        return [{}]
+        return [{}, {}, {}]
 
 class HeaderFeature(EditorJSFeature):
     allowed_tags = ["h1", "h2", "h3", "h4", "h5", "h6"]
@@ -514,8 +524,18 @@ class BlockQuoteFeature(EditorJSFeature):
 
 
 class AttachesFeature(EditorJSFeature):
-    allowed_tags = ["a"]
-    allowed_attributes = ["class", "href"] #, "data-id"
+    allowed_tags = [
+        "div", "p", "span", "a",
+        "svg", "path",
+    ]
+    allowed_attributes = {
+        "div": ["class"],
+        "p": ["class"],
+        "span": ["class"],
+        "a": ["class", "href", "title"],
+        "svg": ["xmlns", "width", "height", "fill", "class", "viewBox"],
+        "path": ["d"],
+    }
 
     def validate(self, data: Any):
         super().validate(data)
@@ -531,13 +551,9 @@ class AttachesFeature(EditorJSFeature):
         
     def render_block_data(self, block: EditorJSBlock, context = None) -> EditorJSElement:
 
-        if "id" in block["data"]["file"] and block["data"]["file"]["id"]:
-            document_id = block["data"]["file"]["id"]
-            document = Document.objects.get(pk=document_id)
-            url = document.url
-        else:
-            document = None
-            url = block["data"]["file"]["url"]
+        document_id = block["data"]["file"]["id"]
+        document = Document.objects.get(pk=document_id)
+        url = document.url
 
         if not any([url.startswith(i) for i in ["http://", "https://", "//"]]) and context:
             request = context.get("request")
@@ -553,14 +569,37 @@ class AttachesFeature(EditorJSFeature):
                 title = url
 
         return EditorJSElement(
-            "a",
-            title,
-            close_tag=True,
-            attrs={
-                "href": url,
-                "class": "attaches-link",
-                # "data-id": block["data"]["file"]["id"],
-            },
+            "div",
+            [
+                EditorJSElement(
+                    "p",
+                    EditorJSElement(
+                        "a",
+                        title,
+                        attrs={"href": url},
+                    ),
+                    attrs={"class": "attaches-title"},
+                ),
+                EditorJSElement(
+                    "span",
+                    filesize_to_human_readable(document.file.size),
+                    attrs={"class": "attaches-size"},
+                ),
+                EditorJSElement(
+                    "a",
+                    mark_safe("""<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-link" viewBox="0 0 16 16">
+    <path d="M6.354 5.5H4a3 3 0 0 0 0 6h3a3 3 0 0 0 2.83-4H9q-.13 0-.25.031A2 2 0 0 1 7 10.5H4a2 2 0 1 1 0-4h1.535c.218-.376.495-.714.82-1z"/>
+    <path d="M9 5.5a3 3 0 0 0-2.83 4h1.098A2 2 0 0 1 9 6.5h3a2 2 0 1 1 0 4h-1.535a4 4 0 0 1-.82 1H12a3 3 0 1 0 0-6z"/>
+</svg>"""),
+                    attrs={
+                        "title": _("Download"),
+                        "href": url,
+                        "class": "attaches-link",
+                        # "data-id": document_id,
+                    },
+                )
+            ],
+            attrs={"class": "attaches"},
         )
     
     @classmethod

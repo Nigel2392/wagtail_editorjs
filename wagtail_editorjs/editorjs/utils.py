@@ -18,8 +18,8 @@ def wrap_tag(tag_name, attrs, content = None, close_tag = True):
     attributes = f" {make_attrs(attrs)}" if attrs else ""
     if content is None and close_tag:
         return f"<{tag_name}{attributes}></{tag_name}>"
-    elif content is None:
-        return f"<{tag_name}{attributes}/>"
+    elif content is None and not close_tag:
+        return f"<{tag_name}{attributes}>"
     return f"<{tag_name}{attributes}>{content}</{tag_name}>"
 
 
