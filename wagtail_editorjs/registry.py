@@ -9,7 +9,7 @@ from django.utils.safestring import mark_safe
 from django.template.loader import render_to_string
 from wagtail import hooks
 
-import copy, datetime, bs4
+import copy, datetime, bs4, re
 
 from .editorjs.element import (
     EditorJSElement,
@@ -256,6 +256,12 @@ class LazyInlineEditorJSFeature(BaseInlineEditorJSFeature):
         pass
     
 
+    @cached_property
+    def might_contain_tag_re(self):
+        # <([a-z]+)(?![^>]*\/>)[^>]*>
+        return re.compile(rf"<({self.tag_name})(?![^>]*\/>)[^>]*>")
+    
+
     def parse_inline_data(self, element: EditorJSElement, data: Any, context = None) -> tuple[bs4.BeautifulSoup, EditorJSElement, dict[Any, dict[str, Any]], Any]:
         """
             Finds inline elements by the must_have_attrs and can_have_attrs.
@@ -265,6 +271,13 @@ class LazyInlineEditorJSFeature(BaseInlineEditorJSFeature):
             I.E. For a link; this would gather all page ID's and fetch them in a single query.
         """
         content = element.content
+
+        if not content:
+            return None
+        
+        if self.might_contain_tag_re.search(content) is None:
+            return None
+
         matches: dict[Any, dict[str, Any]] = {}
         soup = bs4.BeautifulSoup(content, "html.parser")
         for key, value in self.must_have_attrs.items():
@@ -429,7 +442,10 @@ class InlineEditorJSFeature(BaseInlineEditorJSFeature):
         pass
 
     def parse_inline_data(self, element: EditorJSElement, data: Any, context=None) -> tuple[bs4.BeautifulSoup, EditorJSElement, dict[Any, dict[str, Any]], Any]:
-        soup, element, matches, block_data = super().parse_inline_data(element, data, context)
+        ret = super().parse_inline_data(element, data, context)
+        if not ret:
+            return None
+        soup, element, matches, block_data = ret
         self.build_elements(soup=soup, element=element, matches=matches, block_data=block_data, context=context)
         element.content = soup.prettify()
         return element    

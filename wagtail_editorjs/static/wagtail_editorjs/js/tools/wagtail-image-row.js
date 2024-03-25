@@ -116,13 +116,7 @@ class ImageRowTool extends window.BaseWagtailEditorJSTool {
             dragClass: 'wagtail-image-row-image-dragging',
         });
 
-        try {
-            super.render();
-        } catch (e) {
-            console.error(e);
-        }
-
-        return this.wrapperElement;
+        return super.render();
     }
 
     save(blockContent) {
