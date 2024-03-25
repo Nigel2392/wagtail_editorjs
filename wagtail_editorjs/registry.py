@@ -192,7 +192,13 @@ class EditorJSFeature(BaseEditorJSFeature):
         if "data" not in data:
             raise ValueError("Invalid data format")
     
-    def render_block_data(self, block: EditorJSBlock, context = None) -> "EditorJSElement":
+    def get_prefetch_data(self, block: EditorJSBlock, context = None):
+        return None
+    
+    def prefetch_data(self, data: list[tuple[int, EditorJSBlock, Any]], context = None):
+        pass
+
+    def render_block_data(self, block: EditorJSBlock, prefetch_data, context = None) -> "EditorJSElement":
         return EditorJSElement(
             "p",
             block["data"].get("text")
@@ -395,18 +401,10 @@ class ModelInlineEditorJSFeature(InlineEditorJSFeature):
         ids = []
         # element_soups = []
         for data in inline_data:
-            # soup: BeautifulSoup
-            # element: EditorJSElement
-            # matches: dict[bs4.elementType, dict[str, Any]]
-            # data: dict[str, Any] # Block data.
-            item, data = data
+            item, attrs = data
 
-            # # Store element and soup for later replacement of content.
-            # element_soups.append((soup, element))
-
-            # Item is bs4 tag, attrs are must_have_attrs
-            
-            id = self.get_id(item, data, context)
+            # Item is bs4 tag, attrs are must_have_attrs and can_have_attrs
+            id = self.get_id(item, attrs, context)
             ids.append((item, id))
 
             # delete all attributes

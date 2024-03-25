@@ -89,7 +89,7 @@ class NestedListFeature(EditorJSFeature):
         if data["data"]["style"] not in ["ordered", "unordered"]:
             raise ValueError("Invalid style value")
     
-    def render_block_data(self, block: EditorJSBlock, context = None) -> EditorJSElement:
+    def render_block_data(self, block: EditorJSBlock, prefetch_data: Any, context = None) -> EditorJSElement:
         element = "ol" if block["data"]["style"] == "ordered" else "ul"
         return parse_list(block["data"]["items"], element)
 
@@ -148,7 +148,7 @@ class CheckListFeature(EditorJSFeature):
             if "text" not in item:
                 raise ValueError("Invalid text value")
     
-    def render_block_data(self, block: EditorJSBlock, context = None) -> EditorJSElement:
+    def render_block_data(self, block: EditorJSBlock, prefetch_data: Any, context = None) -> EditorJSElement:
         s = []
         for item in block["data"]["items"]:
             class_ = "checklist-item"
@@ -186,7 +186,7 @@ class CodeFeature(EditorJSFeature):
         if 'code' not in data['data']:
             raise ValueError('Invalid code value')
     
-    def render_block_data(self, block: EditorJSBlock, context = None) -> EditorJSElement:
+    def render_block_data(self, block: EditorJSBlock, prefetch_data: Any, context = None) -> EditorJSElement:
         return EditorJSElement("code", block["data"]["code"], attrs={"class": "code"})
     
     @classmethod
@@ -201,7 +201,7 @@ class DelimiterFeature(EditorJSFeature):
     allowed_tags = ["hr"]
     allowed_attributes = ["class"]
 
-    def render_block_data(self, block: EditorJSBlock, context = None) -> EditorJSElement:
+    def render_block_data(self, block: EditorJSBlock, prefetch_data: Any, context = None) -> EditorJSElement:
         return EditorJSElement("hr", close_tag=False, attrs={"class": "delimiter"})
     
     @classmethod
@@ -219,7 +219,7 @@ class HeaderFeature(EditorJSFeature):
         if level > 6 or level < 1:
             raise ValueError("Invalid level value")
     
-    def render_block_data(self, block: EditorJSBlock, context = None) -> EditorJSElement:
+    def render_block_data(self, block: EditorJSBlock, prefetch_data: Any, context = None) -> EditorJSElement:
         return EditorJSElement(
             "h" + str(block["data"]["level"]),
             block["data"].get("text")
@@ -245,7 +245,7 @@ class HTMLFeature(EditorJSFeature):
         if "html" not in data["data"]:
             raise ValueError("Invalid html value")
     
-    def render_block_data(self, block: EditorJSBlock, context = None) -> EditorJSElement:
+    def render_block_data(self, block: EditorJSBlock, prefetch_data: Any, context = None) -> EditorJSElement:
         return EditorJSElement("div", block["data"]["html"], attrs={"class": "html"})
     
     @classmethod
@@ -269,7 +269,7 @@ class WarningFeature(EditorJSFeature):
         if "message" not in data["data"]:
             raise ValueError("Invalid message value")
     
-    def render_block_data(self, block: EditorJSBlock, context = None) -> EditorJSElement:
+    def render_block_data(self, block: EditorJSBlock, prefetch_data: Any, context = None) -> EditorJSElement:
         return EditorJSElement(
             "div",
             attrs={
@@ -333,6 +333,21 @@ class ImageFeature(EditorJSFeature):
             f"editorjs-image-chooser-{context['widget']['attrs']['id']}"
         config["config"]["getImageUrl"] = reverse("wagtail_editorjs:image_for_id_fmt")
         return config
+    
+    def get_prefetch_data(self, block: EditorJSBlock, context=None):
+        return block["data"]["imageId"]
+    
+    def prefetch_data(self, data: list[tuple[int, EditorJSBlock, Any]], context=None):
+        ids = [i[2] for i in data]
+        
+        images_qs = Image.objects.in_bulk(ids)
+
+        for j, (i, block, prefetch_data) in enumerate(data):
+            try:
+                prefetch_data = int(prefetch_data)
+            except ValueError:
+                pass
+            data[j] = (i, block, images_qs[prefetch_data])
 
     def validate(self, data: Any):
         super().validate(data)
@@ -350,10 +365,7 @@ class ImageFeature(EditorJSFeature):
             {"id": widget_id}
         )
     
-    def render_block_data(self, block: EditorJSBlock, context = None) -> EditorJSElement:
-        image = block["data"].get("imageId")
-        image = Image.objects.get(id=image)
-
+    def render_block_data(self, block: EditorJSBlock, prefetch_data: Any, context = None) -> EditorJSElement:
         classlist = []
         styles = {}
         if block["data"].get("withBorder"):
@@ -373,7 +385,7 @@ class ImageFeature(EditorJSFeature):
         if styles:
             attrs["style"] = styles
 
-        url = image.file.url
+        url = prefetch_data.file.url
         if not any([url.startswith(i) for i in ["http://", "https://", "//"]]) and context:
             request = context.get("request")
             if request:
@@ -478,21 +490,34 @@ class ImageRowFeature(EditorJSFeature):
             
             if "title" not in image:
                 raise ValueError("Invalid title value")
-    
-    def render_block_data(self, block: EditorJSBlock, context = None) -> EditorJSElement:
-        images = block["data"]["images"]
+            
+    def get_prefetch_data(self, block: EditorJSBlock, context=None):
+        data = []
+        for image in block["data"]["images"]:
+            data.append(image["id"])
+        return data
+        
+    def prefetch_data(self, data: list[tuple[int, EditorJSBlock, Any]], context=None):
         ids = []
-        for image in images:
-            ids.append(image["id"])
+        for i, block, prefetch_data in data:
+            ids.extend(prefetch_data)
 
-        images = Image.objects.in_bulk(ids)
+        images_qs = Image.objects.in_bulk(ids)
+
+        for j, (i, block, prefetch_data) in enumerate(data):
+            prefetch_data = []
+            for image in block["data"]["images"]:
+                try:
+                    id = int(image["id"])
+                except ValueError:
+                    pass
+                prefetch_data.append(images_qs[id])
+            data[j] = (i, block, prefetch_data)
+
+    
+    def render_block_data(self, block: EditorJSBlock, prefetch_data: Any, context = None) -> EditorJSElement:
         s = []
-        for id in ids:
-            try:
-                id = int(id)
-            except ValueError:
-                pass
-            image = images[id]
+        for image in prefetch_data:
             url = image.file.url
             if not any([url.startswith(i) for i in ["http://", "https://", "//"]]) and context:
                 request = context.get("request")
@@ -542,7 +567,7 @@ class TableFeature(EditorJSFeature):
         if "withHeadings" not in data["data"]:
             raise ValueError("Invalid withHeadings value")
 
-    def render_block_data(self, block: EditorJSBlock, context = None) -> EditorJSElement:
+    def render_block_data(self, block: EditorJSBlock, prefetch_data: Any, context = None) -> EditorJSElement:
         table = []
         for i, row in enumerate(block["data"]["content"]):
             tr = []
@@ -589,7 +614,7 @@ class BlockQuoteFeature(EditorJSFeature):
             raise ValueError("Invalid caption value")
         
     
-    def render_block_data(self, block: EditorJSBlock, context = None) -> EditorJSElement:
+    def render_block_data(self, block: EditorJSBlock, prefetch_data: Any, context = None) -> EditorJSElement:
         text = block["data"]["text"]
         caption = block["data"]["caption"]
         return EditorJSElement(
@@ -639,11 +664,23 @@ class AttachesFeature(EditorJSFeature):
         if "title" not in data["data"]:
             raise ValueError("Invalid title value")
         
-    def render_block_data(self, block: EditorJSBlock, context = None) -> EditorJSElement:
+    def get_prefetch_data(self, block: EditorJSBlock, context=None):
+        return block["data"]["file"]["id"]
+        
+    def prefetch_data(self, data: list[tuple[int, EditorJSBlock, Any]], context=None):
+        ids = [i[2] for i in data]
+        documents = Document.objects.in_bulk(ids)
 
-        document_id = block["data"]["file"]["id"]
-        document = Document.objects.get(pk=document_id)
-        url = document.url
+        for j, (i, block, prefetch_data) in enumerate(data):
+            try:
+                prefetch_data = int(prefetch_data)
+            except ValueError:
+                pass
+            data[j] = (i, block, documents[prefetch_data])
+        
+    def render_block_data(self, block: EditorJSBlock, prefetch_data: Any, context = None) -> EditorJSElement:
+
+        url = prefetch_data.url
 
         if not any([url.startswith(i) for i in ["http://", "https://", "//"]]) and context:
             request = context.get("request")
@@ -653,8 +690,8 @@ class AttachesFeature(EditorJSFeature):
         if block["data"]["title"]:
             title = block["data"]["title"]
         else:
-            if document:
-                title = document.title
+            if prefetch_data:
+                title = prefetch_data.title
             else:
                 title = url
 
@@ -672,7 +709,7 @@ class AttachesFeature(EditorJSFeature):
                 ),
                 EditorJSElement(
                     "span",
-                    filesize_to_human_readable(document.file.size),
+                    filesize_to_human_readable(prefetch_data.file.size),
                     attrs={"class": "attaches-size"},
                 ),
                 EditorJSElement(
