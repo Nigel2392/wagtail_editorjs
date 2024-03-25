@@ -36,11 +36,6 @@ class WagtailDocumentTool extends window.BaseWagtailChooserTool {
             this.chooser.input.addEventListener('change', chooseNewFunc);
         });
 
-        this.targetSelect.onchange = (e) => {
-            this.URLInput.target = e.target.value;
-        };
-
-        
 
         this.container.hidden = false;
 

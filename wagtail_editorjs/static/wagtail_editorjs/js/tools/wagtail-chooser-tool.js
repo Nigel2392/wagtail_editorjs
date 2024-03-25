@@ -33,9 +33,7 @@ class BaseWagtailChooserTool {
             a: {
                 "href": true,
                 "class": true,
-                "data-id": true,
-                "data-title": true,
-                [`data-${this.chooserType}`]: true,
+                "data-*": true,
             },
         };
     }

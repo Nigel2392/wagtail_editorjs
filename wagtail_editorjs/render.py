@@ -10,7 +10,7 @@ from .registry import (
     InlineEditorJSFeature,
     EDITOR_JS_FEATURES,
 )
-import bleach
+import bleach, bs4
 
 
 class NullSanitizer:
@@ -64,40 +64,44 @@ def render_editorjs_html(features: list[str], data: dict, context=None, clean: b
         for tune_name, tune_value in tunes.items():
             element = feature_mappings[tune_name].tune_element(element, tune_value, context)
 
-        for inline in inlines:
-            # Parse the inline data.
-            # Gather all data nescessary for building elements if the inline is lazy.
-            # This data is passed in bulk to the build_elements method.
-            # This allows for more efficient building of elements by limiting
-            # database queries and other expensive operations.
-            inline: InlineEditorJSFeature
-            ret = inline.parse_inline_data(element, block, context)
-            if not ret:
-                continue
-            
-            # InlineEditorJSFeature is a special case, as it is not lazy.
-            # It DOES inherit from LazyInlineEditorJSFeature, but it is not lazy.
-            if isinstance(inline, InlineEditorJSFeature):
-                continue # Skip as processing is done in parse_inline_data.
-
-            # Only store lazy features for bulk processing.
-            # Otherwise (if not lazy) the element is built 
-            # immediately by caling parse_inline_data (which calls build_element internally).
-            elif isinstance(inline, LazyInlineEditorJSFeature):
-                soup, element, matches, d = ret
-                if matches:
-                    inline_matches.setdefault(inline, [])\
-                        .append((soup, element, matches, d))
-
         html.append(element)
+
+
+    html = "\n".join([str(h) for h in html])
+
+    soup = bs4.BeautifulSoup(html, "html.parser")
+    for inline in inlines:
+        # Parse the inline data.
+        # Gather all data nescessary for building elements if the inline is lazy.
+        # This data is passed in bulk to the build_elements method.
+        # This allows for more efficient building of elements by limiting
+        # database queries and other expensive operations.
+        inline: InlineEditorJSFeature
+        ret = inline.parse_inline_data(soup, element, block, context)
+        if not ret:
+            continue
+        
+        # InlineEditorJSFeature is a special case, as it is not lazy.
+        # It DOES inherit from LazyInlineEditorJSFeature, but it is not lazy.
+        if isinstance(inline, InlineEditorJSFeature):
+            continue # Skip as processing is done in parse_inline_data.
+
+        # Only store lazy features for bulk processing.
+        # Otherwise (if not lazy) the element is built 
+        # immediately by caling parse_inline_data (which calls build_element internally).
+        elif isinstance(inline, LazyInlineEditorJSFeature):
+            matches, d = ret
+            if matches:
+                inline_matches.setdefault(inline, [])\
+                    .append((matches, d))
 
     # Build all inlines.
     for inline, data in inline_matches.items():
         inline: LazyInlineEditorJSFeature
         inline.build_elements(data, context)
 
-
-    html = "\n".join([str(h) for h in html])
+    # Re-render the soup.
+    html = soup.prettify()
 
     if clean or (clean is None and settings.CLEAN_HTML):
         allowed_tags = set({

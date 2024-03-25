@@ -268,16 +268,30 @@ class LazyInlineEditorJSFeature(BaseInlineEditorJSFeature):
         if item.name != self.tag_name:
             return False
         
+        print("\n\n",item)
         for key, value in self.must_have_attrs.items():
+            print(key, value, item.get(key), item.has_attr(key))
             if not value:
                 if not item.has_attr(key):
                     return False
-            elif item.get(key) != value:
-                return False
+            else:
+                cmp = item.get(key)
+                if isinstance(cmp, str):
+                    cmp = cmp.strip()
+                    if cmp != value:
+                        print("cmp != value", cmp, value)
+                        return False
+                elif isinstance(cmp, list):
+                    if value not in cmp:
+                        print("value not in cmp", value, cmp)
+                        return False
+                else:
+                    print("cmp is not str or list", cmp)
+                    return False
             
         return True
     
-    def parse_inline_data(self, element: EditorJSElement, data: Any, context = None) -> tuple[bs4.BeautifulSoup, EditorJSElement, dict[Any, dict[str, Any]], Any]:
+    def parse_inline_data(self, soup: bs4.BeautifulSoup, element: EditorJSElement, data: Any, context = None) -> tuple[bs4.BeautifulSoup, EditorJSElement, dict[Any, dict[str, Any]], Any]:
         """
             Finds inline elements by the must_have_attrs and can_have_attrs.
             Designed to be database-efficient; allowing for gathering of all data before
@@ -295,7 +309,7 @@ class LazyInlineEditorJSFeature(BaseInlineEditorJSFeature):
 
         matches: dict[Any, dict[str, Any]] = {}
         soup = bs4.BeautifulSoup(content, "html.parser")
-        
+
         elements = soup.find_all(self.filter)
         if not elements:
             return None
@@ -313,7 +327,7 @@ class LazyInlineEditorJSFeature(BaseInlineEditorJSFeature):
                     if item.has_attr(key):
                         matches[item][key] = True
 
-        return (soup, element, matches, data)
+        return (matches, data)
 
 class LazyModelInlineEditorJSFeature(LazyInlineEditorJSFeature):
     model = None
@@ -389,16 +403,16 @@ class LazyModelInlineEditorJSFeature(LazyInlineEditorJSFeature):
         """
         super().build_elements(inline_data, context=context)
         ids = []
-        element_soups = []
+        # element_soups = []
         for data in inline_data:
             # soup: BeautifulSoup
             # element: EditorJSElement
             # matches: dict[bs4.elementType, dict[str, Any]]
             # data: dict[str, Any] # Block data.
-            soup, element, matches, data = data
+            matches, data = data
 
-            # Store element and soup for later replacement of content.
-            element_soups.append((soup, element))
+            # # Store element and soup for later replacement of content.
+            # element_soups.append((soup, element))
 
             # Item is bs4 tag, attrs are must_have_attrs
             for (item, attrs) in matches.items():
@@ -414,9 +428,9 @@ class LazyModelInlineEditorJSFeature(LazyInlineEditorJSFeature):
         for item, id in ids:
             self.build_element(item, objects[id], context)
 
-        # Replace the element's content with the new soup
-        for soup, element in element_soups:
-            element.content = soup.prettify()
+        # # Replace the element's content with the new soup
+        # for soup, element in element_soups:
+        #     element.content = soup.prettify()
 
     def get_css(self):
         return self.widget.media._css.get("all", []) + super().get_css()

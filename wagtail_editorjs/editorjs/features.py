@@ -299,7 +299,7 @@ class WarningFeature(EditorJSFeature):
 
 class LinkFeature(LazyModelInlineEditorJSFeature):
     allowed_tags = ["a"]
-    allowed_attributes = ["class", "href", "data-parent-id"]
+    allowed_attributes = ["class", "href", "data-id"]
     chooser_class = AdminPageChooser
     model = Page
 
