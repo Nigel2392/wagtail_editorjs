@@ -536,6 +536,10 @@ class EditorJSFeatures:
         """
             Converts the data from the editorjs format to the python format.
         """
+
+        if isinstance(data, EditorJSValue):
+            return data
+
         self._look_for_features()
         block_list = data.get("blocks", [])
         features = {

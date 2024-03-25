@@ -20,6 +20,7 @@ from ..editorjs.features import (
     HeaderFeature,
     HTMLFeature,
     ImageFeature,
+    ImageRowFeature,
     LinkFeature,
     DocumentFeature,
     NestedListFeature,
@@ -42,7 +43,7 @@ def register_editor_js_features(registry: EditorJSFeatures):
             "attaches",
             "CSRFAttachesTool",
             js=[
-                "wagtail_editorjs/vendor/tools/attaches.js",
+                "wagtail_editorjs/vendor/editorjs/tools/attaches.js",
                 "wagtail_editorjs/js/tools/attaches.js",
             ],
             config={
@@ -55,7 +56,7 @@ def register_editor_js_features(registry: EditorJSFeatures):
         CheckListFeature(
             "checklist",
             "Checklist",
-            "wagtail_editorjs/vendor/tools/checklist.js",
+            "wagtail_editorjs/vendor/editorjs/tools/checklist.js",
             inlineToolbar = True,
         
         ),
@@ -65,7 +66,7 @@ def register_editor_js_features(registry: EditorJSFeatures):
         CodeFeature(
             "code",
             "CodeTool",
-            "wagtail_editorjs/vendor/tools/code.js",
+            "wagtail_editorjs/vendor/editorjs/tools/code.js",
             inlineToolbar = True,
         ),
     )
@@ -74,7 +75,7 @@ def register_editor_js_features(registry: EditorJSFeatures):
         DelimiterFeature(
             "delimiter",
             "Delimiter",
-            "wagtail_editorjs/vendor/tools/delimiter.js",
+            "wagtail_editorjs/vendor/editorjs/tools/delimiter.js",
             inlineToolbar = True,
         ),
     )
@@ -83,7 +84,7 @@ def register_editor_js_features(registry: EditorJSFeatures):
         HeaderFeature(
             "header",
             "Header",
-            "wagtail_editorjs/vendor/tools/header.js",
+            "wagtail_editorjs/vendor/editorjs/tools/header.js",
             inlineToolbar = True,
         
         ),
@@ -94,7 +95,7 @@ def register_editor_js_features(registry: EditorJSFeatures):
             "inline-code",
             "InlineCode",
             js = [
-                "wagtail_editorjs/vendor/tools/inline-code.js",
+                "wagtail_editorjs/vendor/editorjs/tools/inline-code.js",
             ],
             inlineToolbar = True,
         ),
@@ -105,7 +106,7 @@ def register_editor_js_features(registry: EditorJSFeatures):
             "marker",
             "Marker",
             js = [
-                "wagtail_editorjs/vendor/tools/marker.js",
+                "wagtail_editorjs/vendor/editorjs/tools/marker.js",
             ],
             inlineToolbar = True,
             allowed_tags=["mark"],
@@ -117,7 +118,7 @@ def register_editor_js_features(registry: EditorJSFeatures):
             "nested-list",
             "NestedList",
             js = [
-                "wagtail_editorjs/vendor/tools/nested-list.js",
+                "wagtail_editorjs/vendor/editorjs/tools/nested-list.js",
             ],
             inlineToolbar = True,
         ),
@@ -128,7 +129,7 @@ def register_editor_js_features(registry: EditorJSFeatures):
             "paragraph",
             "Paragraph",
             js = [
-                "wagtail_editorjs/vendor/tools/paragraph.umd.js",
+                "wagtail_editorjs/vendor/editorjs/tools/paragraph.umd.js",
             ],
             inlineToolbar = True,
             allowed_tags=["p"],
@@ -140,7 +141,7 @@ def register_editor_js_features(registry: EditorJSFeatures):
             "quote",
             "Quote",
             js = [
-                "wagtail_editorjs/vendor/tools/quote.js",
+                "wagtail_editorjs/vendor/editorjs/tools/quote.js",
             ],
             inlineToolbar = True,
         ),
@@ -151,7 +152,7 @@ def register_editor_js_features(registry: EditorJSFeatures):
             "raw",
             "RawTool",
             js = [
-                "wagtail_editorjs/vendor/tools/raw.js",
+                "wagtail_editorjs/vendor/editorjs/tools/raw.js",
             ],
             inlineToolbar = True,
         ),
@@ -162,7 +163,7 @@ def register_editor_js_features(registry: EditorJSFeatures):
             "table",
             "Table",
             js = [
-                "wagtail_editorjs/vendor/tools/table.js",
+                "wagtail_editorjs/vendor/editorjs/tools/table.js",
             ],
             inlineToolbar = True,
         ),
@@ -173,7 +174,7 @@ def register_editor_js_features(registry: EditorJSFeatures):
             "underline",
             "Underline",
             js = [
-                "wagtail_editorjs/vendor/tools/underline.js",
+                "wagtail_editorjs/vendor/editorjs/tools/underline.js",
             ],
             inlineToolbar = True,
         ),
@@ -184,7 +185,7 @@ def register_editor_js_features(registry: EditorJSFeatures):
             "warning",
             "Warning",
             js = [
-                "wagtail_editorjs/vendor/tools/warning.js",
+                "wagtail_editorjs/vendor/editorjs/tools/warning.js",
             ],
             inlineToolbar = True,
         ),
@@ -203,7 +204,6 @@ def register_editor_js_features(registry: EditorJSFeatures):
             inlineToolbar = True,
         ),
     )
-
     registry.register(
         "image",
         ImageFeature(
@@ -215,7 +215,17 @@ def register_editor_js_features(registry: EditorJSFeatures):
             config={},
         ),
     )
-
+    registry.register(
+        "images",
+        ImageRowFeature(
+            "images",
+            "ImageRowTool",
+            js = [
+                "wagtail_editorjs/js/tools/wagtail-image-row.js",
+            ],
+            config={},
+        ),
+    )
     registry.register(
         "document",
         DocumentFeature(
@@ -229,7 +239,17 @@ def register_editor_js_features(registry: EditorJSFeatures):
             inlineToolbar = True,
         ),
     )
-
+    # registry.register(
+    #     "page-annotations",
+    #     EditorJSFeature(
+    #         "page-annotations",
+    #         "PageAnnotationTool",
+    #         js = [
+    #             "wagtail_editorjs/vendor/html2canvas/html2canvas.min.js",
+    #             "wagtail_editorjs/js/tools/wagtail-page-annotations.js",
+    #         ],
+    #     ),
+    # )
 
     # Tunes
     registry.register(
@@ -238,7 +258,7 @@ def register_editor_js_features(registry: EditorJSFeatures):
             "text-alignment-tune",
             "AlignmentBlockTune",
             js = [
-                "wagtail_editorjs/vendor/tools/text-alignment.js",
+                "wagtail_editorjs/vendor/editorjs/tools/text-alignment.js",
             ],
             inlineToolbar = True,
             config={
@@ -252,7 +272,7 @@ def register_editor_js_features(registry: EditorJSFeatures):
             "text-variant-tune",
             "TextVariantTune",
             js = [
-                "wagtail_editorjs/vendor/tools/text-variant-tune.js",
+                "wagtail_editorjs/vendor/editorjs/tools/text-variant-tune.js",
             ],
             inlineToolbar = True,
         ),
@@ -264,7 +284,7 @@ def register_editor_js_features(registry: EditorJSFeatures):
         EditorJSJavascriptFeature(
             "undo-redo",
             js = [
-                "wagtail_editorjs/vendor/tools/undo-redo.js",
+                "wagtail_editorjs/vendor/editorjs/tools/undo-redo.js",
                 "wagtail_editorjs/js/init/undo-redo.js",
             ],
             weight=0,
@@ -276,7 +296,7 @@ def register_editor_js_features(registry: EditorJSFeatures):
         EditorJSJavascriptFeature(
             "drag-drop",
             js = [
-                "wagtail_editorjs/vendor/tools/drag-drop.js",
+                "wagtail_editorjs/vendor/editorjs/tools/drag-drop.js",
                 "wagtail_editorjs/js/init/drag-drop.js",
             ],
             weight=1,

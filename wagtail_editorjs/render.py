@@ -23,6 +23,8 @@ def render_editorjs_html(features: list[str], data: dict, context=None, clean: b
         Renders the editorjs widget.
     """
 
+    
+
     if "blocks" not in data:
         data["blocks"] = []
 
@@ -44,7 +46,10 @@ def render_editorjs_html(features: list[str], data: dict, context=None, clean: b
 
         feature: str = block["type"]
         tunes: dict[str, Any] = block.get("tunes", {})
-        feature_mapping = feature_mappings[feature]
+        feature_mapping = feature_mappings.get(feature, None)
+
+        if not feature_mapping:
+            continue
 
         # Build the actual block.
         element: EditorJSElement = feature_mapping.render_block_data(block, context)

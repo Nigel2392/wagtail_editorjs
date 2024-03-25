@@ -4,6 +4,7 @@ from wagtail import blocks
 from .render import render_editorjs_html
 from .forms import (
     EditorJSFormField,
+    EDITOR_JS_FEATURES,
     get_features,
 )
 
@@ -21,7 +22,7 @@ class EditorJSBlock(blocks.FieldBlock):
             required=getattr(self.meta, 'required', True),
             help_text=getattr(self.meta, 'help_text', ''),
         )
-
+    
     @property
     def features(self):
         return get_features(self._features)

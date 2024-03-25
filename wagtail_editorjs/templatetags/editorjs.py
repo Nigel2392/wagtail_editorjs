@@ -7,3 +7,4 @@ register = template.Library()
 @register.simple_tag(takes_context=True, name="editorjs")
 def render_editorjs(context, data: EditorJSValue):
     return render_editorjs_html(data.features, data, context=context)
+

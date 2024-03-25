@@ -62,6 +62,20 @@ class SimpleToggleSetting extends Setting {
         }
     }
 
+    initialize() {
+        if (this.tool.data[this.tuneName] === undefined) {
+            this.tool.data[this.tuneName] = false;
+        }
+
+        if (this.isActive()) {
+            this.tool.imageWrapper.classList.toggle(this.tuneName, true);
+            this.tool.refreshActiveTunes();
+            if (this._onClick) {
+                this._onClick(true);
+            }
+        }
+    }
+
     isActive() {
         return !!this.tool.data[this.tuneName];
     }
@@ -291,11 +305,13 @@ class WagtailImageTool {
         this.imageWrapper.appendChild(this.image);
         this.imageWrapper.appendChild(this.titleInput);
 
-        this.settings.forEach( tune => {
-            if (tune.initialize) {
-                tune.initialize();
-            }
-        });
+        setTimeout(() => {
+            this.settings.forEach( tune => {
+                if (tune.initialize) {
+                    tune.initialize();
+                }
+            });
+        }, 0);
 
         this.refreshActiveTunes();
 

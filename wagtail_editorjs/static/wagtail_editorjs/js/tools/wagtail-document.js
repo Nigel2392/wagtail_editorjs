@@ -40,13 +40,7 @@ class WagtailDocumentTool extends window.BaseWagtailChooserTool {
             this.URLInput.target = e.target.value;
         };
 
-        this.relSelect.onchange = (e) => {
-            if (!e.target.value && this.URLInput.rel) {
-                this.URLInput.removeAttribute('rel');
-            } else {
-                this.URLInput.rel = e.target.value;
-            }
-        }
+        
 
         this.container.hidden = false;
 
@@ -56,10 +50,8 @@ class WagtailDocumentTool extends window.BaseWagtailChooserTool {
     hideActions() {
         this.container.hidden = true;
         this.URLInput.value = '';
-        this.chooseNewButton.onclick = null;
         this.URLInput.onchange = null;
-        this.targetSelect.onchange = null;
-        this.relSelect.onchange = null;
+        this.chooseNewButton.onclick = null;
         this.chooseNewButton.classList.remove(
             this.api.styles.inlineToolButtonActive
         );
@@ -81,24 +73,6 @@ class WagtailDocumentTool extends window.BaseWagtailChooserTool {
             this.api.styles.inlineToolButton,
         )
 
-        const selectContainer = document.createElement('div');
-        selectContainer.classList.add("wagtail-link-tool-actions");
-
-        this.targetSelect = document.createElement('select');
-        this.targetSelect.innerHTML = `
-            <option value="">-- ${this.api.i18n.t('Target')} --</option>
-            <option value="_self">${this.api.i18n.t('Open in this window')}</option>
-            <option value="_blank">${this.api.i18n.t('Open in new window')}</option>
-        `;
-
-        this.relSelect = document.createElement('select');
-        this.relSelect.innerHTML = `
-            <option value="">-- ${this.api.i18n.t('Rel')} --</option>
-            <option value="nofollow">${this.api.i18n.t('No follow')}</option>
-            <option value="noopener">${this.api.i18n.t('No opener')}</option>
-            <option value="noreferrer">${this.api.i18n.t('No referrer')}</option>
-        `;
-
         this.URLInput = document.createElement('input');
         this.URLInput.type = 'text';
         this.URLInput.disabled = true;
@@ -108,15 +82,10 @@ class WagtailDocumentTool extends window.BaseWagtailChooserTool {
             this.api.styles.inputUrl,
         );
 
-
-        selectContainer.appendChild(this.targetSelect);
-        selectContainer.appendChild(this.relSelect);
-
         btnContainer.appendChild(this.URLInput);
         btnContainer.appendChild(this.chooseNewButton);
 
         this.container.appendChild(btnContainer);
-        this.container.appendChild(selectContainer);
 
         return this.container;
     }

@@ -439,6 +439,81 @@ class ImageFeature(EditorJSFeature):
             # }
         ]
 
+
+class ImageRowFeature(EditorJSFeature):
+    allowed_tags = ["div", "img"]
+    allowed_attributes = ["class", "style"]
+
+    def get_config(self, context: dict[str, Any]):
+        config = super().get_config() or {}
+        config.setdefault("config", {})
+        config["config"]["imageChooserId"] =\
+            f"editorjs-image-chooser-{context['widget']['attrs']['id']}"
+        config["config"]["getImageUrl"] = reverse("wagtail_editorjs:image_for_id_fmt")
+        return config
+    
+    def render_template(self, context: dict[str, Any] = None):
+        widget_id = f"editorjs-image-chooser-{context['widget']['attrs']['id']}"
+        return AdminImageChooser().render_html(
+            widget_id,
+            None,
+            {"id": widget_id}
+        )
+
+    def validate(self, data: Any):
+        super().validate(data)
+
+        if "images" not in data["data"]:
+            raise ValueError("Invalid images value")
+        
+        if not data["data"]["images"]:
+            raise ValueError("Invalid images value")
+        
+        for image in data["data"]["images"]:
+            if "id" not in image:
+                raise ValueError("Invalid id value")
+            
+            if "title" not in image:
+                raise ValueError("Invalid title value")
+    
+    def render_block_data(self, block: EditorJSBlock, context = None) -> EditorJSElement:
+        images = block["data"]["images"]
+        ids = []
+        for image in images:
+            ids.append(image["id"])
+
+        images = Image.objects.in_bulk(ids)
+        s = []
+        for id in ids:
+            try:
+                id = int(id)
+            except ValueError:
+                pass
+            image = images[id]
+            url = image.file.url
+            if not any([url.startswith(i) for i in ["http://", "https://", "//"]]) and context:
+                request = context.get("request")
+                if request:
+                    url = request.build_absolute_uri(url)
+
+            s.append(EditorJSElement(
+                "div",
+                EditorJSElement(
+                    "img",
+                    close_tag=False,
+                    attrs={
+                        "src": url,
+                        "alt": image.title,
+                    }
+                ),
+                attrs={
+                    "class": "image-wrapper",
+                }
+            ))
+
+        return EditorJSElement("div", s, attrs={"class": "image-row"})
+
+
 class TableFeature(EditorJSFeature):
     allowed_tags = ["table", "tr", "th", "td", "thead", "tbody", "tfoot"]
     allowed_attributes = ["class"]

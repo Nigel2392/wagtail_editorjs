@@ -59,8 +59,9 @@ class EditorJSWidget(widgets.Input):
     @cached_property
     def media(self):
         js = [
-            "wagtail_editorjs/vendor/editorjs.umd.js",
+            "wagtail_editorjs/vendor/editorjs/editorjs.umd.js",
             "wagtail_editorjs/js/editorjs-widget.js",
+            "wagtail_editorjs/js/tools/wagtail-block-tool.js",
         ]
         css = [
             "wagtail_editorjs/css/editorjs-widget.css",
@@ -107,7 +108,6 @@ class EditorJSFormField(formfields.JSONField):
         value = EDITOR_JS_FEATURES.to_python(
             self.features, value
         )
-
         return value
     
     def prepare_value(self, value):

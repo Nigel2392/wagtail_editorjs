@@ -6,7 +6,6 @@ from django.http import (
 )
 from django.shortcuts import get_object_or_404
 
-from wagtail.images.exceptions import InvalidFilterSpecError
 from wagtail.images.models import SourceImageIOError
 from wagtail.images import (
     get_image_model,
