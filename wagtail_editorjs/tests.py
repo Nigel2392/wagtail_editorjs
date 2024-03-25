@@ -1,6 +1,7 @@
 from django.test import TestCase
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
+from bs4 import BeautifulSoup
 from .registry import (
     EDITOR_JS_FEATURES,
 )
@@ -32,15 +33,19 @@ class TestEditorJSFeatures(TestCase):
                     tpl = feature.render_block_data(data)
                     html.append(tpl)
 
-        rendered = render_editorjs_html(
+        rendered_1 = render_editorjs_html(
             EDITOR_JS_FEATURES.keys(),
             {"blocks": test_data},
             clean=False,
         )
 
-        self.assertEqual(rendered, render_to_string(
+        rendered_2 = render_to_string(
             "wagtail_editorjs/rich_text.html",
             {"html": mark_safe("\n".join([str(h) for h in html]))}
-        ))
+        )
 
+        soup1 = BeautifulSoup(rendered_1, "html.parser")
+        soup2 = BeautifulSoup(rendered_2, "html.parser")
+
+        self.assertEqual(soup1.decode(False), soup2.decode(False))
 

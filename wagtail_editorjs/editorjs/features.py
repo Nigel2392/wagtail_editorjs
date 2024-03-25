@@ -15,7 +15,7 @@ import bleach
 from .utils import wrap_tag
 from ..registry import (
     EditorJSFeature,
-    LazyModelInlineEditorJSFeature,
+    ModelInlineEditorJSFeature,
     EditorJSTune,
     EditorJSElement,
     EditorJSBlock,
@@ -297,7 +297,7 @@ class WarningFeature(EditorJSFeature):
         ]
 
 
-class LinkFeature(LazyModelInlineEditorJSFeature):
+class LinkFeature(ModelInlineEditorJSFeature):
     allowed_tags = ["a"]
     allowed_attributes = ["class", "href", "data-id"]
     chooser_class = AdminPageChooser
@@ -311,7 +311,7 @@ class LinkFeature(LazyModelInlineEditorJSFeature):
         }
 
 
-class DocumentFeature(LazyModelInlineEditorJSFeature):
+class DocumentFeature(ModelInlineEditorJSFeature):
     allowed_tags = ["a"]
     allowed_attributes = ["class", "href", "data-id"]
     chooser_class = AdminDocumentChooser

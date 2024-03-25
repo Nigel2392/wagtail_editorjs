@@ -225,7 +225,7 @@ class BaseInlineEditorJSFeature(BaseEditorJSFeature):
     pass
 
 
-class LazyInlineEditorJSFeature(BaseInlineEditorJSFeature):
+class InlineEditorJSFeature(BaseInlineEditorJSFeature):
     def __init__(self,
             tool_name: str,
             klass: str,
@@ -268,9 +268,7 @@ class LazyInlineEditorJSFeature(BaseInlineEditorJSFeature):
         if item.name != self.tag_name:
             return False
         
-        print("\n\n",item)
         for key, value in self.must_have_attrs.items():
-            print(key, value, item.get(key), item.has_attr(key))
             if not value:
                 if not item.has_attr(key):
                     return False
@@ -279,14 +277,11 @@ class LazyInlineEditorJSFeature(BaseInlineEditorJSFeature):
                 if isinstance(cmp, str):
                     cmp = cmp.strip()
                     if cmp != value:
-                        print("cmp != value", cmp, value)
                         return False
                 elif isinstance(cmp, list):
                     if value not in cmp:
-                        print("value not in cmp", value, cmp)
                         return False
                 else:
-                    print("cmp is not str or list", cmp)
                     return False
             
         return True
@@ -327,9 +322,11 @@ class LazyInlineEditorJSFeature(BaseInlineEditorJSFeature):
                     if item.has_attr(key):
                         matches[item][key] = True
 
-        return (matches, data)
+        # Build all inlines.
+        self.build_elements(list(matches.items()), context=context)
 
-class LazyModelInlineEditorJSFeature(LazyInlineEditorJSFeature):
+
+class ModelInlineEditorJSFeature(InlineEditorJSFeature):
     model = None
     chooser_class = None
     tag_name = "a"
@@ -428,10 +425,6 @@ class LazyModelInlineEditorJSFeature(LazyInlineEditorJSFeature):
         for item, id in ids:
             self.build_element(item, objects[id], context)
 
-        # # Replace the element's content with the new soup
-        # for soup, element in element_soups:
-        #     element.content = soup.prettify()
-
     def get_css(self):
         return self.widget.media._css.get("all", []) + super().get_css()
     
@@ -443,24 +436,6 @@ class LazyModelInlineEditorJSFeature(LazyInlineEditorJSFeature):
         return None
 
             
-
-class InlineEditorJSFeature(BaseInlineEditorJSFeature):
-    """
-        Builds the elements for the inline data immediately.
-        Does not allow for lazy prefetching of all data.
-    """
-
-    def build_elements(self, soup: bs4.BeautifulSoup, element: EditorJSElement, matches: dict[Any, dict[str, Any]], block_data: Any, context = None):
-        pass
-
-    def parse_inline_data(self, element: EditorJSElement, data: Any, context=None) -> tuple[bs4.BeautifulSoup, EditorJSElement, dict[Any, dict[str, Any]], Any]:
-        ret = super().parse_inline_data(element, data, context)
-        if not ret:
-            return None
-        soup, element, matches, block_data = ret
-        self.build_elements(soup=soup, element=element, matches=matches, block_data=block_data, context=context)
-        element.content = soup.prettify()
-        return element    
             
 
 def get_features(features: list[str] = None):
