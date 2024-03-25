@@ -513,6 +513,9 @@ class ImageRowFeature(EditorJSFeature):
 
         return EditorJSElement("div", s, attrs={"class": "image-row"})
 
+    @classmethod
+    def get_test_data(cls):
+        return []
 
 class TableFeature(EditorJSFeature):
     allowed_tags = ["table", "tr", "th", "td", "thead", "tbody", "tfoot"]
