@@ -264,6 +264,7 @@ class InlineEditorJSFeature(BaseInlineEditorJSFeature):
         match = self.might_contain_tag_re.search(content)
         return match is not None
 
+
     def filter(self, item):
         if item.name != self.tag_name:
             return False
@@ -286,7 +287,7 @@ class InlineEditorJSFeature(BaseInlineEditorJSFeature):
             
         return True
     
-    def parse_inline_data(self, soup: bs4.BeautifulSoup, element: EditorJSElement, data: Any, context = None) -> tuple[bs4.BeautifulSoup, EditorJSElement, dict[Any, dict[str, Any]], Any]:
+    def parse_inline_data(self, soup: bs4.BeautifulSoup, context = None) -> tuple[bs4.BeautifulSoup, EditorJSElement, dict[Any, dict[str, Any]], Any]:
         """
             Finds inline elements by the must_have_attrs and can_have_attrs.
             Designed to be database-efficient; allowing for gathering of all data before
@@ -294,17 +295,9 @@ class InlineEditorJSFeature(BaseInlineEditorJSFeature):
 
             I.E. For a link; this would gather all page ID's and fetch them in a single query.
         """
-        content = element.content
-
-        if not content:
-            return None
         
-        if not self.might_contain_tag(content):
-            return None
 
         matches: dict[Any, dict[str, Any]] = {}
-        soup = bs4.BeautifulSoup(content, "html.parser")
-
         elements = soup.find_all(self.filter)
         if not elements:
             return None
@@ -406,19 +399,19 @@ class ModelInlineEditorJSFeature(InlineEditorJSFeature):
             # element: EditorJSElement
             # matches: dict[bs4.elementType, dict[str, Any]]
             # data: dict[str, Any] # Block data.
-            matches, data = data
+            item, data = data
 
             # # Store element and soup for later replacement of content.
             # element_soups.append((soup, element))
 
             # Item is bs4 tag, attrs are must_have_attrs
-            for (item, attrs) in matches.items():
-                id = self.get_id(item, attrs, context)
-                ids.append((item, id))
+            
+            id = self.get_id(item, data, context)
+            ids.append((item, id))
 
-                # delete all attributes
-                for key in list(item.attrs.keys()):
-                    del item[key]
+            # delete all attributes
+            for key in list(item.attrs.keys()):
+                del item[key]
         
         # Fetch all objects
         objects = self.model.objects.in_bulk([id for item, id in ids])

@@ -30,11 +30,7 @@ class BaseWagtailChooserTool {
 
     static get sanitize() {
         return {
-            a: {
-                "href": true,
-                "class": true,
-                "data-*": true,
-            },
+            a: true,
         };
     }
     

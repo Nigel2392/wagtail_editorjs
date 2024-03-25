@@ -69,13 +69,10 @@ def render_editorjs_html(features: list[str], data: dict, context=None, clean: b
     soup = bs4.BeautifulSoup(html, "html.parser")
     if inlines:
         for inline in inlines:
-            # Parse the inline data.
-            # Gather all data nescessary for building elements if the inline is lazy.
-            # This data is passed in bulk to the build_elements method.
-            # This allows for more efficient building of elements by limiting
-            # database queries and other expensive operations.
+            # Give inlines access to whole soup.
+            # This allows for proper parsing of say; page or document links.
             inline: InlineEditorJSFeature
-            inline.parse_inline_data(soup, element, block, context)
+            inline.parse_inline_data(soup, context)
 
         # Re-render the soup.
         html = soup.decode(False)
