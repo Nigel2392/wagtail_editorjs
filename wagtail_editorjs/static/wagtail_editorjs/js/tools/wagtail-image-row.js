@@ -15,13 +15,10 @@ const wagtailImageRowToolAddIcon = `<svg xmlns="http://www.w3.org/2000/svg" widt
 class ImageRowTool extends window.BaseWagtailEditorJSTool {
     constructor({ data, api, config, block }) {
         super({ data, api, config, block });
-        this.imageElements = [];
 
         if (!("images" in this.data || !Array.isArray(this.data.images)) || !this.data.images) {
             this.data.images = [];
         }
-
-        console.log(this);
 
         this.settings = [
             new window.BaseButtonSetting({
@@ -68,29 +65,31 @@ class ImageRowTool extends window.BaseWagtailEditorJSTool {
 
     addImage() {
         this.imageChooser.openChooserModal();
-        this.imageChooser.input.addEventListener('change', () => {
+
+
+        let changeEventFunc;
+        changeEventFunc = () => {
             const data = this.imageChooser.getState();
+            this._createImage(data);
+            this.imageChooser.input.removeEventListener('change', changeEventFunc);
+        };
 
-            const imageWrapper = this.imageRow.addElement('div', {
-                className: 'wagtail-image-row-image-wrapper',
-            });
-    
-            this.imageElements.push(imageWrapper);
-    
-            const image = imageWrapper.addElement('img', {
-                className: 'wagtail-image-row-image',
-            });
+        this.imageChooser.input.addEventListener('change', changeEventFunc);
+    }
 
-            image.src = `${this.config.getImageUrl}${data.id}/`
-            console.log(image.src, `${this.config.getImageUrl}${data.id}/`);
-            image.alt = data.title;
-            image.dataset.imageId = data.id;
-            image.dataset.editUrl = data.edit_url;
-            this.images.push({
-                id: data.id,
-                title: data.title,
-            });
+    _createImage(imageData) {
+        const imageWrapper = this.imageRow.addElement('div', {
+            className: 'wagtail-image-row-image-wrapper',
         });
+
+        const image = imageWrapper.addElement('img', {
+            className: 'wagtail-image-row-image',
+        });
+
+        image.src = `${this.config.getImageUrl}${imageData.id}/`;
+        image.alt = imageData.title;
+        image.dataset.imageId = imageData.id;
+        image.dataset.editUrl = imageData.edit_url;
     }
 
     render() {
@@ -104,20 +103,7 @@ class ImageRowTool extends window.BaseWagtailEditorJSTool {
 
         if (this.images && this.images.length > 0) {
             this.images.forEach((imageData) => {
-                const imageWrapper = this.imageRow.addElement('div', {
-                    className: 'wagtail-image-row-image-wrapper',
-                });
-
-                this.imageElements.push(imageWrapper);
-
-                const image = imageWrapper.addElement('img', {
-                    className: 'wagtail-image-row-image',
-                });
-
-                image.src = `${this.config.getImageUrl}${imageData.id}/`;
-                image.alt = imageData.title;
-                image.dataset.imageId = imageData.id;
-                image.dataset.editUrl = imageData.edit_url;
+                this._createImage(imageData);
             });
         } else {
             this.settings[0].onEvent();

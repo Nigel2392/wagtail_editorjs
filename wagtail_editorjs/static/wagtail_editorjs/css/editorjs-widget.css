@@ -96,7 +96,7 @@
 
 
 .wagtail-image-row-wrapper {
-
+    margin: 0.5rem 0;
 }
 .wagtail-image-row-wrapper .wagtail-image-row {
     display: flex;

@@ -4,7 +4,6 @@ from wagtail import blocks
 from .render import render_editorjs_html
 from .forms import (
     EditorJSFormField,
-    EDITOR_JS_FEATURES,
     get_features,
 )
 
