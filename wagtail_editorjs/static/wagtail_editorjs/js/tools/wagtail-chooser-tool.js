@@ -118,7 +118,6 @@ class BaseWagtailChooserTool {
         range.insertNode(text);
     }
     
-    
     checkState() {
         const wrapperTag = this.api.selection.findParentTag(this.tag, this.tagClass);
         if (!wrapperTag) {

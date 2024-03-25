@@ -253,6 +253,10 @@ class WagtailImageTool {
             icon: wagtailImageIcon,
         };
     }
+
+    validate(savedData) {
+        return !!savedData.imageId;
+    }
   
     render(){
         this.imageWrapper = document.createElement('div');

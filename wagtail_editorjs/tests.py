@@ -20,7 +20,7 @@ class TestEditorJSFeatures(TestCase):
 
             for i, data in enumerate(test_data_list):
                 test_data_list[i] = {
-                    "id": "test_id",
+                    "id": "test_id_{}".format(i),
                     "type": feature.tool_name,
                     "data": data,
                     "tunes": {}

@@ -54,6 +54,12 @@ def render_editorjs_html(features: list[str], data: dict, context=None, clean: b
         # Build the actual block.
         element: EditorJSElement = feature_mapping.render_block_data(block, context)
 
+        # if element.tag != "div":
+        #     new = EditorJSElement("div", [element], attrs=element.attrs)
+        #     element.attrs = {}
+        #     element = new
+
+
         # Tune the element.
         for tune_name, tune_value in tunes.items():
             element = feature_mappings[tune_name].tune_element(element, tune_value, context)

@@ -119,6 +119,21 @@ class ImageRowTool extends window.BaseWagtailEditorJSTool {
         return super.render();
     }
 
+    validate(savedData) {
+        if (!("images" in savedData || !Array.isArray(savedData.images)) || !savedData.images) {
+            return false;
+        }
+
+        let valid = true;
+        savedData.images.forEach((image) => {
+            if (!("id" in image && "title" in image)) {
+                valid = false;
+            }
+        });
+
+        return valid;
+    }
+
     save(blockContent) {
         this.data = super.save(blockContent);
         this.data.images = [];

@@ -264,7 +264,19 @@ class LazyInlineEditorJSFeature(BaseInlineEditorJSFeature):
         match = self.might_contain_tag_re.search(content)
         return match is not None
 
-
+    def filter(self, item):
+        if item.name != self.tag_name:
+            return False
+        
+        for key, value in self.must_have_attrs.items():
+            if not value:
+                if not item.has_attr(key):
+                    return False
+            elif item.get(key) != value:
+                return False
+            
+        return True
+    
     def parse_inline_data(self, element: EditorJSElement, data: Any, context = None) -> tuple[bs4.BeautifulSoup, EditorJSElement, dict[Any, dict[str, Any]], Any]:
         """
             Finds inline elements by the must_have_attrs and can_have_attrs.
@@ -283,41 +295,24 @@ class LazyInlineEditorJSFeature(BaseInlineEditorJSFeature):
 
         matches: dict[Any, dict[str, Any]] = {}
         soup = bs4.BeautifulSoup(content, "html.parser")
-        for key, value in self.must_have_attrs.items():
-            arguments = [self.tag_name, {key: value}]
-            if not value:
-                def filter(item):
-                    if item.has_attr(key):
-                        return True
-                    return False
-                arguments = [filter]
-
-            found = soup.find_all(*arguments)
-            if not found:
-                return None
+        
+        elements = soup.find_all(self.filter)
+        if not elements:
+            return None
+        
+        for item in elements:
+            matches[item] = {}
             
-            if not matches:
-                matches = {
-                    item: {}
-                    for item in found
-                }
-
-            for item in found:
+            for key in self.must_have_attrs.keys():
                 matches[item][key] = item.get(key)
 
-        for key, value in self.can_have_attrs.items():
-            arguments = [self.tag_name, {key: value}]
-            if not value:
-                def filter(item):
+            for key, value in self.can_have_attrs.items():
+                if value:
+                    matches[item][key] = item.get(key)
+                else:
                     if item.has_attr(key):
-                        return True
-                    return False
-                arguments = [filter]
+                        matches[item][key] = True
 
-            for item in soup.find_all(*arguments):
-                matches[item] = item.get(key)
-        
-        
         return (soup, element, matches, data)
 
 class LazyModelInlineEditorJSFeature(LazyInlineEditorJSFeature):

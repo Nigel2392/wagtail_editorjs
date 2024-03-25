@@ -1,6 +1,46 @@
 :root {
     --accent-color-rgb: 34, 70, 136;
+    --richtext-margin: 25rem;
 }
+*, *:before, *:after {
+    box-sizing: border-box;
+}
+.wagtail-editorjs-richtext.wagtail-editorjs-richtext > * {
+    /* margin: 0.75rem 0; */
+}
+.wagtail-editorjs-richtext.wagtail-editorjs-richtext > :not(.stretched) {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+@media (min-width: 576px) {
+    .wagtail-editorjs-richtext.wagtail-editorjs-richtext > :not(.stretched) {
+        width: calc(100% - calc(var(--richtext-margin) / 4));
+    }
+}
+@media (min-width: 768px) {
+    .wagtail-editorjs-richtext.wagtail-editorjs-richtext > :not(.stretched) {
+        width: calc(100% - calc(var(--richtext-margin) / 3));
+    }
+  
+}
+@media (min-width: 992px) {
+    .wagtail-editorjs-richtext.wagtail-editorjs-richtext > :not(.stretched) {
+        width: calc(100% - calc(var(--richtext-margin) / 2));
+    }
+}
+@media (min-width: 1200px) {
+    .wagtail-editorjs-richtext.wagtail-editorjs-richtext > :not(.stretched) {
+        width: calc(100% - var(--richtext-margin));
+    }
+
+}
+@media (min-width: 1400px) {
+    .wagtail-editorjs-richtext.wagtail-editorjs-richtext > :not(.stretched) {
+        width: calc(100% - calc(var(--richtext-margin) * 1.25));
+    }
+}
+
 .wagtail-editorjs-richtext figure {
     margin: 0;
     margin-bottom: 1rem;
@@ -32,6 +72,8 @@
 .wagtail-editorjs-richtext > img,
 .wagtail-editorjs-richtext :not(figure) > img {
     margin: 1rem 0;
+    max-height: 500px;
+    overflow: hidden;
 }
 .wagtail-editorjs-richtext img {
     height: auto;
@@ -42,6 +84,9 @@
 .wagtail-editorjs-richtext figure.stretched img,
 .wagtail-editorjs-richtext img.stretched {
     width: 100%;
+    max-height: 500px;
+    overflow: hidden;
+    object-fit: cover;
 }
 
 .wagtail-editorjs-richtext .align-content-left {
@@ -99,7 +144,8 @@
 
 .wagtail-editorjs-richtext .attaches {
     padding: 0.5rem 1rem;
-    margin: 0.5rem 0;
+    margin-top: 0.75rem;
+    margin-bottom: 0.75rem;
     border: 1px solid rgba(var(--accent-color-rgb), 0.1);
     border-radius: 0.25rem;
     position: relative;
@@ -187,7 +233,7 @@
 
 /* .cdx-text-variant--details .ce-block__content, */
 .wagtail-editorjs-richtext .text-variant-details {
-    margin: 0.5rem 0;
+    margin: 1rem 0;
     padding: 0.5rem 1rem;
     border-radius: 0.25rem;
     border: 1px solid rgba(34, 70, 136, 0.8);
@@ -198,7 +244,7 @@
 /* .cdx-text-variant--call-out .ce-block__content, */
 .wagtail-editorjs-richtext .text-variant-call-out {
     font-size: 1.1rem;
-    margin: 0.5rem 0;
+    margin: 1rem 0;
     padding: 1rem 1.5rem;
     border-radius: 0.25rem;
     border: 1px solid rgba(255, 0, 0, 0.5);
@@ -240,7 +286,7 @@
 }
 
 .wagtail-editorjs-richtext hr {
-    margin: 1rem 0;
+    margin: 2rem 0;
     border: 0;
     border-top: 1px solid rgba(var(--accent-color-rgb), 0.1);
 
@@ -291,6 +337,7 @@
     flex-direction: row;
     width: 100%;
     gap: 0.5rem;
+    margin: 0.5rem 0;
 }
 
 .wagtail-editorjs-richtext .image-row .image-wrapper {

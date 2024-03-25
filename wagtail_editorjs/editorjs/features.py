@@ -469,6 +469,9 @@ class ImageRowFeature(EditorJSFeature):
         if not data["data"]["images"]:
             raise ValueError("Invalid images value")
         
+        if "settings" not in data["data"] or data["data"]["settings"] is None:
+            raise ValueError("Invalid settings value")
+        
         for image in data["data"]["images"]:
             if "id" not in image:
                 raise ValueError("Invalid id value")
@@ -511,7 +514,16 @@ class ImageRowFeature(EditorJSFeature):
                 }
             ))
 
-        return EditorJSElement("div", s, attrs={"class": "image-row"})
+        classnames = [
+            "image-row",
+        ]
+
+        if block["data"]["settings"].get("stretched"):
+            classnames.append("stretched")
+
+        return EditorJSElement("div", s, attrs={
+            "class": classnames,
+        })
 
     @classmethod
     def get_test_data(cls):
