@@ -255,12 +255,15 @@ class LazyInlineEditorJSFeature(BaseInlineEditorJSFeature):
         """
         pass
     
-
     @cached_property
     def might_contain_tag_re(self):
         # <([a-z]+)(?![^>]*\/>)[^>]*>
-        return re.compile(rf"<({self.tag_name})(?![^>]*\/>)[^>]*>")
-    
+        return re.compile(rf"<({self.tag_name}+)(?![^>]*\/>)[^>]*>", re.IGNORECASE)
+
+    def might_contain_tag(self, content: str):
+        match = self.might_contain_tag_re.search(content)
+        return match is not None
+
 
     def parse_inline_data(self, element: EditorJSElement, data: Any, context = None) -> tuple[bs4.BeautifulSoup, EditorJSElement, dict[Any, dict[str, Any]], Any]:
         """
@@ -275,7 +278,7 @@ class LazyInlineEditorJSFeature(BaseInlineEditorJSFeature):
         if not content:
             return None
         
-        if self.might_contain_tag_re.search(content) is None:
+        if not self.might_contain_tag(content):
             return None
 
         matches: dict[Any, dict[str, Any]] = {}
