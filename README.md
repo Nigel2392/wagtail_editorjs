@@ -1,6 +1,8 @@
 wagtail_editorjs
 ================
 
+*Check out [Awesome Wagtail](https://github.com/springload/awesome-wagtail) for more awesome packages and resources from the Wagtail community.*
+
 A Wagtail EditorJS widget with page/image chooser support, document support and more!
 
 Quick start
