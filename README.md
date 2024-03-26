@@ -5,6 +5,25 @@ wagtail_editorjs
 
 A Wagtail EditorJS widget with page/image chooser support, document support and more!
 
+## List features
+
+This readme might not fully reflect which features are available.
+
+To find this out - you can:
+
+1. start the python shell
+
+   ```bash
+   py ./manage.py shell
+   ```
+2. Print all the available features:
+
+   ```python
+   from wagtail_editorjs.registry import EDITOR_JS_FEATURES
+   print(EDITOR_JS_FEATURES.keys())
+   dict_keys([... all registered features ...])
+   ```
+
 ## Add features:
 
 * [Add an already defined EditorJS feature](https://github.com/Nigel2392/wagtail_editorjs/blob/main/docs/editorjs_feature.md "Simple Image Feature")

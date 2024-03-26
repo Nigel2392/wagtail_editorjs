@@ -32,7 +32,7 @@ class CustomImageFeature(EditorJSFeature):
         if "caption" not in data["data"]:
             raise forms.ValidationError('Invalid data.caption value')
         
-    # ...
+        # ...
         
     def render_block_data(self, block: EditorJSBlock, context = None) -> EditorJSElement:
         # Context is not guaranteed to be present. This is the request context.
