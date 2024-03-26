@@ -58,6 +58,7 @@ class CustomImageFeature(EditorJSFeature):
 ```
 
 Next we can override the `render_block_data` method.
+
 This method is used to render the block for display to the user on the frontend.
 
 ```python
@@ -79,6 +80,7 @@ This method is used to render the block for display to the user on the frontend.
 ```
 
 We also provide a way to easily test this feature.
+
 All registered features are tested automatically if their `get_test_data` method returns data.
 
 ```python
@@ -95,7 +97,10 @@ All registered features are tested automatically if their `get_test_data` method
         ]
 ```
 
+
+
 We can now register the feature with the editor.
+
 The feature will be imported from a CDN provided on the package README.
 
 ```python
