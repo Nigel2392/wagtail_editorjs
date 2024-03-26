@@ -5,6 +5,10 @@ wagtail_editorjs
 
 A Wagtail EditorJS widget with page/image chooser support, document support and more!
 
+## Add features:
+
+* [Add an already defined EditorJS feature](https://github.com/Nigel2392/wagtail_editorjs/blob/main/docs/editorjs_feature.md "Simple Image Feature")
+
 Quick start
 -----------
 
