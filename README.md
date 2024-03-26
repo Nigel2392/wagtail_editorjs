@@ -29,45 +29,56 @@ Quick start
    ```
 3. Add the field to your model:
 
-   ```python
-   ...
-   from wagtail_editorjs.fields import EditorJSField
+```python
+...
+from wagtail_editorjs.fields import EditorJSField
+from wagtail_editorjs.blocks import EditorJSBlock
 
 
-   class HomePage(Page):
-       content_panels = [
-           FieldPanel("editor_field"),
-       ]
-       editor_field = EditorJSField(
-           # All supported features
-           features=[
-                'attaches',
-                'checklist',
-                'code',
-                'delimiter',
-                'document',
-                'drag-drop',
-                'header',
-                'image',
-                'inline-code',
-                'link',
-                'marker',
-                'nested-list',
-                'paragraph',
-                'quote',
-                'raw',
-                'table',
-                'text-alignment-tune',
-                'text-variant-tune',
-                'underline',
-                'undo-redo',
-                'warning',
-            ],
-           blank=True,
-           null=True,
-       )
+class HomePage(Page):
+    content_panels = [
+        FieldPanel("editor_field"),
+        FieldPanel("content"),
+    ]
+    editor_field = EditorJSField(
+        # All supported features
+        features=[
+             'attaches',
+             'checklist',
+             'code',
+             'delimiter',
+             'document',
+             'drag-drop',
+             'header',
+             'image',
+             'images',
+             'inline-code',
+             'link',
+             'marker',
+             'nested-list',
+             'paragraph',
+             'quote',
+             'raw',
+             'table',
+             'text-alignment-tune',
+             'text-variant-tune',
+             'underline',
+             'undo-redo',
+             'warning',
+         ],
+        blank=True,
+        null=True,
+    )
 
-   ```
+    # Or as a block
+    content = fields.StreamField([
+        ('editorjs', EditorJSBlock(features=[
+            # ... same as before
+        ])),
+    ], blank=True, use_json_field=True)
+
+
+```
 
 ## Settings
 
