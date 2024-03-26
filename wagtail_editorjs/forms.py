@@ -105,9 +105,14 @@ class EditorJSFormField(formfields.JSONField):
     
     def to_python(self, value):
         value = super().to_python(value)
+
+        if value is None:
+            return value
+        
         value = EDITOR_JS_FEATURES.to_python(
             self.features, value
         )
+
         return value
     
     def prepare_value(self, value):
@@ -115,6 +120,9 @@ class EditorJSFormField(formfields.JSONField):
             return super().prepare_value(value)
         
         if isinstance(value, formfields.InvalidJSONInput):
+            return value
+        
+        if not isinstance(value, dict):
             return value
         
         value = EDITOR_JS_FEATURES.prepare_value(
