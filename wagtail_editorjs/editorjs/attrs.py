@@ -9,6 +9,17 @@ class EditorJSElementAttribute:
         self.value = value
         self.delimiter = delimiter
 
+    def __eq__(self, other):
+        if isinstance(other, EditorJSElementAttribute):
+            return self.value == other.value
+        
+        if isinstance(other, list):
+            for item in other:
+                if item not in self.value:
+                    return False
+            return True
+        return False
+
     def extend(self, value: Any):
         if isinstance(value, list):
             self.value.extend(value)
@@ -22,6 +33,24 @@ class EditorJSElementAttribute:
 class EditorJSStyleAttribute(EditorJSElementAttribute):
     def __init__(self, value: dict):
         super().__init__(value, ";")
+
+    def __repr__(self):
+        return f"EditorJSStyleAttribute({self.value})"
+
+    def __eq__(self, other):
+        if isinstance(other, EditorJSStyleAttribute):
+            return self.value == other.value
+        
+        if isinstance(other, dict):
+            return self.value == other
+        
+        if isinstance(other, str):
+            try:
+                key, value = other.split(":")
+                return self.value.get(key) == value.strip()
+            except ValueError:
+                return False
+        return False
 
     def extend(self, value: dict = None, **kwargs):
         if value:

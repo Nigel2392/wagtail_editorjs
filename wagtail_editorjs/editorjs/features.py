@@ -544,14 +544,39 @@ class TableFeature(EditorJSFeature):
 
     def render_block_data(self, block: EditorJSBlock, context = None) -> EditorJSElement:
         table = []
-        for i, row in enumerate(block["data"]["content"]):
-            tr = []
-            for cell in row:
-                tag = "th" if block["data"]["withHeadings"] and i == 0 else "td"
-                tr.append(wrap_tag(tag, {}, cell))
-            table.append(wrap_tag("tr", {}, "".join(tr)))
 
-        return EditorJSElement("table", "".join(table))
+        if block["data"]["withHeadings"]:
+            headings = block["data"]["content"][0]
+            table.append(EditorJSElement(
+                "thead",
+                EditorJSElement(
+                    "tr",
+                    [
+                        EditorJSElement("th", heading)
+                        for heading in headings
+                    ]
+                )
+            ))
+
+            content = block["data"]["content"][1:]
+        else:
+            content = block["data"]["content"]
+
+        tbody = EditorJSElement("tbody")
+        for row in content:
+            tbody.append(
+                EditorJSElement(
+                    "tr",
+                    [
+                        EditorJSElement("td", cell)
+                        for cell in row
+                    ]
+                )
+            )
+
+        table.append(tbody)
+
+        return EditorJSElement("table", table)
 
     @classmethod
     def get_test_data(cls):

@@ -56,6 +56,11 @@ class WagtailLinkTool extends window.BaseWagtailChooserTool {
             this.chooser.input.addEventListener('change', chooseNewPageFunc);
         });
 
+        this.api.tooltip.onHover(this.chooseNewPageButton, this.api.i18n.t('Choose new ' + this.constructor["chooserType"]), {
+            placement: 'top',
+            hidingDelay: 200,
+        });
+
         this.targetSelect.onchange = (e) => {
             this.pageURLInput.target = e.target.value;
         };

@@ -38,6 +38,11 @@ class EditorJSWidget {
             this.editorConfig.data = JSON.parse(this.element.value);
         }
 
+        if (!window.editors){
+            window.editors = [];
+        }
+        window.editors.push(this);
+
         const formButtons = $('[data-edit-form] :submit');
         let clickedFormSaveButton = false;
         formButtons.on('click', (e) => {

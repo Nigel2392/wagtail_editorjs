@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Union
 from collections import defaultdict
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
@@ -17,7 +17,14 @@ class NullSanitizer:
     def sanitize_css(val):
         return val
 
-def render_editorjs_html(features: list[str], data: dict, context=None, clean: bool = None) -> str:
+def render_editorjs_html(
+        features: list[str],
+        data: dict,
+        context=None,
+        clean: bool = None,
+        whitelist_tags: list[str] = None,
+        whitelist_attrs: Union[dict, list] = None
+    ) -> str:
     """
         Renders the editorjs widget.
     """
@@ -56,13 +63,11 @@ def render_editorjs_html(features: list[str], data: dict, context=None, clean: b
         #     element.attrs = {}
         #     element = new
 
-
         # Tune the element.
         for tune_name, tune_value in tunes.items():
             element = feature_mappings[tune_name].tune_element(element, tune_value, context)
-
+        
         html.append(element)
-
 
     html = "\n".join([str(h) for h in html])
 
@@ -93,6 +98,17 @@ def render_editorjs_html(features: list[str], data: dict, context=None, clean: b
 
             for key, value in feature.allowed_attributes.items():
                 allowed_attributes[key].update(value)
+
+        if whitelist_tags:
+            allowed_tags.update(whitelist_tags)
+
+        if whitelist_attrs:
+            if isinstance(whitelist_attrs, dict):
+                for key, value in whitelist_attrs.items():
+                    allowed_attributes[key].update(value)
+            else:
+                for key in allowed_attributes:
+                    allowed_attributes[key].update(whitelist_attrs)
 
         html = bleach.clean(
             html,

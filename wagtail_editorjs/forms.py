@@ -22,10 +22,11 @@ class EditorJSWidget(widgets.Input):
     accepts_features = True
     input_type = 'hidden'
 
-    def __init__(self, features: list[str] = None, attrs: dict = None):
+    def __init__(self, features: list[str] = None, tools_config: dict = None, attrs: dict = None):
         super().__init__(attrs)
 
         self.features = get_features(features)
+        self.tools_config = tools_config or {}
         self.autofocus = self.attrs.get('autofocus', False)
         self.placeholder = self.attrs.get('placeholder', "")
 
@@ -38,6 +39,16 @@ class EditorJSWidget(widgets.Input):
         context = super().get_context(name, value, attrs)
         config = EDITOR_JS_FEATURES.build_config(self.features, context)
         config["holder"] = f"{context['widget']['attrs']['id']}-wagtail-editorjs-widget"
+
+        tools = config.get('tools', {})
+        for tool_name, tool_config in self.tools_config.items():
+            if tool_name in tools:
+                cfg = tools[tool_name]
+                cpy = tool_config.copy()
+                cpy.update(cfg)
+                tools[tool_name] = cpy
+            else:
+                raise ValueError(f"Tool {tool_name} not found in tools; did you include the feature?")
 
         for hook in hooks.get_hooks(BUILD_CONFIG_HOOK):
             hook(self, context, config)

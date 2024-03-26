@@ -1,8 +1,9 @@
 
 class BaseToolSetting {
-    constructor({name, icon, action = null, initialize = null, isActive = null, getState = null, render = null, onSave = null}) {
+    constructor({name, icon, description = null, action = null, initialize = null, isActive = null, getState = null, render = null, onSave = null}) {
         this.tuneName = name;
         this.icon = icon;
+        this.description = description;
         this.api = null;
         this.config = null;
         this.tool = null;
@@ -278,7 +279,20 @@ class BaseWagtailEditorJSTool {
         const wrapper = document.createElement('div');
 
         this.settings.forEach( tune => {
-            wrapper.appendChild(tune.render());
+            const rendered = tune.render();
+
+            if (rendered) {
+                let description = tune.description;
+                if (!description) {
+                    description = tune.tuneName;
+                }
+                this.api.tooltip.onHover(rendered, description, {
+                    placement: 'top',
+                    offset: 5,
+                    hidingDelay: 200,
+                });
+                wrapper.appendChild(rendered);
+            }
         });
     
         return wrapper;

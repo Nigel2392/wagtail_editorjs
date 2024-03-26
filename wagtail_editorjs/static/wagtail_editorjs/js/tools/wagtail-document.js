@@ -35,6 +35,11 @@ class WagtailDocumentTool extends window.BaseWagtailChooserTool {
             this.chooser.openChooserModal();
             this.chooser.input.addEventListener('change', chooseNewFunc);
         });
+        
+        this.api.tooltip.onHover(this.chooseNewButton, this.api.i18n.t('Choose new ' + this.constructor["chooserType"]), {
+            placement: 'top',
+            hidingDelay: 200,
+        });
 
 
         this.container.hidden = false;
