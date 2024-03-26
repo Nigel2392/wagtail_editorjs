@@ -56,16 +56,17 @@ Next we can override the `render_block_data` method.
 This method is used to render the block for display to the user on the frontend.
 ```python
     def render_block_data(self, block: EditorJSBlock, context = None) -> EditorJSElement:
+        # Context is not guaranteed to be present. This is the request context.
         return EditorJSElement(
             "img",
             close_tag=False,
             attrs={
-                "src": block.data["url"],
-                "alt": block.data["caption"],
+                "src": block["data"]["url"],
+                "alt": block["data"]["caption"],
                 "style": {
-                    "border": "1px solid black" if block.data["withBorder"] else "none",
-                    "background-color": "lightgray" if block.data["withBackground"] else "none",
-                    "width": "100%" if block.data["stretched"] else "auto",
+                    "border": "1px solid black" if block["data"]["withBorder"] else "none",
+                    "background-color": "lightgray" if block["data"]["withBackground"] else "none",
+                    "width": "100%" if block["data"]["stretched"] else "auto",
                 }
             },
         )
