@@ -60,17 +60,16 @@ class TestEditorJSInline(BaseEditorJSTest):
             testing_block = soup.find("div", {"data-testing-id": "TARGET"})
             testing_block.clear()
 
-            for i, (initial, _) in enumerate(test_data):
-                initial_soup = bs4.BeautifulSoup(initial, "html.parser")
-                initial_soup.attrs["data-testing-id"] = f"test_{i}"
-                testing_block.append(initial_soup)
+            for initial, _ in test_data:
+                testing_block.append(bs4.BeautifulSoup(initial, "html.parser"))
+
 
             feature.parse_inline_data(soup)
 
             html = str(soup)
 
             outputs = [i[1] for i in test_data]
-            for i, output in enumerate(outputs):
+            for output in outputs:
                 self.assertInHTML(
                     output,
                     html

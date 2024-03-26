@@ -1,5 +1,5 @@
 from django.test import TestCase
-from django.core.management import call_command
+# from django.core.management import call_command
 from wagtail.models import Collection, Page
 from wagtail.images.tests.utils import (
     get_test_image_file,
@@ -58,6 +58,6 @@ class BaseEditorJSTest(TestCase):
                 title=f"Test Image {i}",
                 collection=self.collection
             )
-        call_command("fixtree")
-        call_command("set_url_paths")
+        # call_command("fixtree")
+        # call_command("set_url_paths")
 
