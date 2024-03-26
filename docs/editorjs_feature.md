@@ -36,11 +36,14 @@ class CustomImageFeature(EditorJSFeature):
     allowed_tags = ["img"]
     allowed_attributes = ["src", "alt", "style"]
 
+    def get_config(self, context: dict[str, Any]):
+        # This context is always present.
+        # It is the widget context - NOT the request context.
+        config = super().get_config() or {}
+        config["config"] = {} # my custom configuration
+        return config
 
     def validate(self, data: Any):
-        """
-        
-        """
         super().validate(data)
 
         if 'url' not in data['data']:
