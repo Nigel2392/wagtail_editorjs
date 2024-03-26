@@ -221,11 +221,7 @@ class EditorJSTune(BaseEditorJSFeature):
         return None
 
 
-class BaseInlineEditorJSFeature(BaseEditorJSFeature):
-    pass
-
-
-class InlineEditorJSFeature(BaseInlineEditorJSFeature):
+class InlineEditorJSFeature(BaseEditorJSFeature):
     def __init__(self,
             tool_name: str,
             klass: str,
@@ -287,7 +283,7 @@ class InlineEditorJSFeature(BaseInlineEditorJSFeature):
             
         return True
     
-    def parse_inline_data(self, soup: bs4.BeautifulSoup, context = None) -> tuple[bs4.BeautifulSoup, EditorJSElement, dict[Any, dict[str, Any]], Any]:
+    def parse_inline_data(self, soup: bs4.BeautifulSoup, context = None):
         """
             Finds inline elements by the must_have_attrs and can_have_attrs.
             Designed to be database-efficient; allowing for gathering of all data before
@@ -318,6 +314,20 @@ class InlineEditorJSFeature(BaseInlineEditorJSFeature):
         # Build all inlines.
         self.build_elements(list(matches.items()), context=context)
 
+    @classmethod
+    def get_test_data(cls) -> list[tuple[str, str]]:
+        """
+            Returns a list of test data.
+
+            The test data should be a list of tuples.
+
+            The first item in the tuple is the raw HTML tag.
+            The second item is the expected output.
+
+            The raw HTML tag(s) will be randomly appended into a soup.
+            We will use assertQueries(1) to ensure any database queries are kept to a minimum.
+        """
+        return []
 
 class ModelInlineEditorJSFeature(InlineEditorJSFeature):
     model = None
@@ -379,11 +389,13 @@ class ModelInlineEditorJSFeature(InlineEditorJSFeature):
         item["class"] = f"{self.model._meta.model_name}-link"
 
     
-    def get_url(self, instance):
+    @classmethod
+    def get_url(cls, instance):
         return instance.url
     
-    def get_full_url(self, instance, request):
-        return request.build_absolute_uri(self.get_url(instance))
+    @classmethod
+    def get_full_url(cls, instance, request):
+        return request.build_absolute_uri(cls.get_url(instance))
 
 
     def build_elements(self, inline_data: list, context: dict[str, Any] = None) -> list:
@@ -425,9 +437,19 @@ class ModelInlineEditorJSFeature(InlineEditorJSFeature):
         return (self.widget.media._js or []) + super().get_js()
     
     @classmethod
-    def get_test_data(cls):
-        return None
+    def get_test_queryset(cls):
+        return cls.model.objects.all()
 
+    @classmethod
+    def get_test_data(cls):
+        models = cls.get_test_queryset()[0:5]
+        return [
+            (
+                f"<a data-id='{model.id}' data-{cls.model._meta.model_name}='True' class='wagtail-{cls.model._meta.model_name}-link'></a>",
+                f"<a href='{cls.get_url(model)}' class='{cls.model._meta.model_name}-link'></a>"
+            )
+            for model in models
+        ]
             
             
 
@@ -477,7 +499,7 @@ class EditorJSFeatures:
 
     def register(self, tool_name: str, feature: EditorJSFeature):
         self.features[tool_name] = feature
-        if isinstance(feature, BaseInlineEditorJSFeature):
+        if isinstance(feature, InlineEditorJSFeature):
             self.inline_features.append(feature)
 
 

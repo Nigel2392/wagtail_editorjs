@@ -303,12 +303,24 @@ class LinkFeature(ModelInlineEditorJSFeature):
     chooser_class = AdminPageChooser
     model = Page
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.must_have_attrs = self.must_have_attrs | {
-            "data-parent-id": None,
-            "href": None,
-        }
+    @classmethod
+    def get_url(cls, instance):
+        return instance.get_url()
+    
+    @classmethod
+    def get_full_url(cls, instance, request):
+        return instance.get_full_url(request)
+    
+    @classmethod
+    def get_test_queryset(cls):
+        return super().get_test_queryset().filter(depth__gt=1)
+    
+   #  def __init__(self, *args, **kwargs):
+   #      super().__init__(*args, **kwargs)
+   #      self.must_have_attrs = self.must_have_attrs | {
+   #          "data-parent-id": None,
+   #          "href": None,
+   #      }
 
 
 class DocumentFeature(ModelInlineEditorJSFeature):
@@ -317,6 +329,10 @@ class DocumentFeature(ModelInlineEditorJSFeature):
     chooser_class = AdminDocumentChooser
     model = Document
 
+    @classmethod
+    def get_url(cls, instance):
+        return instance.file.url
+    
 
 class ImageFeature(EditorJSFeature):
     allowed_tags = ["img", "figure", "figcaption"]
@@ -406,7 +422,6 @@ class ImageFeature(EditorJSFeature):
 
         return EditorJSElement(
             "img",
-            block["data"].get("caption"),
             close_tag=False,
             attrs={
                 "src": url,
@@ -417,26 +432,26 @@ class ImageFeature(EditorJSFeature):
     
     @classmethod
     def get_test_data(cls):
-        # instance = Image.objects.first()
+        instance = Image.objects.first()
         return [
-            # {
-            #     "imageId": instance.pk,
-            #     "withBorder": True,
-            #     "stretched": False,
-            #     "backgroundColor": "#000000",
-            #     "usingCaption": False,
-            #     "alt": "Image",
-            #     "caption": "Image",
-            # },
-            # {
-            #     "imageId": instance.pk,
-            #     "withBorder": False,
-            #     "stretched": True,
-            #     "backgroundColor": None,
-            #     "usingCaption": True,
-            #     "alt": "Image",
-            #     "caption": "Image",
-            # }
+            {
+                "imageId": instance.pk,
+                "withBorder": True,
+                "stretched": False,
+                "backgroundColor": "#000000",
+                "usingCaption": False,
+                "alt": "Image",
+                "caption": "Image",
+            },
+            {
+                "imageId": instance.pk,
+                "withBorder": False,
+                "stretched": True,
+                "backgroundColor": None,
+                "usingCaption": True,
+                "alt": "Image",
+                "caption": "Image",
+            }
         ]
 
 
@@ -527,7 +542,20 @@ class ImageRowFeature(EditorJSFeature):
 
     @classmethod
     def get_test_data(cls):
-        return []
+        images = Image.objects.all()[0:3]
+        return [
+            {
+                "images": [
+                    {
+                        "id": image.pk,
+                        "title": image.title,
+                    } for image in images
+                ],
+                "settings": {
+                    "stretched": True,
+                },
+            }
+        ]
 
 class TableFeature(EditorJSFeature):
     allowed_tags = ["table", "tr", "th", "td", "thead", "tbody", "tfoot"]

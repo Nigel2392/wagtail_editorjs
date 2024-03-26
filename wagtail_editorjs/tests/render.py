@@ -4,10 +4,13 @@ from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 from bs4 import BeautifulSoup
 
+from .utils import BaseEditorJSTest
 from ..editorjs.element import EditorJSElement
 from ..render import render_editorjs_html
 from ..registry import (
     EditorJSTune,
+    EditorJSFeature,
+    InlineEditorJSFeature,
     EDITOR_JS_FEATURES,
 )
 
@@ -23,9 +26,10 @@ class TestEditorJSTune(EditorJSTune):
 
 
 # Create your tests here.
-class TestEditorJSFeatures(TestCase):
+class TestEditorJSFeatures(BaseEditorJSTest):
 
     def setUp(self) -> None:
+        super().setUp()
         self.tune = TestEditorJSTune(
             "test_tune_feature",
             None
@@ -41,7 +45,8 @@ class TestEditorJSFeatures(TestCase):
         test_data = []
         for i, feature in enumerate(EDITOR_JS_FEATURES.features.values()):
             test_data_list = feature.get_test_data()
-            if test_data_list is None:
+            if not isinstance(feature, (EditorJSFeature))\
+                or not test_data_list:
                 continue
 
             for j, data in enumerate(test_data_list):
@@ -84,7 +89,8 @@ class TestEditorJSFeatures(TestCase):
         test_data = []
         for i, feature in enumerate(EDITOR_JS_FEATURES.features.values()):
             test_data_list = feature.get_test_data()
-            if test_data_list is None:
+            if not isinstance(feature, (EditorJSFeature))\
+                or not test_data_list:
                 continue
 
             for j, data in enumerate(test_data_list):

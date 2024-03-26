@@ -5,7 +5,7 @@ from django.utils.safestring import mark_safe
 from . import settings
 from .registry import (
     EditorJSElement,
-    BaseInlineEditorJSFeature,
+    InlineEditorJSFeature,
     InlineEditorJSFeature,
     EDITOR_JS_FEATURES,
 )
@@ -42,7 +42,7 @@ def render_editorjs_html(
     inlines = [
         feature
         for feature in feature_mappings.values()
-        if isinstance(feature, BaseInlineEditorJSFeature)
+        if isinstance(feature, InlineEditorJSFeature)
     ]
 
     html = []
