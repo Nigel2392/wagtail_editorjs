@@ -20,6 +20,7 @@ from wagtail import hooks
 
 We can now get started creating the feature itself.
 As seen from the data-format in the github package, the feature requires the following fields:
+
 - `url`: The URL of the image.
 - `caption`: The caption of the image.
 - `withBorder`: A boolean value to determine if the image should have a border.
@@ -30,6 +31,7 @@ We will create a new class `CustomImageFeature` that extends `EditorJSFeature`.
 For now we will only override the `validate` method.
 
 We will also set the required attributes for cleaning.
+
 ```python
 class CustomImageFeature(EditorJSFeature):
     # These tags are allowed and will not be cleaned by bleach if enabled.
@@ -57,6 +59,7 @@ class CustomImageFeature(EditorJSFeature):
 
 Next we can override the `render_block_data` method.
 This method is used to render the block for display to the user on the frontend.
+
 ```python
     def render_block_data(self, block: EditorJSBlock, context = None) -> EditorJSElement:
         # Context is not guaranteed to be present. This is the request context.
@@ -77,6 +80,7 @@ This method is used to render the block for display to the user on the frontend.
 
 We also provide a way to easily test this feature.
 All registered features are tested automatically if their `get_test_data` method returns data.
+
 ```python
     @classmethod
     def get_test_data(cls):
@@ -98,8 +102,15 @@ The feature will be imported from a CDN provided on the package README.
 
 @hooks.register(REGISTER_HOOK_NAME)
 def register_editorjs_features(features: EditorJSFeatures):
+    # The feature name as you'd like to use in your field/block.
     feature_name = "simple-image"
+
+    # The classname as defined in javascript.
+    # This is accessed with `window.[feature_js_class]`.
+    # In this case; `window.SimpleImage`.
     feature_js_class = "SimpleImage"
+
+    # Register the feature with the editor.
     features.register(
         feature_name,
         CustomImageFeature(
