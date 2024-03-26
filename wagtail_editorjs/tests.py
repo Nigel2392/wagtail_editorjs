@@ -30,7 +30,7 @@ class TestEditorJSFeatures(TestCase):
 
             for data in test_data_list:
                 if hasattr(feature, "render_block_data"):
-                    tpl = feature.render_block_data(data)
+                    tpl = feature.render_block_data(data, None)
                     html.append(tpl)
 
         rendered_1 = render_editorjs_html(

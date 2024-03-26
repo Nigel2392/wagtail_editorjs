@@ -6,6 +6,7 @@ from . import settings
 from .registry import (
     EditorJSElement,
     BaseInlineEditorJSFeature,
+    EditorJSFeature,
     InlineEditorJSFeature,
     EDITOR_JS_FEATURES,
 )
@@ -38,7 +39,7 @@ def render_editorjs_html(features: list[str], data: dict, context=None, clean: b
         if isinstance(feature, BaseInlineEditorJSFeature)
     ]
 
-    html = []
+    blocks: list[tuple[EditorJSFeature, dict, Any]] = []
     for block in data["blocks"]:
 
         feature: str = block["type"]
@@ -48,14 +49,27 @@ def render_editorjs_html(features: list[str], data: dict, context=None, clean: b
         if not feature_mapping:
             continue
 
+        # Get the prefetch data for this block
+        prefetch_data = feature_mapping.get_prefetch_data(block, context)
+        blocks.append((feature_mapping, block, prefetch_data))
+
+    # Prefetch the data
+    prefetch_map: dict[EditorJSFeature, list[tuple[int, dict, Any]]] = defaultdict(list)
+    for i, (feature_mapping, block, prefetch_data) in enumerate(blocks):
+        prefetch_map[feature_mapping].append((i, block, prefetch_data))
+
+    for feature_mapping, data in prefetch_map.items():
+        feature_mapping.prefetch_data(data, context)
+
+        for i, block, prefetch_data in data:
+            blocks[i] = (feature_mapping, block, prefetch_data)
+
+    html = []
+    for feature_mapping, block, prefetch_data in blocks:
+        tunes: dict[str, Any] = block.get("tunes", {})
+
         # Build the actual block.
-        element: EditorJSElement = feature_mapping.render_block_data(block, context)
-
-        # if element.tag != "div":
-        #     new = EditorJSElement("div", [element], attrs=element.attrs)
-        #     element.attrs = {}
-        #     element = new
-
+        element: EditorJSElement = feature_mapping.render_block_data(block, prefetch_data, context)
 
         # Tune the element.
         for tune_name, tune_value in tunes.items():
