@@ -25,7 +25,7 @@ def render_editorjs_html(
         whitelist_attrs: Union[dict, list] = None
     ) -> str:
     """
-        Renders the editorjs widget.
+        Renders the editorjs widget based on the features provided.
     """
 
     
