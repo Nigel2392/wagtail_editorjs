@@ -28,8 +28,6 @@ def render_editorjs_html(
         Renders the editorjs widget based on the features provided.
     """
 
-    
-
     if "blocks" not in data:
         data["blocks"] = []
 

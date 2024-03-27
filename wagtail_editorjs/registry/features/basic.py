@@ -1,4 +1,5 @@
 from typing import Any, Union
+from django import forms
 
 from ..element import EditorJSElement
 from ..value import EditorJSBlock
@@ -27,7 +28,7 @@ class EditorJSFeature(BaseEditorJSFeature):
             return
         
         if "data" not in data:
-            raise ValueError("Invalid data format")
+            raise forms.ValidationError("Invalid data format")
     
     def render_block_data(self, block: EditorJSBlock, context = None) -> "EditorJSElement":
         return EditorJSElement(
