@@ -17,8 +17,8 @@ from .registry import (
     ModelInlineEditorJSFeature,
     EditorJSTune,
     EditorJSBlock,
-    wrap_tag,
     EditorJSElement,
+    wrap_tag,
 )
 
 BYTE_SIZE_STEPS = [_("Bytes"), _("Kilobytes"), _("Megabytes"), _("Gigabytes"), _("Terabytes")]
