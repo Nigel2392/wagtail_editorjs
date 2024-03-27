@@ -1,6 +1,6 @@
 from typing import Any
 from wagtail import hooks
-from django.urls import reverse
+from django.urls import reverse_lazy
 
 from ..hooks import (
     REGISTER_HOOK_NAME,
@@ -23,6 +23,7 @@ from ..features import (
     ImageFeature,
     ImageRowFeature,
     LinkFeature,
+    LinkAutoCompleteFeature,
     DocumentFeature,
     NestedListFeature,
     TableFeature,
@@ -47,9 +48,6 @@ def register_editor_js_features(registry: EditorJSFeatures):
                 "wagtail_editorjs/vendor/editorjs/tools/attaches.js",
                 "wagtail_editorjs/js/tools/attaches.js",
             ],
-            config={
-                "endpoint": reverse("wagtail_editorjs:attaches_upload"),
-            },
         ),
     )
     registry.register(
@@ -189,6 +187,17 @@ def register_editor_js_features(registry: EditorJSFeatures):
                 "wagtail_editorjs/vendor/editorjs/tools/warning.js",
             ],
             inlineToolbar = True,
+        ),
+    )
+    
+    registry.register(
+        "link-autocomplete",
+        LinkAutoCompleteFeature(
+            "link-autocomplete",
+            "LinkAutocomplete",
+            js = [
+                "wagtail_editorjs/vendor/editorjs/tools/link-autocomplete.js",
+            ],
         ),
     )
 

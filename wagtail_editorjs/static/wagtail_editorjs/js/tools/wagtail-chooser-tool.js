@@ -90,7 +90,7 @@ class BaseWagtailChooserTool {
         let selectedText = range.extractContents();
 
         const previousWrapperTag = this.api.selection.findParentTag(this.tag);
-        if (previousWrapperTag) {
+        if (previousWrapperTag || previousWrapperTag && previousWrapperTag.querySelector(this.tag.toLowerCase())) {
             previousWrapperTag.remove();
         }
 

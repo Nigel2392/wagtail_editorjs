@@ -1,9 +1,12 @@
-from typing import Any, Union
+from typing import Any, Union, TYPE_CHECKING
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 from ..value import (
     EditorJSBlock,
 )
+
+if TYPE_CHECKING:
+    from ..feature_registry import EditorJSFeatures
 
 
 class TemplateNotSpecifiedError(Exception):
@@ -65,6 +68,9 @@ class BaseEditorJSFeature:
 
         self.allowed_tags = set(allowed_tags)
         self.allowed_attributes = allowed_attributes
+
+    def on_register(self, registry: "EditorJSFeatures"):
+        pass
 
     def __repr__(self):
         return f"<EditorJSFeature \"{self.tool_name}\">"

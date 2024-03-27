@@ -139,11 +139,13 @@ class ModelInlineEditorJSFeature(InlineEditorJSFeature):
         self.must_have_attrs = self.must_have_attrs | {
             self.id_attr: None,
             f"data-{self.model._meta.model_name}": None,
-            "class": f"wagtail-{self.model._meta.model_name}-link",
         }
 
     @cached_property
     def widget(self):
+        if self.chooser_class is None:
+            return None
+        
         return self.chooser_class()
 
     def get_id(self, item, attrs: dict[str, Any], context: dict[str, Any] = None):
@@ -158,6 +160,9 @@ class ModelInlineEditorJSFeature(InlineEditorJSFeature):
         return config
 
     def render_template(self, context: dict[str, Any] = None):
+        if not self.widget:
+            return super().render_template(context)
+        
         return self.widget.render_html(
             f"editorjs-{self.model._meta.model_name}-chooser-{context['widget']['attrs']['id']}",
             None,
@@ -250,7 +255,7 @@ class ModelInlineEditorJSFeature(InlineEditorJSFeature):
         models = cls.get_test_queryset()[0:5]
         return [
             (
-                f"<a data-id='{model.id}' data-{cls.model._meta.model_name}='True' class='wagtail-{cls.model._meta.model_name}-link'></a>",
+                f"<a data-id='{model.id}' data-{cls.model._meta.model_name}='True'></a>",
                 f"<a href='{cls.get_url(model)}' class='{cls.model._meta.model_name}-link'></a>",
             )
             for model in models

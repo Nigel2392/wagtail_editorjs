@@ -61,6 +61,8 @@ class EditorJSFeatures:
         if isinstance(feature, InlineEditorJSFeature):
             self.inline_features.append(feature)
 
+        feature.on_register(self)
+
 
     def register_tune(self, tune_name: str, tool_name: str = None):
         if tool_name:

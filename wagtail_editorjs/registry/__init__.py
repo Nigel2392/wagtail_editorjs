@@ -6,6 +6,7 @@ from .features import (
     EditorJSFeature,
     EditorJSJavascriptFeature,
     EditorJSTune,
+    FeatureViewMixin,
     InlineEditorJSFeature,
     ModelInlineEditorJSFeature,
     TemplateNotSpecifiedError,

@@ -11,3 +11,6 @@ from .inlines import (
     InlineEditorJSFeature,
     ModelInlineEditorJSFeature,
 )
+from .view import (
+    FeatureViewMixin,
+)
