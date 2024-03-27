@@ -1,5 +1,6 @@
 from typing import Any
 
+from django import forms
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django.utils.safestring import mark_safe
@@ -81,13 +82,13 @@ class NestedListFeature(EditorJSFeature):
 
         items = data["data"].get("items")
         if not items:
-            raise ValueError("Invalid items value")
+            raise forms.ValidationError("Invalid items value")
         
         if "style" not in data["data"]:
-            raise ValueError("Invalid style value")
+            raise forms.ValidationError("Invalid style value")
         
         if data["data"]["style"] not in ["ordered", "unordered"]:
-            raise ValueError("Invalid style value")
+            raise forms.ValidationError("Invalid style value")
     
     def render_block_data(self, block: EditorJSBlock, context = None) -> EditorJSElement:
         element = "ol" if block["data"]["style"] == "ordered" else "ul"
@@ -139,14 +140,14 @@ class CheckListFeature(EditorJSFeature):
         
         items = data["data"].get("items")
         if not items:
-            raise ValueError("Invalid items value")
+            raise forms.ValidationError("Invalid items value")
         
         for item in items:
             if "checked" not in item:
-                raise ValueError("Invalid checked value")
+                raise forms.ValidationError("Invalid checked value")
             
             if "text" not in item:
-                raise ValueError("Invalid text value")
+                raise forms.ValidationError("Invalid text value")
     
     def render_block_data(self, block: EditorJSBlock, context = None) -> EditorJSElement:
         s = []
@@ -184,7 +185,7 @@ class CodeFeature(EditorJSFeature):
         super().validate(data)
 
         if 'code' not in data['data']:
-            raise ValueError('Invalid code value')
+            raise forms.ValidationError('Invalid code value')
     
     def render_block_data(self, block: EditorJSBlock, context = None) -> EditorJSElement:
         return EditorJSElement("code", block["data"]["code"], attrs={"class": "code"})
@@ -217,7 +218,7 @@ class HeaderFeature(EditorJSFeature):
 
         level = data["data"].get("level")
         if level > 6 or level < 1:
-            raise ValueError("Invalid level value")
+            raise forms.ValidationError("Invalid level value")
     
     def render_block_data(self, block: EditorJSBlock, context = None) -> EditorJSElement:
         return EditorJSElement(
@@ -243,7 +244,7 @@ class HTMLFeature(EditorJSFeature):
         super().validate(data)
 
         if "html" not in data["data"]:
-            raise ValueError("Invalid html value")
+            raise forms.ValidationError("Invalid html value")
     
     def render_block_data(self, block: EditorJSBlock, context = None) -> EditorJSElement:
         return EditorJSElement("div", block["data"]["html"], attrs={"class": "html"})
@@ -264,10 +265,10 @@ class WarningFeature(EditorJSFeature):
         super().validate(data)
 
         if "title" not in data["data"]:
-            raise ValueError("Invalid title value")
+            raise forms.ValidationError("Invalid title value")
         
         if "message" not in data["data"]:
-            raise ValueError("Invalid message value")
+            raise forms.ValidationError("Invalid message value")
     
     def render_block_data(self, block: EditorJSBlock, context = None) -> EditorJSElement:
         return EditorJSElement(
@@ -355,7 +356,7 @@ class ImageFeature(EditorJSFeature):
 
         d = data["data"]
         if "imageId" not in d:
-            raise ValueError("Invalid imageId value")
+            raise forms.ValidationError("Invalid imageId value")
             
         
     def render_template(self, context: dict[str, Any] = None):
@@ -479,20 +480,20 @@ class ImageRowFeature(EditorJSFeature):
         super().validate(data)
 
         if "images" not in data["data"]:
-            raise ValueError("Invalid images value")
+            raise forms.ValidationError("Invalid images value")
         
         if not data["data"]["images"]:
-            raise ValueError("Invalid images value")
+            raise forms.ValidationError("Invalid images value")
         
         if "settings" not in data["data"] or data["data"]["settings"] is None:
-            raise ValueError("Invalid settings value")
+            raise forms.ValidationError("Invalid settings value")
         
         for image in data["data"]["images"]:
             if "id" not in image:
-                raise ValueError("Invalid id value")
+                raise forms.ValidationError("Invalid id value")
             
             if "title" not in image:
-                raise ValueError("Invalid title value")
+                raise forms.ValidationError("Invalid title value")
     
     def render_block_data(self, block: EditorJSBlock, context = None) -> EditorJSElement:
         images = block["data"]["images"]
@@ -565,10 +566,10 @@ class TableFeature(EditorJSFeature):
         super().validate(data)
 
         if "content" not in data["data"]:
-            raise ValueError("Invalid content value")
+            raise forms.ValidationError("Invalid content value")
         
         if "withHeadings" not in data["data"]:
-            raise ValueError("Invalid withHeadings value")
+            raise forms.ValidationError("Invalid withHeadings value")
 
     def render_block_data(self, block: EditorJSBlock, context = None) -> EditorJSElement:
         table = []
@@ -636,10 +637,10 @@ class BlockQuoteFeature(EditorJSFeature):
         super().validate(data)
 
         if "text" not in data["data"]:
-            raise ValueError("Invalid text value")
+            raise forms.ValidationError("Invalid text value")
         
         if "caption" not in data["data"]:
-            raise ValueError("Invalid caption value")
+            raise forms.ValidationError("Invalid caption value")
         
     
     def render_block_data(self, block: EditorJSBlock, context = None) -> EditorJSElement:
@@ -684,13 +685,13 @@ class AttachesFeature(EditorJSFeature):
         super().validate(data)
 
         if "file" not in data["data"]:
-            raise ValueError("Invalid file value")
+            raise forms.ValidationError("Invalid file value")
         
         if "id" not in data["data"]["file"] and not data["data"]["file"]["id"] and "url" not in data["data"]["file"]:
-            raise ValueError("Invalid id/url value")
+            raise forms.ValidationError("Invalid id/url value")
         
         if "title" not in data["data"]:
-            raise ValueError("Invalid title value")
+            raise forms.ValidationError("Invalid title value")
         
     def render_block_data(self, block: EditorJSBlock, context = None) -> EditorJSElement:
 
@@ -776,7 +777,7 @@ class AlignmentBlockTune(EditorJSTune):
         super().validate(data)
         alignment = data.get("alignment")
         if alignment not in ["left", "center", "right"]:
-            raise ValueError("Invalid alignment value")
+            raise forms.ValidationError("Invalid alignment value")
         
     def tune_element(self, element: EditorJSElement, tune_value: Any, context = None) -> EditorJSElement:
         element = super().tune_element(element, tune_value, context=context)
@@ -812,7 +813,7 @@ class TextVariantTune(EditorJSTune):
                 "citation",
                 "details",
             ]:
-            raise ValueError("Invalid text variant value")
+            raise forms.ValidationError("Invalid text variant value")
         
     def tune_element(self, element: EditorJSElement, tune_value: Any, context = None) -> EditorJSElement:
         element = super().tune_element(element, tune_value, context=context)
