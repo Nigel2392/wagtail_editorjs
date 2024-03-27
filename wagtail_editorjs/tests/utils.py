@@ -1,5 +1,4 @@
 from django.test import TestCase
-# from django.core.management import call_command
 from wagtail.models import Collection, Page
 from wagtail.images.tests.utils import (
     get_test_image_file,
@@ -16,6 +15,11 @@ Document = get_document_model()
 
 
 class BaseEditorJSTest(TestCase):
+    """
+        Setup test data for EditorJS tests
+        This is so blocks can freely be tested and query the test db
+        without having to worry about setting up the data.
+    """
     def setUp(self) -> None:
         image_funcs = [
             get_test_image_file,

@@ -1,15 +1,14 @@
 from typing import Any
-from django.test import TestCase
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 from bs4 import BeautifulSoup
 
 from .utils import BaseEditorJSTest
-from ..editorjs.element import EditorJSElement
 from ..render import render_editorjs_html
 from ..registry import (
     EditorJSTune,
     EditorJSFeature,
+    EditorJSElement,
     EDITOR_JS_FEATURES,
 )
 

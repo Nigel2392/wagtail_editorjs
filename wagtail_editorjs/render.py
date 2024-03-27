@@ -6,7 +6,6 @@ from . import settings
 from .registry import (
     EditorJSElement,
     InlineEditorJSFeature,
-    InlineEditorJSFeature,
     EDITOR_JS_FEATURES,
 )
 import bleach, bs4

@@ -12,13 +12,13 @@ from wagtail.documents import get_document_model
 
 import bleach
 
-from .utils import wrap_tag
-from ..registry import (
+from .registry import (
     EditorJSFeature,
     ModelInlineEditorJSFeature,
     EditorJSTune,
-    EditorJSElement,
     EditorJSBlock,
+    wrap_tag,
+    EditorJSElement,
 )
 
 BYTE_SIZE_STEPS = [_("Bytes"), _("Kilobytes"), _("Megabytes"), _("Gigabytes"), _("Terabytes")]
@@ -463,12 +463,12 @@ class ImageRowFeature(EditorJSFeature):
         config = super().get_config() or {}
         config.setdefault("config", {})
         config["config"]["imageChooserId"] =\
-            f"editorjs-image-chooser-{context['widget']['attrs']['id']}"
+            f"editorjs-images-chooser-{context['widget']['attrs']['id']}"
         config["config"]["getImageUrl"] = reverse("wagtail_editorjs:image_for_id_fmt")
         return config
     
     def render_template(self, context: dict[str, Any] = None):
-        widget_id = f"editorjs-image-chooser-{context['widget']['attrs']['id']}"
+        widget_id = f"editorjs-images-chooser-{context['widget']['attrs']['id']}"
         return AdminImageChooser().render_html(
             widget_id,
             None,

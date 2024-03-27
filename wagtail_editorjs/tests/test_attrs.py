@@ -1,6 +1,6 @@
 from django.test import TestCase
-from ..editorjs.element import EditorJSElement
-from ..editorjs.utils import (
+from ..registry.element.element import EditorJSElement
+from ..registry.element.utils import (
     wrap_tag,
     _make_attr,
     add_attributes,
@@ -21,7 +21,7 @@ class TestEditorJSElement(TestCase):
             }
         )
 
-        self.assertEqual(
+        self.assertHTMLEqual(
             str(element),
             '<div class="test-class" id="test-id">Hello, World!</div>'
         )
@@ -37,7 +37,7 @@ class TestEditorJSElement(TestCase):
             "data-test": "test-data",
         })
 
-        self.assertEqual(
+        self.assertHTMLEqual(
             str(element),
             '<div class="test-class" data-test="test-data">Hello, World!</div>'
         )
@@ -72,7 +72,7 @@ class TestEditorJSElement(TestCase):
             "Hello, World!"
         )
     
-        self.assertEqual(
+        self.assertHTMLEqual(
             tag,
             '<div class="test-class" id="test-id">Hello, World!</div>'
         )

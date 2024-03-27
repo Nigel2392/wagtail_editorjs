@@ -9,14 +9,16 @@ from .forms import (
 
 
 class EditorJSBlock(blocks.FieldBlock):
-    def __init__(self, features=None, **kwargs):
+    def __init__(self, features: list[str] = None, tools_config: dict = None, **kwargs):
         self._features = features
+        self.tools_config = tools_config or {}
         super().__init__(**kwargs)
 
     @cached_property
     def field(self):
         return EditorJSFormField(
             features=self.features,
+            tools_config=self.tools_config,
             label=getattr(self.meta, 'label', None),
             required=getattr(self.meta, 'required', True),
             help_text=getattr(self.meta, 'help_text', ''),

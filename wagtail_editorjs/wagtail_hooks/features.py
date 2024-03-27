@@ -1,3 +1,4 @@
+from typing import Any
 from wagtail import hooks
 from django.urls import reverse
 
@@ -10,7 +11,7 @@ from ..registry import (
     EditorJSFeatures,
     EditorJSJavascriptFeature,
 )
-from ..editorjs.features import (
+from ..features import (
     AttachesFeature,
     BlockQuoteFeature,
     CheckListFeature,
@@ -307,3 +308,44 @@ def register_editor_js_features(registry: EditorJSFeatures):
     registry.register_tune("text-alignment-tune")
     registry.register_tune("text-variant-tune")
 
+
+# 
+# from django.contrib.auth import get_user_model
+# from wagtail.snippets.widgets import AdminSnippetChooser
+# from wagtail_editorjs.hooks import REGISTER_HOOK_NAME
+# from wagtail_editorjs.registry import (
+#     EditorJSFeatures,
+#     ModelInlineEditorJSFeature,
+# )
+# 
+# 
+# class InlineUserChooserFeature(ModelInlineEditorJSFeature):
+#     model = get_user_model()
+#     chooser_class = AdminSnippetChooser
+#     must_have_attrs = {
+#         "data-email": None,
+#     }
+# 
+#     @classmethod
+#     def get_url(cls, instance):
+#         return f"mailto:{instance.email}"
+#     
+#     @classmethod
+#     def get_full_url(cls, instance, request):
+#         return cls.get_url(instance)
+# 
+# 
+# @hooks.register(REGISTER_HOOK_NAME)
+# def register_editor_js_features(registry: EditorJSFeatures):
+#     registry.register(
+#         "inline-user",
+#         InlineUserChooserFeature(
+#             "inline-user",
+#             "InlineUserTool",
+#             js=[
+#                 "wagtail_editorjs/js/tools/inline-user.js",
+#             ],
+#             config={},
+#         ),
+#     )
+# 

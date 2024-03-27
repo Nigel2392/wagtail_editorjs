@@ -104,14 +104,16 @@ class EditorJSWidget(widgets.Input):
 
 
 class EditorJSFormField(formfields.JSONField):
-    def __init__(self, features: list[str] = None, *args, **kwargs):
+    def __init__(self, features: list[str] = None, tools_config: dict = None, *args, **kwargs):
         self.features = get_features(features)
+        self.tools_config = tools_config or {}
         super().__init__(*args, **kwargs)
 
     @cached_property
     def widget(self):
         return EditorJSWidget(
             features=self.features,
+            tools_config=self.tools_config,
         )
     
     def to_python(self, value):

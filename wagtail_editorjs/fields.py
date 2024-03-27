@@ -8,10 +8,12 @@ from .registry import EDITOR_JS_FEATURES, get_features
 
 class EditorJSField(models.JSONField):
     def __init__(self,
-            features = None,
+            features: list[str] = None,
+            tools_config: dict  = None,
             *args, **kwargs
         ):
         self._features = features
+        self.tools_config = tools_config or {}
         super().__init__(*args, **kwargs)
 
     @cached_property
@@ -21,6 +23,7 @@ class EditorJSField(models.JSONField):
     def deconstruct(self):
         name, path, args, kwargs = super().deconstruct()
         kwargs['features'] = self.features
+        kwargs['tools_config'] = self.tools_config
         return name, path, args, kwargs
     
     def from_db_value(self, value: Any, expression, connection) -> Any:
@@ -41,5 +44,6 @@ class EditorJSField(models.JSONField):
         return super().formfield(**{
             'form_class': EditorJSFormField,
             'features': self.features,
+            'tools_config': self.tools_config,
             **kwargs
         })
