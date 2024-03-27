@@ -1,0 +1,4 @@
+Django>=4.2
+Wagtail>=5.0
+beautifulsoup4>=4.9.3
+bleach>=6.0.0
