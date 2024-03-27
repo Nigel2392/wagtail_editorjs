@@ -48,6 +48,10 @@ def parse_list(items: list[dict[str, Any]], element: str, depth = 0) -> NestedLi
 class NestedListFeature(EditorJSFeature):
     allowed_tags = ["ul", "ol", "li"]
     allowed_attributes = ["class", "style"]
+    klass="NestedList"
+    js = [
+        "wagtail_editorjs/vendor/editorjs/tools/nested-list.js",
+    ]
 
     def validate(self, data: Any):
         super().validate(data)
@@ -106,6 +110,10 @@ class NestedListFeature(EditorJSFeature):
 class CheckListFeature(EditorJSFeature):
     allowed_tags = ["ul", "li"]
     allowed_attributes = ["class"]
+    klass="Checklist"
+    js=[
+        "wagtail_editorjs/vendor/editorjs/tools/checklist.js",
+    ]
 
     def validate(self, data: Any):
         super().validate(data)

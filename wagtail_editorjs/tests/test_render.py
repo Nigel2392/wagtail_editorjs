@@ -17,6 +17,7 @@ class TestEditorJSTune(EditorJSTune):
     allowed_attributes = {
         "*": ["data-testing-id"],
     }
+    klass = 1
 
     def tune_element(self, element: EditorJSElement, tune_value: Any, context=None) -> EditorJSElement:
         element.attrs["data-testing-id"] = tune_value

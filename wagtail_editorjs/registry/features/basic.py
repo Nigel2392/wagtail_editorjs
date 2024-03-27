@@ -7,7 +7,8 @@ from .base import BaseEditorJSFeature
 
 class EditorJSJavascriptFeature(BaseEditorJSFeature):
     def __init__(self, tool_name: str, js: Union[str, list[str]] = None, css: Union[str, list[str]] = None, weight: int = 0, allowed_tags: list[str] = None, allowed_attributes: dict[str, list[str]] = None):
-        super().__init__(tool_name, None, js, css, None, {}, weight=weight, allowed_tags=allowed_tags, allowed_attributes=allowed_attributes)
+        # 1 for klass - unused for this type of feature.
+        super().__init__(tool_name, 1, js, css, None, {}, weight=weight, allowed_tags=allowed_tags, allowed_attributes=allowed_attributes)
 
     def get_config(self, context: dict[str, Any] = None) -> dict:
         return None

@@ -53,6 +53,11 @@ class AttachesFeature(FeatureViewMixin, EditorJSFeature):
         "svg": ["xmlns", "width", "height", "fill", "class", "viewBox"],
         "path": ["d"],
     }
+    klass="CSRFAttachesTool"
+    js=[
+        "wagtail_editorjs/vendor/editorjs/tools/attaches.js",
+        "wagtail_editorjs/js/tools/attaches.js",
+    ],
 
 
     def get_config(self, context: dict[str, Any] = None) -> dict:

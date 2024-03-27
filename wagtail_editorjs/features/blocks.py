@@ -13,10 +13,13 @@ from ..registry import (
 
 
 
-
 class CodeFeature(EditorJSFeature):
     allowed_tags = ["code"]
     allowed_attributes = ["class"]
+    klass="CodeTool"
+    js=[
+        "wagtail_editorjs/vendor/editorjs/tools/code.js",
+    ]
 
     def validate(self, data: Any):
         super().validate(data)
@@ -39,6 +42,10 @@ class CodeFeature(EditorJSFeature):
 class DelimiterFeature(EditorJSFeature):
     allowed_tags = ["hr"]
     allowed_attributes = ["class"]
+    klass="Delimiter"
+    js = [
+        "wagtail_editorjs/vendor/editorjs/tools/delimiter.js",
+    ]
 
     def render_block_data(self, block: EditorJSBlock, context = None) -> EditorJSElement:
         return EditorJSElement("hr", close_tag=False, attrs={"class": "delimiter"})
@@ -51,6 +58,10 @@ class DelimiterFeature(EditorJSFeature):
 class HeaderFeature(EditorJSFeature):
     allowed_tags = ["h1", "h2", "h3", "h4", "h5", "h6"]
     allowed_attributes = ["class"]
+    klass="Header"
+    js=[
+        "wagtail_editorjs/vendor/editorjs/tools/header.js",
+    ]
 
     def validate(self, data: Any):
         super().validate(data)
@@ -78,6 +89,10 @@ class HeaderFeature(EditorJSFeature):
 class HTMLFeature(EditorJSFeature):
     allowed_tags = bleach.ALLOWED_TAGS
     allowed_attributes = bleach.ALLOWED_ATTRIBUTES
+    klass="RawTool"
+    js = [
+        "wagtail_editorjs/vendor/editorjs/tools/raw.js",
+    ]
 
     def validate(self, data: Any):
         super().validate(data)
@@ -92,13 +107,17 @@ class HTMLFeature(EditorJSFeature):
     def get_test_data(cls):
         return [
             {
-                "html": "<p>This is an HTML block.</p>",
+                "html": "<p>This is a HTML block.</p>",
             }
         ]
 
 class WarningFeature(EditorJSFeature):
     allowed_tags = ["div", "h2", "p"]
     allowed_attributes = ["class"]
+    klass="Warning"
+    js = [
+        "wagtail_editorjs/vendor/editorjs/tools/warning.js",
+    ]
 
     def validate(self, data: Any):
         super().validate(data)
@@ -140,6 +159,10 @@ class WarningFeature(EditorJSFeature):
 class TableFeature(EditorJSFeature):
     allowed_tags = ["table", "tr", "th", "td", "thead", "tbody", "tfoot"]
     allowed_attributes = ["class"]
+    klass="Table"
+    js = [
+        "wagtail_editorjs/vendor/editorjs/tools/table.js",
+    ]
 
     def validate(self, data: Any):
         super().validate(data)
@@ -212,7 +235,11 @@ class TableFeature(EditorJSFeature):
 class BlockQuoteFeature(EditorJSFeature):
     allowed_tags = ["blockquote", "footer"]
     allowed_attributes = ["class"]
-    
+    klass="Quote"
+    js = [
+        "wagtail_editorjs/vendor/editorjs/tools/quote.js",
+    ]
+
     def validate(self, data: Any):
         super().validate(data)
 

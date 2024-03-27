@@ -71,6 +71,10 @@ class ImageFeature(BaseImageFeature):
         "figure": ["class", "style"],
         "figcaption": ["class"],
     }
+    klass = "WagtailImageTool"
+    js = [
+        "wagtail_editorjs/js/tools/wagtail-image.js",
+    ]
 
     def get_config(self, context: dict[str, Any]):
         config = super().get_config() or {}
@@ -188,6 +192,10 @@ class ImageFeature(BaseImageFeature):
 class ImageRowFeature(BaseImageFeature):
     allowed_tags = ["div", "img"]
     allowed_attributes = ["class", "style"]
+    klass = "ImageRowTool"
+    js = [
+        "wagtail_editorjs/js/tools/wagtail-image-row.js",
+    ]
 
     def get_config(self, context: dict[str, Any]):
         config = super().get_config() or {}

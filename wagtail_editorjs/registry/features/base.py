@@ -16,11 +16,14 @@ class TemplateNotSpecifiedError(Exception):
 class BaseEditorJSFeature:
     allowed_tags: list[str] = None
     allowed_attributes: dict[str, list[str]] = None
+    klass: str = None
+    js: list[str] = None
+    css: list[str] = None
     # cleaner_funcs: dict[str, dict[str, Callable[[str], bool]]] = {}
     
     def __init__(self,
             tool_name: str,
-            klass: str,
+            klass: str = None,
             js: Union[str, list[str]] = None,
             css: Union[str, list[str]] = None,
             include_template: str = None,
@@ -30,11 +33,26 @@ class BaseEditorJSFeature:
             allowed_attributes: dict[str, list[str]] = None,
             **kwargs
         ):
+
+        css = css or []
+        js = js or []
+
+        if self.css:
+            css.extend(self.css)
+
+        if self.js:
+            js.extend(self.js)
+
+        if not klass and not self.klass:
+            raise ValueError("klass must be provided")
+        
+        if not klass:
+            klass = self.klass
         
         self.tool_name = tool_name
         self.klass = klass
-        self.js = js or []
-        self.css = css or []
+        self.js = js
+        self.css = css
         self.config = config or dict()
         self.kwargs = kwargs
         self.weight = weight

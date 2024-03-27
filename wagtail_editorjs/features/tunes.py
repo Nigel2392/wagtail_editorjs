@@ -12,7 +12,11 @@ class AlignmentBlockTune(EditorJSTune):
     allowed_attributes = {
         "*": ["class"],
     }
-     
+    klass = "AlignmentBlockTune"
+    js = [
+        "wagtail_editorjs/vendor/editorjs/tools/text-alignment.js",
+    ]
+
     def validate(self, data: Any):
         super().validate(data)
         alignment = data.get("alignment")
@@ -28,6 +32,10 @@ class AlignmentBlockTune(EditorJSTune):
 class TextVariantTune(EditorJSTune):
     allowed_tags = ["div"]
     allowed_attributes = ["class"]
+    klass = "TextVariantTune"
+    js = [
+        "wagtail_editorjs/vendor/editorjs/tools/text-variant-tune.js",
+    ]
 
     def validate(self, data: Any):
         super().validate(data)

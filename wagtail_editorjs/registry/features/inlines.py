@@ -3,7 +3,7 @@ from django.utils.functional import cached_property
 
 from .base import BaseEditorJSFeature
 
-import re, bs4
+import bs4
 
 
 class InlineEditorJSFeature(BaseEditorJSFeature):
@@ -13,8 +13,8 @@ class InlineEditorJSFeature(BaseEditorJSFeature):
     def __init__(
         self,
         tool_name: str,
-        klass: str,
         tag_name: str,
+        klass: str = None,
         must_have_attrs: dict = None,
         can_have_attrs: dict = None,
         js: Union[str, list[str]] = None,

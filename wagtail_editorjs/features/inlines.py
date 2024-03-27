@@ -41,7 +41,13 @@ class LinkFeature(BasePageLinkMixin, ModelInlineEditorJSFeature):
     }
     chooser_class = AdminPageChooser
     model = Page
-    
+
+    klass="WagtailLinkTool"
+    js = [
+        "wagtail_editorjs/js/tools/wagtail-chooser-tool.js",
+        "wagtail_editorjs/js/tools/wagtail-link.js",
+    ]
+
     @classmethod
     def get_test_data(cls):
         models = cls.get_test_queryset()[0:5]
@@ -68,6 +74,10 @@ class LinkAutoCompleteFeature(FeatureViewMixin, BasePageLinkMixin, ModelInlineEd
     }
     chooser_class = AdminPageChooser
     model = Page
+    klass="LinkAutocomplete"
+    js = [
+        "wagtail_editorjs/vendor/editorjs/tools/link-autocomplete.js",
+    ]
 
     def get_config(self, context: dict[str, Any]):
         config = super(ModelInlineEditorJSFeature, self).get_config(context)
@@ -139,6 +149,11 @@ class DocumentFeature(ModelInlineEditorJSFeature):
     allowed_attributes = ["class", "href", "data-id"]
     chooser_class = AdminDocumentChooser
     model = Document
+    klass = "WagtailDocumentTool"
+    js = [
+        "wagtail_editorjs/js/tools/wagtail-chooser-tool.js",
+        "wagtail_editorjs/js/tools/wagtail-document.js",
+    ]
 
     @classmethod
     def get_url(cls, instance):
