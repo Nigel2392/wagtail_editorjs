@@ -61,6 +61,11 @@ class InlineEditorJSFeature(BaseEditorJSFeature):
         pass
 
     def filter(self, item):
+        """
+        Filter function for the bs4 find_all method.
+        Extracts the tag name and attributes from the item and compares them to the must_have_attrs.
+        If the item attributes matches the must_have_attrs the element is what we need.
+        """
         if item.name != self.tag_name:
             return False
 

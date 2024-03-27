@@ -57,14 +57,26 @@ class EditorJSFeatures:
 
 
     def register(self, tool_name: str, feature: EditorJSFeature):
+        """
+            Register a feature with the EditorJS editor.
+            After registering it; you can easily use this by
+            providing the `tool_name` into `features` for widgets and fields.
+        """
         self.features[tool_name] = feature
         if isinstance(feature, InlineEditorJSFeature):
             self.inline_features.append(feature)
 
+        # Callback to the feature in case it needs to do something
+        # after being registered. (like registering admin urls.)
         feature.on_register(self)
 
 
     def register_tune(self, tune_name: str, tool_name: str = None):
+        """
+            Register a tune (BY NAME) for a tool.
+            This tune will be made available to only that tool (unless otherwise specified)
+            If not providing a `tool_name`; the tune will be available to all tools.
+        """
         if tool_name:
             self.tunes_for_tools[tool_name].append(tune_name)
         else:
@@ -72,11 +84,18 @@ class EditorJSFeatures:
 
 
     def register_config(self, tool_name: str, config: dict):
+        """
+            Register or override any additional configuration for a tool.
+        """
         self._look_for_features()
         self.features[tool_name].config.update(config)
 
 
     def build_config(self, tools: list[str], context: dict[str, Any] = None):
+        """
+            Builds out the configuration for the EditorJS widget.
+            This config is passed into the editorjs javascript side.
+        """
         editorjs_config = {}
         editorjs_config_tools = {}
         self._look_for_features()
@@ -148,6 +167,7 @@ class EditorJSFeatures:
     def prepare_value(self, tools: list[str], data: dict):
         """
             Filters out unknown features and tunes.
+            Return the value back to native format.
         """
         self._look_for_features()
         block_list = data.get("blocks", [])
@@ -186,9 +206,6 @@ class EditorJSFeatures:
                 od[value.tool_name] = value
         
         return od
-    
-    def update_config(self, tool: str, config: dict):
-        self.features[tool].config.update(config)
 
     def validate_for_tools(self, tools: list[str], data: dict):
         """

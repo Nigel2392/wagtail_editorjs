@@ -88,6 +88,11 @@ class BaseEditorJSFeature:
         self.allowed_attributes = allowed_attributes
 
     def on_register(self, registry: "EditorJSFeatures"):
+        """
+            Called when the feature is registered.
+            This can be used to say; register URLs
+            required for this feature to work.
+        """
         pass
 
     def __repr__(self):
@@ -95,12 +100,25 @@ class BaseEditorJSFeature:
     
     @classmethod
     def get_test_data(cls):
+        """
+            Returns test data for the feature.
+            This is so it can easily be integrated with our tests.
+            Any extra testing you deem necessary should be done in
+            separate tests.
+        """
         return []
 
     def get_template_context(self, context: dict[str, Any] = None) -> dict:
+        """
+            Returns the context for the template. (if any template is provided)
+        """
         return context
     
     def render_template(self, context: dict[str, Any] = None):
+        """
+            Renders a template inside of the widget container.
+            This is useful for things like the image feature.
+        """
         if self.include_template and hasattr(self.include_template, "render"):
             return self.include_template.render(self.get_template_context(context))
         elif self.include_template:
@@ -110,6 +128,11 @@ class BaseEditorJSFeature:
         raise TemplateNotSpecifiedError("Template not specified for this feature")
     
     def get_config(self, context: dict[str, Any] = None) -> dict:
+        """
+            Returns the config for the feature.
+            This is what will be passed to javascript.
+            The `class` is extracted from window[`class`].
+        """
         config = {
             "class": self.klass,
         }
@@ -123,17 +146,32 @@ class BaseEditorJSFeature:
         return config
 
     def get_js(self):
+        """
+            Return any javascript files required for this feature to work.
+        """
         if isinstance(self.js, str):
             return [self.js]
         return self.js
     
     def get_css(self):
+        """
+            Return any css files required for this feature to work.
+        """
         if isinstance(self.css, str):
             return [self.css]
         return self.css
     
     def validate(self, data: Any):
+        """
+            Validate any data coming from editorJS
+            for completeness and correctness.
+        """
         pass
 
     def create_block(self, tools: list[str], data: dict) -> EditorJSBlock:
+        """
+            Create a block from the data.
+            This block is the value that the developer will work with.
+            It is a subclass of `dict`.
+        """
         return EditorJSBlock(data, tools)

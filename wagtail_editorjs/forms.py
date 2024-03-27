@@ -18,6 +18,14 @@ from .registry import (
 
 
 class EditorJSWidget(widgets.Input):
+    """
+        A widget which renders the EditorJS editor.
+
+        All features are allowed to register CSS and JS files.
+
+        They can also optionally include sub-templates
+        inside of the widget container.
+    """
     template_name = 'wagtail_editorjs/widgets/editorjs.html'
     accepts_features = True
     input_type = 'hidden'
