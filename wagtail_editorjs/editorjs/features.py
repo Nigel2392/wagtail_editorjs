@@ -747,14 +747,14 @@ class AttachesFeature(EditorJSFeature):
     
     @classmethod
     def get_test_data(cls):
-        # instance = Document.objects.first()
+        instance = Document.objects.first()
         return [
-            # {
-            #     "file": {
-            #         "id": instance.pk,
-            #     },
-            #     "title": "Document",
-            # },
+            {
+                "file": {
+                    "id": instance.pk,
+                },
+                "title": "Document",
+            },
         ]
     
 # def clean_alignment_class(value):

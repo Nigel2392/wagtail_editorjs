@@ -10,7 +10,6 @@ from ..render import render_editorjs_html
 from ..registry import (
     EditorJSTune,
     EditorJSFeature,
-    InlineEditorJSFeature,
     EDITOR_JS_FEATURES,
 )
 
