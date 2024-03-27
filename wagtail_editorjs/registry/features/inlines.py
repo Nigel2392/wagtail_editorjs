@@ -10,23 +10,35 @@ class InlineEditorJSFeature(BaseEditorJSFeature):
     must_have_attrs = None
     can_have_attrs = None
 
-    def __init__(self,
-            tool_name: str,
-            klass: str,
-            tag_name: str,
-            must_have_attrs: dict = None,
-            can_have_attrs: dict = None,
-            js: Union[str, list[str]] = None,
-            css: Union[str, list[str]] = None,
-            include_template: str = None,
-            config: dict = None,
-            weight: int = 0,
-            allowed_tags: list[str] = None,
-            allowed_attributes: dict[str, list[str]] = None,
-            **kwargs
-        ):
-        super().__init__(tool_name, klass, js, css, include_template, config, weight=weight, allowed_tags=allowed_tags, allowed_attributes=allowed_attributes, **kwargs)
-        
+    def __init__(
+        self,
+        tool_name: str,
+        klass: str,
+        tag_name: str,
+        must_have_attrs: dict = None,
+        can_have_attrs: dict = None,
+        js: Union[str, list[str]] = None,
+        css: Union[str, list[str]] = None,
+        include_template: str = None,
+        config: dict = None,
+        weight: int = 0,
+        allowed_tags: list[str] = None,
+        allowed_attributes: dict[str, list[str]] = None,
+        **kwargs,
+    ):
+        super().__init__(
+            tool_name,
+            klass,
+            js,
+            css,
+            include_template,
+            config,
+            weight=weight,
+            allowed_tags=allowed_tags,
+            allowed_attributes=allowed_attributes,
+            **kwargs,
+        )
+
         must_have_attrs = must_have_attrs or {}
         can_have_attrs = can_have_attrs or {}
 
@@ -35,34 +47,23 @@ class InlineEditorJSFeature(BaseEditorJSFeature):
 
         if self.can_have_attrs:
             can_have_attrs.update(self.can_have_attrs)
-        
+
         self.tag_name = tag_name
         self.must_have_attrs = must_have_attrs
         self.can_have_attrs = can_have_attrs
 
-
     def build_elements(self, inline_data: list, context: dict[str, Any] = None) -> list:
         """
-            Builds the elements for the inline data.
+        Builds the elements for the inline data.
 
-            See the LinkFeature class for an example.
+        See the LinkFeature class for an example.
         """
         pass
-    
-    @cached_property
-    def might_contain_tag_re(self):
-        # <([a-z]+)(?![^>]*\/>)[^>]*>
-        return re.compile(rf"<({self.tag_name}+)(?![^>]*\/>)[^>]*>", re.IGNORECASE)
-
-    def might_contain_tag(self, content: str):
-        match = self.might_contain_tag_re.search(content)
-        return match is not None
-
 
     def filter(self, item):
         if item.name != self.tag_name:
             return False
-        
+
         for key, value in self.must_have_attrs.items():
             if not value:
                 if not item.has_attr(key):
@@ -78,27 +79,26 @@ class InlineEditorJSFeature(BaseEditorJSFeature):
                         return False
                 else:
                     return False
-            
-        return True
-    
-    def parse_inline_data(self, soup: bs4.BeautifulSoup, context = None):
-        """
-            Finds inline elements by the must_have_attrs and can_have_attrs.
-            Designed to be database-efficient; allowing for gathering of all data before
-            making a database request.
 
-            I.E. For a link; this would gather all page ID's and fetch them in a single query.
+        return True
+
+    def parse_inline_data(self, soup: bs4.BeautifulSoup, context=None):
         """
-        
+        Finds inline elements by the must_have_attrs and can_have_attrs.
+        Designed to be database-efficient; allowing for gathering of all data before
+        making a database request.
+
+        I.E. For a link; this would gather all page ID's and fetch them in a single query.
+        """
 
         matches: dict[Any, dict[str, Any]] = {}
         elements = soup.find_all(self.filter)
         if not elements:
             return None
-        
+
         for item in elements:
             matches[item] = {}
-            
+
             for key in self.must_have_attrs.keys():
                 matches[item][key] = item.get(key)
 
@@ -115,17 +115,18 @@ class InlineEditorJSFeature(BaseEditorJSFeature):
     @classmethod
     def get_test_data(cls) -> list[tuple[str, str]]:
         """
-            Returns a list of test data.
+        Returns a list of test data.
 
-            The test data should be a list of tuples.
+        The test data should be a list of tuples.
 
-            The first item in the tuple is the raw HTML tag.
-            The second item is the expected output.
+        The first item in the tuple is the raw HTML tag.
+        The second item is the expected output.
 
-            The raw HTML tag(s) will be randomly appended into a soup.
-            We will use assertQueries(1) to ensure any database queries are kept to a minimum.
+        The raw HTML tag(s) will be randomly appended into a soup.
+        We will use assertQueries(1) to ensure any database queries are kept to a minimum.
         """
         return []
+
 
 class ModelInlineEditorJSFeature(InlineEditorJSFeature):
     model = None
@@ -138,41 +139,40 @@ class ModelInlineEditorJSFeature(InlineEditorJSFeature):
         self.must_have_attrs = self.must_have_attrs | {
             self.id_attr: None,
             f"data-{self.model._meta.model_name}": None,
-            "class": f"wagtail-{self.model._meta.model_name}-link"
+            "class": f"wagtail-{self.model._meta.model_name}-link",
         }
-
 
     @cached_property
     def widget(self):
         return self.chooser_class()
 
-
     def get_id(self, item, attrs: dict[str, Any], context: dict[str, Any] = None):
         return int(attrs[self.id_attr])
-
 
     def get_config(self, context: dict[str, Any]):
         config = super().get_config() or {}
         config.setdefault("config", {})
-        config["config"]["chooserId"] =\
-            f"editorjs-{self.model._meta.model_name}-chooser-{context['widget']['attrs']['id']}"
+        config["config"][
+            "chooserId"
+        ] = f"editorjs-{self.model._meta.model_name}-chooser-{context['widget']['attrs']['id']}"
         return config
-
 
     def render_template(self, context: dict[str, Any] = None):
         return self.widget.render_html(
             f"editorjs-{self.model._meta.model_name}-chooser-{context['widget']['attrs']['id']}",
             None,
-            {"id": f"editorjs-{self.model._meta.model_name}-chooser-{context['widget']['attrs']['id']}"}
+            {
+                "id": f"editorjs-{self.model._meta.model_name}-chooser-{context['widget']['attrs']['id']}"
+            },
         )
 
     def build_element(self, item, obj, context: dict[str, Any] = None):
         """
-            Build the element from the object.
+        Build the element from the object.
 
-            item:    bs4.element.Tag
-            obj:     Model
-            context: RequestContext | None
+        item:    bs4.element.Tag
+        obj:     Model
+        context: RequestContext | None
         """
         # delete all attributes
         for key in list(item.attrs.keys()):
@@ -186,20 +186,18 @@ class ModelInlineEditorJSFeature(InlineEditorJSFeature):
             item["href"] = self.get_url(obj)
         item["class"] = f"{self.model._meta.model_name}-link"
 
-    
     @classmethod
     def get_url(cls, instance):
         return instance.url
-    
+
     @classmethod
     def get_full_url(cls, instance, request):
         return request.build_absolute_uri(cls.get_url(instance))
 
-
     def build_elements(self, inline_data: list, context: dict[str, Any] = None) -> list:
         """
-            Process the bulk data; fetch all pages in one go
-            and build the elements.
+        Process the bulk data; fetch all pages in one go
+        and build the elements.
         """
         super().build_elements(inline_data, context=context)
         ids = []
@@ -215,14 +213,14 @@ class ModelInlineEditorJSFeature(InlineEditorJSFeature):
             # element_soups.append((soup, element))
 
             # Item is bs4 tag, attrs are must_have_attrs
-            
+
             id = self.get_id(item, data, context)
             ids.append((item, id))
 
             # delete all attributes
             for key in list(item.attrs.keys()):
                 del item[key]
-        
+
         # Fetch all objects
         objects = self.model.objects.in_bulk([id for item, id in ids])
         for item, id in ids:
@@ -230,28 +228,30 @@ class ModelInlineEditorJSFeature(InlineEditorJSFeature):
 
     def get_css(self):
         return self.widget.media._css.get("all", []) + super().get_css()
-    
+
     def get_js(self):
         return (self.widget.media._js or []) + super().get_js()
-    
+
     @classmethod
     def get_test_queryset(cls):
         return cls.model.objects.all()
 
     @classmethod
     def get_test_data(cls):
-
+        # This test only works for the default build_element method.
+        # Any extra attributes will make this test fail otherwise.
         if cls.build_element is not ModelInlineEditorJSFeature.build_element:
             raise ValueError(
                 "You must implement the get_test_data method for your ModelInlineEditorJSFeature"
                 "if you override the build_element method."
             )
 
+        # Limit test QS to 5.
         models = cls.get_test_queryset()[0:5]
         return [
             (
                 f"<a data-id='{model.id}' data-{cls.model._meta.model_name}='True' class='wagtail-{cls.model._meta.model_name}-link'></a>",
-                f"<a href='{cls.get_url(model)}' class='{cls.model._meta.model_name}-link'></a>"
+                f"<a href='{cls.get_url(model)}' class='{cls.model._meta.model_name}-link'></a>",
             )
             for model in models
         ]

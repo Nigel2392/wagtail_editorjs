@@ -314,6 +314,7 @@ class LinkFeature(ModelInlineEditorJSFeature):
     
     @classmethod
     def get_test_queryset(cls):
+        # Filter depth gt1; otherwise get_url will return None.
         return super().get_test_queryset().filter(depth__gt=1)
     
    #  def __init__(self, *args, **kwargs):
