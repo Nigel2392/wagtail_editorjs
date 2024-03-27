@@ -10,6 +10,12 @@ from .attrs import (
 
 
 def make_attrs(attrs: dict[str, Any]) -> str:
+
+    attrs = {
+        key: _make_attr(value)
+        for key, value in attrs.items()
+    }
+
     return " ".join([f'{key}="{value}"' for key, value in attrs.items()])
 
 

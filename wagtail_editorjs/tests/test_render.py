@@ -79,7 +79,20 @@ class TestEditorJSFeatures(BaseEditorJSTest):
         soup1 = BeautifulSoup(rendered_1, "html.parser")
         soup2 = BeautifulSoup(rendered_2, "html.parser")
 
-        self.assertHTMLEqual(soup1.decode(False), soup2.decode(False))
+        d1 = soup1.decode(False)
+        d2 = soup2.decode(False)
+        self.assertHTMLEqual(
+            d1, d2,
+            msg=(
+                "The rendered HTML does not match the expected output.\n"
+                "This might be due to a change in the rendering process.\n\n"
+                "Expected: {expected}\n\n"
+                "Got: {got}" % {
+                    "expected": d1,
+                    "got": d2,
+                }
+            )
+        )
 
     def test_cleaned_editorjs_features(self):
 
@@ -120,12 +133,32 @@ class TestEditorJSFeatures(BaseEditorJSTest):
         for data in test_data:
             block = soup.find(attrs={"data-testing-id": data["tunes"]["test_tune_feature"]})
 
+            if not block:
+                self.fail(
+                    f"Block with id {data['tunes']['test_tune_feature']} not found.\n"
+                    "The tune might not have been properly applied. Check the test data.\n\n"
+                    f"Test data: {data}\n\n"
+                    f"Soup: {soup}"
+                )
+
             feature = EDITOR_JS_FEATURES[data["type"]]
             element = feature.render_block_data(data)
             element = self.tune.tune_element(element, data["tunes"]["test_tune_feature"])
 
             soup_element = BeautifulSoup(str(element), "html.parser")
 
-            self.assertHTMLEqual(str(block).replace("\n", "").strip(), str(soup_element).replace("\n", "").strip())
+            self.assertHTMLEqual(
+                str(block).replace("\n", "").strip(), str(soup_element).replace("\n", "").strip(),
+                msg=(
+                    "Block with id {feature} does not match the expected output.\n"
+                    "Something has gone wrong with the cleaning process.\n\n"
+                    "Expected: {expected}\n\n"
+                    "Got: {got}" % {
+                        "feature": data['tunes']['test_tune_feature'],
+                        "expected": str(soup_element).replace('\n', '').strip(),
+                        "got": str(block).replace('\n', '').strip(),
+                    }
+                )
+            )
 
 

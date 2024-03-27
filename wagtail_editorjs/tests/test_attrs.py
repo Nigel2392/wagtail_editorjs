@@ -77,4 +77,23 @@ class TestEditorJSElement(TestCase):
             '<div class="test-class" id="test-id">Hello, World!</div>'
         )
     
+    def test_wrap_tag_styles(self):
+        tag = wrap_tag(
+            "div",
+            {
+                "id": "test-id",
+                "class": ["test-class", "test-class-2"],
+                "style": {
+                    "color": "red",
+                    "background-color": "blue",
+                }
+            },
+            "Hello, World!"
+        )
+
+        self.assertHTMLEqual(
+            tag,
+            '<div id="test-id" class="test-class test-class-2" style="color: red;background-color: blue">Hello, World!</div>'
+        )
+
     

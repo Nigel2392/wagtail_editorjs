@@ -73,5 +73,5 @@ class TestEditorJSInline(BaseEditorJSTest):
             for i, output in enumerate(outputs):
                 self.assertInHTML(
                     output,
-                    html
+                    html,
                 )
