@@ -7,5 +7,5 @@ Includes support for custom blocks, inline tools, and more.
 Everything is dynamic and customizable.
 """
 
-__version__ = '1.5.0'
+__version__ = '1.5.1'
 VERSION = tuple([int(v) for v in __version__.split('.')])

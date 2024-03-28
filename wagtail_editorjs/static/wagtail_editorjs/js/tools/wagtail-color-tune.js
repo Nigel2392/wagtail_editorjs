@@ -124,6 +124,9 @@ class WagtailBackgroundColorTune extends BaseWagtailColorTune {
     }
 
     render() {
+        this.stretchTextElement = document.createElement('span');
+        this.stretchTextElement.innerHTML = this.stretchedTooltipText;
+
         const wrapper = super.render();
         if (this.data.stretched) {
             this.data.stretched = this.data.stretched;
@@ -138,15 +141,13 @@ class WagtailBackgroundColorTune extends BaseWagtailColorTune {
         });
         wrapper.appendChild(this.stretchBlockButton);
 
-        this.stretchTextElement = document.createElement('span');
-        this.stretchTextElement.innerHTML = this.stretchedTooltipText;
+        this.blockHolder = this.block.holder;
+        this.blockContent = this.block.holder.querySelector('.ce-block__content');
+
         this.api.tooltip.onHover(this.stretchBlockButton, this.stretchTextElement, {
             placement: 'top',
             hidingDelay: 200,
         });
-
-        this.blockHolder = this.block.holder;
-        this.blockContent = this.block.holder.querySelector('.ce-block__content');
 
         return wrapper;
     }
