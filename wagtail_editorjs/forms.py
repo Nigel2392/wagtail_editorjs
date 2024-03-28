@@ -94,11 +94,17 @@ class EditorJSWidget(widgets.Input):
         for feature in feature_mapping.values():
             for js_file in feature.get_js():
                 if js_file not in js:
-                    js.append(js_file)
+                    if isinstance(js_file, (list, tuple)):
+                        js.extend(js_file)
+                    else:
+                        js.append(js_file)
 
             for css_file in feature.get_css():
                 if css_file not in css:
-                    css.append(css_file)
+                    if isinstance(css_file, (list, tuple)):
+                        css.extend(css_file)
+                    else:
+                        css.append(css_file)
 
         js.extend([
             "wagtail_editorjs/js/editorjs-widget-controller.js",
