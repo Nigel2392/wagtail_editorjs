@@ -46,6 +46,12 @@ class BaseWagtailColorTune {
         if ("defaultStretched" in this.config && !("stretched" in this.data)) {
             this.data.stretched = this.config.defaultStretched;
         }
+
+        setTimeout(() => {
+            if (this.data.color) {
+                this.onChange();
+            }
+        }, 10);
     }
 
     static get isTune() {
@@ -58,6 +64,14 @@ class BaseWagtailColorTune {
 
     get pickTooltipText() {
         return this.api.i18n.t('Pick Color');
+    }
+
+    get blockHolder() {
+        return this.block.holder;
+    }
+
+    get blockContent() {
+        return this.block.holder.querySelector('.ce-block__content');
     }
 
     render() {
@@ -81,10 +95,6 @@ class BaseWagtailColorTune {
         this.wrapper.appendChild(this.colorInput);
         this.wrapper.appendChild(this.clearButton);
 
-        if (this.data.color) {
-            this.onChange();
-        }
-
         this.api.tooltip.onHover(this.colorInput, this.pickTooltipText, {
             placement: 'left',
             hidingDelay: 200,
@@ -93,7 +103,7 @@ class BaseWagtailColorTune {
             placement: 'top',
             hidingDelay: 200,
         });
-
+        
         return this.wrapper;
     }
 
@@ -128,7 +138,6 @@ class WagtailBackgroundColorTune extends BaseWagtailColorTune {
         this.stretchTextElement = document.createElement('span');
         this.stretchTextElement.innerHTML = this.stretchedTooltipText;
 
-        const wrapper = super.render();
         if (this.data.stretched) {
             this.data.stretched = this.data.stretched;
         }
@@ -139,26 +148,27 @@ class WagtailBackgroundColorTune extends BaseWagtailColorTune {
             this.data.stretched = !this.data.stretched;
             this.onChange();
         });
-        wrapper.appendChild(this.stretchBlockButton);
-
-        this.blockHolder = this.block.holder;
-        this.blockContent = this.block.holder.querySelector('.ce-block__content');
 
         this.api.tooltip.onHover(this.stretchBlockButton, this.stretchTextElement, {
             placement: 'top',
             hidingDelay: 200,
         });
 
+        const wrapper = super.render();
+        wrapper.appendChild(this.stretchBlockButton);
+
         return wrapper;
     }
 
     onChange() {
 
-        this.stretchTextElement.innerHTML = this.stretchedTooltipText;
-        if (this.data.stretched) {
-            this.stretchBlockButton.innerHTML = btnUnstretched;
-        } else {
-            this.stretchBlockButton.innerHTML = btnStretched;
+        if (this.stretchBlockButton && this.stretchTextElement) {
+            this.stretchTextElement.innerHTML = this.stretchedTooltipText;
+            if (this.data.stretched) {
+                this.stretchBlockButton.innerHTML = btnUnstretched;
+            } else {
+                this.stretchBlockButton.innerHTML = btnStretched;
+            }
         }
 
         if (this.data.color === null || this.data.color === undefined) {
@@ -201,16 +211,6 @@ class WagtailBackgroundColorTune extends BaseWagtailColorTune {
 class WagtailTextColorTune extends BaseWagtailColorTune {
     get buttonIcon() {
         return btnTextColor;
-    }
-
-    render() {
-        const wrapper = super.render();
-
-        if (this.data.color) {
-            this.onChange();
-        }
-
-        return wrapper;
     }
 
     onChange() {
