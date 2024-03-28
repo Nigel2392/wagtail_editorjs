@@ -84,7 +84,8 @@ class ColorTune(EditorJSTune):
             raise forms.ValidationError("Invalid color value")
         
         if "color" not in data:
-            raise forms.ValidationError("Invalid color value")
+            # Dont do anything
+            return
         
         if not isinstance(data["color"], str):
             raise forms.ValidationError("Invalid color value")
@@ -93,6 +94,9 @@ class ColorTune(EditorJSTune):
             raise forms.ValidationError("Invalid color value")
         
     def tune_element(self, element: EditorJSElement, tune_value: Any, context = None) -> EditorJSElement:
+        if "color" not in tune_value:
+            return element
+        
         element = super().tune_element(element, tune_value, context=context)
         element.add_attributes(style={
             "color": tune_value["color"],
@@ -102,19 +106,15 @@ class ColorTune(EditorJSTune):
 class BackgroundColorTune(ColorTune):
     klass = "WagtailBackgroundColorTune"
 
-    def validate(self, data: Any):
-        super().validate(data)
-
-        if "stretched" not in data:
-            raise forms.ValidationError("Stretched is required.")
-        
-
     def tune_element(self, element: EditorJSElement, tune_value: Any, context = None) -> EditorJSElement:
-        element = super().tune_element(element, tune_value, context=context)
-        element.add_attributes(
+
+        if "color" not in tune_value:
+            return element
+        
+        return element.add_attributes(
             style={
                 "background-color": tune_value["color"],
             },
-            **{{"class_": f"background-color-{tune_value['stretched']}"}} if tune_value["stretched"] else {},
+            **{{"class_": f"background-color-{tune_value['stretched']}"}}\
+            if tune_value.get("stretched", None) else {},
         )
-        return element
