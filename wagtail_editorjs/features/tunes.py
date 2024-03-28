@@ -61,3 +61,60 @@ class TextVariantTune(EditorJSTune):
             attrs={"class": f"text-variant-{tune_value}"},
         )
 
+
+class WagtailStyleTune(EditorJSTune):
+    js = [
+        "wagtail_editorjs/js/tools/wagtail-style-tune.js",
+    ]
+    klass = "WagtailStyleTune"
+
+
+class ColorTune(EditorJSTune):
+    js = [
+        "wagtail_editorjs/js/tools/wagtail-color-tune.js",
+    ]
+    klass = "WagtailTextColorTune"
+
+    def validate(self, data: Any):
+        super().validate(data)
+        if not data:
+            return
+        
+        if not isinstance(data, dict):
+            raise forms.ValidationError("Invalid color value")
+        
+        if "color" not in data:
+            raise forms.ValidationError("Invalid color value")
+        
+        if not isinstance(data["color"], str):
+            raise forms.ValidationError("Invalid color value")
+        
+        if not data["color"].startswith("#"):
+            raise forms.ValidationError("Invalid color value")
+        
+    def tune_element(self, element: EditorJSElement, tune_value: Any, context = None) -> EditorJSElement:
+        element = super().tune_element(element, tune_value, context=context)
+        element.add_attributes(style={
+            "color": tune_value["color"],
+        })
+        return element
+
+class BackgroundColorTune(ColorTune):
+    klass = "WagtailBackgroundColorTune"
+
+    def validate(self, data: Any):
+        super().validate(data)
+
+        if "stretched" not in data:
+            raise forms.ValidationError("Stretched is required.")
+        
+
+    def tune_element(self, element: EditorJSElement, tune_value: Any, context = None) -> EditorJSElement:
+        element = super().tune_element(element, tune_value, context=context)
+        element.add_attributes(
+            style={
+                "background-color": tune_value["color"],
+            },
+            **{{"class_": f"background-color-{tune_value['stretched']}"}} if tune_value["stretched"] else {},
+        )
+        return element

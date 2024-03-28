@@ -29,6 +29,9 @@ from ..features import (
     TableFeature,
     AlignmentBlockTune,
     TextVariantTune,
+    BackgroundColorTune,
+    ColorTune,
+    WagtailStyleTune,
 )
 
 @hooks.register(BUILD_CONFIG_HOOK)
@@ -211,6 +214,21 @@ def register_editor_js_features(registry: EditorJSFeatures):
             inlineToolbar = True,
         ),
     )
+    registry.register(
+        "background-color-tune",
+        BackgroundColorTune(
+            "background-color-tune",
+            config={
+                "defaultStretched": True,
+            }
+        ),
+    )
+    registry.register(
+        "text-color-tune",
+        ColorTune(
+            "text-color-tune",
+        ),
+    )
 
     # Register initializers
     registry.register(
@@ -240,6 +258,8 @@ def register_editor_js_features(registry: EditorJSFeatures):
     # Add tunes
     registry.register_tune("text-alignment-tune")
     registry.register_tune("text-variant-tune")
+    registry.register_tune("background-color-tune")
+    registry.register_tune("text-color-tune")
 
 
 # 
