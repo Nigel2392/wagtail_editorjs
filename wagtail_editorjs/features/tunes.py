@@ -62,13 +62,6 @@ class TextVariantTune(EditorJSTune):
         )
 
 
-class WagtailStyleTune(EditorJSTune):
-    js = [
-        "wagtail_editorjs/js/tools/wagtail-style-tune.js",
-    ]
-    klass = "WagtailStyleTune"
-
-
 class ColorTune(EditorJSTune):
     js = [
         "wagtail_editorjs/js/tools/wagtail-color-tune.js",
@@ -115,6 +108,6 @@ class BackgroundColorTune(ColorTune):
             style={
                 "background-color": tune_value["color"],
             },
-            **{{"class_": f"background-color-{tune_value['stretched']}"}}\
+            **{"class_": f"background-color-{tune_value['stretched']}"}\
             if tune_value.get("stretched", None) else {},
         )

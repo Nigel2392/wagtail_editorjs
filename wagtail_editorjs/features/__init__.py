@@ -26,7 +26,6 @@ from .inlines import (
 from .tunes import (
     AlignmentBlockTune,
     TextVariantTune,
-    WagtailStyleTune,
     ColorTune,
     BackgroundColorTune,
 )

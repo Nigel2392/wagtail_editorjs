@@ -31,7 +31,6 @@ from ..features import (
     TextVariantTune,
     BackgroundColorTune,
     ColorTune,
-    WagtailStyleTune,
 )
 
 @hooks.register(BUILD_CONFIG_HOOK)

@@ -20,12 +20,12 @@
         margin-right: 0;
     }
     .ce-toolbar__actions {
-        flex-direction: column-reverse;
+        flex-direction: column;
         justify-content: center;
         align-items: center;
         padding-right: 0;
     }
-    .ce-toolbar__actions > * {
+    .ce-toolbar__actions > *:not(:last-child) {
         margin-left: 0;
         margin-right: 0;
         margin-bottom: 0.25rem;
