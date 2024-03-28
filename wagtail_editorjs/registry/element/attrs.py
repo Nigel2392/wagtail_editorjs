@@ -6,6 +6,9 @@ class EditorJSElementAttribute:
         if not isinstance(value, (list, dict)):
             value = [value]
 
+        if not isinstance(value, dict):
+            value = set(value)
+
         self.value = value
         self.delimiter = delimiter
 
@@ -13,7 +16,7 @@ class EditorJSElementAttribute:
         if isinstance(other, EditorJSElementAttribute):
             return self.value == other.value
         
-        if isinstance(other, list):
+        if isinstance(other, (tuple, list, set)):
             for item in other:
                 if item not in self.value:
                     return False
@@ -21,10 +24,12 @@ class EditorJSElementAttribute:
         return False
 
     def extend(self, value: Any):
-        if isinstance(value, list):
-            self.value.extend(value)
+
+        if isinstance(value, (tuple, list, set)):
+            self.value.update(value)
+
         else:
-            self.value.append(value)
+            self.value.add(value)
 
     def __str__(self):
         return self.delimiter.join([str(item) for item in self.value])

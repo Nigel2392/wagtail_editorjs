@@ -91,9 +91,12 @@ class ColorTune(EditorJSTune):
             return element
         
         element = super().tune_element(element, tune_value, context=context)
-        element.add_attributes(style={
-            "color": tune_value["color"],
-        })
+        element.add_attributes(
+            class_="wagtail-editorjs-color-tuned",
+            style={
+                "--text-color": tune_value["color"],
+            },
+        )
         return element
 
 class BackgroundColorTune(ColorTune):
@@ -104,10 +107,17 @@ class BackgroundColorTune(ColorTune):
         if "color" not in tune_value:
             return element
         
-        return element.add_attributes(
+        classname = [
+            "wagtail-editorjs-color-tuned",
+        ]
+
+        if tune_value.get("stretched", None):
+            classname.append(f"wagtail-editorjs-background-color-stretched")
+        
+        element = element.add_attributes(
+            class_=classname,
             style={
-                "background-color": tune_value["color"],
+                "--background-color": tune_value["color"],
             },
-            **{"class_": f"background-color-{tune_value['stretched']}"}\
-            if tune_value.get("stretched", None) else {},
         )
+        return element

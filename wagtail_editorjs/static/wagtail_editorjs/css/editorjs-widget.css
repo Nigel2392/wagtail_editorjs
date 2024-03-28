@@ -137,11 +137,17 @@
     object-position: center;
 }
 
-
+.wagtail-editorjs-widget-container .ce-popover {
+    --max-height: 450px;
+}
+.wagtail-editorjs-widget-container .ce-popover__custom-content {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
 .w-theme-dark .wagtail-editorjs-widget-container .ce-popover {
     --border-radius: 6px;
     --width: 200px;
-    --max-height: 270px;
     --padding: 6px;
     --offset-from-target: 8px;
     --color-border: var(--w-color-grey-200);
@@ -206,8 +212,9 @@
     flex-direction: row;
     border: 1px solid var(--w-color-grey-100);
     border-radius: 5px;
-    overflow: hidden;
     margin-bottom: 0.25rem;
+    overflow: hidden;
+    width: 100%;
 }
 .editorjs-color-input-wrapper > * {
     background-color: transparent;
