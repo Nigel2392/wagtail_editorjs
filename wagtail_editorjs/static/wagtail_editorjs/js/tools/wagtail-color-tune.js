@@ -124,6 +124,7 @@ class WagtailBackgroundColorTune extends BaseWagtailColorTune {
     }
 
     render() {
+        this.stretchBlockButton = document.createElement('button');
         this.stretchTextElement = document.createElement('span');
         this.stretchTextElement.innerHTML = this.stretchedTooltipText;
 
@@ -132,7 +133,6 @@ class WagtailBackgroundColorTune extends BaseWagtailColorTune {
             this.data.stretched = this.data.stretched;
         }
 
-        this.stretchBlockButton = document.createElement('button');
         this.stretchBlockButton.type = 'button';
         this.stretchBlockButton.innerHTML = this.data.stretched ? btnUnstretched : btnStretched;
         this.stretchBlockButton.addEventListener('click', () => {
