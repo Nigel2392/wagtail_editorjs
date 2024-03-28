@@ -309,7 +309,15 @@ class WagtailImageTool {
                 this.imageChooser.openChooserModal()
                 this.imageChooser.input.addEventListener('change', chooserModalFunc);
             } else {
-                window.open(this.data.editUrl, '_blank');
+                // window.open(this.data.editUrl, '_blank');
+                const editBtn = document.createElement('button');
+                editBtn.type = 'button';
+                editBtn.innerHTML = 'Edit';
+                editBtn.addEventListener('click', () => {
+                    window.open(this.data.editUrl, '_blank');
+                });
+                this.api.toolbar.toggleBlockSettings();
+                this.settingsWrapper.appendChild(editBtn);
             }
         });
 
@@ -355,7 +363,7 @@ class WagtailImageTool {
     }
 
     renderSettings(){
-        const wrapper = document.createElement('div');
+        this.settingsWrapper = document.createElement('div');
 
         this.settings.forEach( tune => {
             const setting = tune.render();
@@ -367,10 +375,10 @@ class WagtailImageTool {
                 placement: 'top',
                 hidingDelay: 200,
             });
-            wrapper.appendChild(setting);
+            this.settingsWrapper.appendChild(setting);
         });
     
-        return wrapper;
+        return this.settingsWrapper;
     }
 
     refreshActiveTunes() {
