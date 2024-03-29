@@ -19,8 +19,8 @@
 }
 
 .wagtail-editorjs-color-tuned {
-    color: var(--text-color);
-    background-color: var(--background-color);
+    color: var(--text-color, inherit);
+    background-color: var(--background-color, inherit);
 }
 
 @media (min-width: 576px) {

@@ -11,6 +11,10 @@ class EditorJSWidget {
         this.element = hiddenInput;
         this.id = elementWrapper.id;
         this.config = config;
+
+        hiddenInput.widgetInstance = this;
+        elementWrapper.widgetInstance = this;
+
         this.initEditor();
     }
 

@@ -74,7 +74,7 @@ def wrapper(element: EditorJSElement, attrs: dict[str, EditorJSElementAttribute]
     if isinstance(element, EditorJSWrapper) or getattr(element, "is_wrapped", False):
         return add_attributes(element, **attrs)
 
-    return EditorJSWrapper(tag, element, attrs)
+    return EditorJSWrapper(element, attrs=attrs, tag=tag)
 
 
 class EditorJSWrapper(EditorJSElement):
@@ -90,11 +90,12 @@ class EditorJSWrapper(EditorJSElement):
         return self._content[0]
     
     def __init__(self,
-            tag: str,
             content: Union[ElementType, list[ElementType]],
             attrs: dict[str, EditorJSElementAttribute] = None,
-            close_tag: bool = True
+            close_tag: bool = True,
+            tag: str = "div",
         ):
+        
         if not isinstance(content, (list, tuple)):
             content = [content]
 

@@ -1,5 +1,10 @@
 from django.utils.functional import cached_property
-from wagtail import blocks
+from django.utils.translation import gettext_lazy as _
+from wagtail.telepath import register
+from wagtail.blocks.field_block import (
+    FieldBlock,
+    FieldBlockAdapter,
+)
 
 from .render import render_editorjs_html
 from .forms import (
@@ -8,11 +13,15 @@ from .forms import (
 )
 
 
-class EditorJSBlock(blocks.FieldBlock):
+class EditorJSBlock(FieldBlock):
     """
         A Wagtail block which can be used to add the EditorJS
         widget into any streamfield or structblock.
     """
+    class Meta:
+        icon = 'draft'
+        label_format = _('EditorJS Block')
+
     def __init__(self, features: list[str] = None, tools_config: dict = None, **kwargs):
         self._features = features
         self.tools_config = tools_config or {}
@@ -40,4 +49,32 @@ class EditorJSBlock(blocks.FieldBlock):
         return render_editorjs_html(self.features, value, context)
 
 
+from django.forms import Media
 
+
+class EditorJSBlockAdapter(FieldBlockAdapter):
+    js_constructor = "wagtail_editorjs.blocks.EditorJSBlock"
+
+    def js_args(self, block):
+        print("js_args", block)
+        print("js_args", block)
+        print("js_args", block)
+        print("js_args", block)
+        return super().js_args(block)
+
+    @cached_property
+    def media(self):
+        # m = super().media
+        # m._js.extend([
+        #     "wagtail_editorjs/js/editorjs-block.js",
+        # ])
+        # return m
+        m = super().media
+        return Media(
+            js= m._js + [
+                "wagtail_editorjs/js/editorjs-block.js",
+            ],
+            css=m._css,
+        )
+
+register(EditorJSBlockAdapter(), EditorJSBlock)

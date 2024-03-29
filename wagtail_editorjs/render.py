@@ -56,11 +56,17 @@ def render_editorjs_html(
         # Build the actual block.
         element: EditorJSElement = feature_mapping.render_block_data(block, context)
 
+        # Optionally tools can decide to not render the block.
+        if element is None:
+            continue
+
         # Tune the element.
         for tune_name, tune_value in tunes.items():
             element = feature_mappings[tune_name].tune_element(element, tune_value, context)
 
+        # Add the block ID to each individual block.
         if settings.ADD_BLOCK_ID:
+            # This can be used to link frontend to the admin area.
             element.attrs[settings.BLOCK_ID_ATTR] = block.get("id", "")
         
         html.append(element)
