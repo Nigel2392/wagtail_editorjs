@@ -5,6 +5,8 @@ from django.utils.translation import gettext_lazy as _
 from ..registry import (
     EditorJSTune,
     EditorJSElement,
+    EditorJSWrapper,
+    wrapper,
 )
 
 
@@ -54,6 +56,9 @@ class TextVariantTune(EditorJSTune):
 
         if not tune_value:
             return element
+        
+        if element.is_wrapped:
+            element["class"] = f"text-variant-{tune_value}"
 
         return EditorJSElement(
             "div",
@@ -63,6 +68,9 @@ class TextVariantTune(EditorJSTune):
 
 
 class ColorTune(EditorJSTune):
+    allowed_attributes = {
+        "*": ["class", "style"],
+    }
     js = [
         "wagtail_editorjs/js/tools/wagtail-color-tune.js",
     ]
@@ -90,14 +98,15 @@ class ColorTune(EditorJSTune):
         if "color" not in tune_value:
             return element
         
-        element = super().tune_element(element, tune_value, context=context)
-        element.add_attributes(
-            class_="wagtail-editorjs-color-tuned",
-            style={
-                "--text-color": tune_value["color"],
+        return wrapper(
+            element,
+            attrs={
+                "class": "wagtail-editorjs-color-tuned",
+                "style": {
+                    "--text-color": tune_value["color"],
+                },
             },
         )
-        return element
 
 class BackgroundColorTune(ColorTune):
     klass = "WagtailBackgroundColorTune"
@@ -106,18 +115,22 @@ class BackgroundColorTune(ColorTune):
 
         if "color" not in tune_value:
             return element
-        
+                
         classname = [
             "wagtail-editorjs-color-tuned",
         ]
 
-        if tune_value.get("stretched", None):
-            classname.append(f"wagtail-editorjs-background-color-stretched")
-        
-        element = element.add_attributes(
-            class_=classname,
-            style={
+        attrs = {
+            "class": classname,
+            "style": {
                 "--background-color": tune_value["color"],
             },
+        }
+
+        if tune_value.get("stretched", None):
+            attrs["class"] = classname + ["bg-stretched"]
+        
+        return wrapper(
+            element,
+            attrs=attrs,
         )
-        return element

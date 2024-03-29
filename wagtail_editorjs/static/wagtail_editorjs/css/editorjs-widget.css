@@ -136,7 +136,6 @@
     object-fit: cover;
     object-position: center;
 }
-
 .wagtail-editorjs-widget-container .ce-popover {
     --max-height: 450px;
 }
@@ -204,6 +203,12 @@
     background-color: var(--w-color-text-context);
 }
 
+.cdx-text-variant--details,
+.cdx-text-variant--citation,
+.cdx-text-variant--call-out {
+    padding-top: 0.6em;
+    padding-bottom: 0.6em;
+}
 
 
 .editorjs-color-input-wrapper {

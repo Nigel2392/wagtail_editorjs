@@ -111,10 +111,19 @@ class BaseWagtailColorTune {
 
     }
 
-    save(){
-        return {
-            color: this.data.color,
-        };
+    save(data = null){
+        if (data === null) {
+            data = {};
+        }
+        if (this.data.color) {
+            data.color = this.data.color;
+        }
+
+        if (!data) {
+            return undefined;
+        }
+
+        return data;
     }
 }
 
@@ -201,9 +210,9 @@ class WagtailBackgroundColorTune extends BaseWagtailColorTune {
     }
 
     save(){
-        let data = super.save();
-        data.stretched = this.data.stretched;
-        return data;
+        return super.save({
+            stretched: this.data.stretched,
+        });
     }
 }
 

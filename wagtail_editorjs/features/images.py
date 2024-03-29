@@ -22,6 +22,7 @@ from ..registry import (
     EditorJSBlock,
     EditorJSElement,
     FeatureViewMixin,
+    wrapper,
 )
 
 Image = get_image_model()
@@ -130,39 +131,32 @@ class ImageFeature(BaseImageFeature):
                 url = request.build_absolute_uri(url)
 
         # Caption last - we are wrapping the image in a figure tag
-        if block["data"].get("usingCaption"):
-            caption = block["data"].get("alt")
-            wrapper = EditorJSElement(
-                "figure",
-                close_tag=True,
-                attrs=attrs,
-            )
-            img = EditorJSElement(
-                "img",
-                close_tag=False,
-                attrs={
-                    "src": url,
-                    "alt": caption,
-                },
-            )
-            figcaption = EditorJSElement(
-                "figcaption",
-                caption,
-            )
-            wrapper.append(img)
-            wrapper.append(figcaption)
-            return wrapper
-
-
-        return EditorJSElement(
+                
+        imgTag = EditorJSElement(
             "img",
             close_tag=False,
             attrs={
                 "src": url,
                 "alt": block["data"].get("alt"),
-                **attrs,
             },
         )
+
+        if block["data"].get("usingCaption"):
+            caption = block["data"].get("alt")
+            w = EditorJSElement(
+                "figure",
+                close_tag=True,
+            )
+            figcaption = EditorJSElement(
+                "figcaption",
+                caption,
+            )
+            w.append(imgTag)
+            w.append(figcaption)
+        else:
+            w = imgTag
+
+        return wrapper(w, attrs=attrs)
     
     @classmethod
     def get_test_data(cls):
@@ -267,16 +261,15 @@ class ImageRowFeature(BaseImageFeature):
                 }
             ))
 
-        classnames = [
-            "image-row",
-        ]
 
-        if block["data"]["settings"].get("stretched"):
-            classnames.append("stretched")
-
-        return EditorJSElement("div", s, attrs={
-            "class": classnames,
-        })
+        return wrapper(
+            EditorJSElement("div", s, attrs={
+                "class": "image-row",
+            }),
+            attrs={
+                "class": "stretched"
+            } if block["data"]["settings"].get("stretched") else {}
+        )
 
     @classmethod
     def get_test_data(cls):

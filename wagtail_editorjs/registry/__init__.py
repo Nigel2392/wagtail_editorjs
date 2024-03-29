@@ -17,6 +17,8 @@ from .value import (
 )
 from .element import (
     EditorJSElement,
+    EditorJSWrapper,
+    wrapper,
     EditorJSElementAttribute,
     EditorJSStyleAttribute,
     wrap_tag,
