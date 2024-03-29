@@ -19,9 +19,10 @@ Function GITHUB_Upload {
 
     git add .
     if ($Tag) {
+        git commit -m $CommitMessage
+        
         $gitVersion = "v${Version}"
         git tag $gitVersion
-        git commit -m $CommitMessage
         git push -u origin main --tags
     } else {
         git commit -m $CommitMessage
