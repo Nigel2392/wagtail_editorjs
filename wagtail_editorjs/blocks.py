@@ -55,20 +55,8 @@ from django.forms import Media
 class EditorJSBlockAdapter(FieldBlockAdapter):
     js_constructor = "wagtail_editorjs.blocks.EditorJSBlock"
 
-    def js_args(self, block):
-        print("js_args", block)
-        print("js_args", block)
-        print("js_args", block)
-        print("js_args", block)
-        return super().js_args(block)
-
     @cached_property
     def media(self):
-        # m = super().media
-        # m._js.extend([
-        #     "wagtail_editorjs/js/editorjs-block.js",
-        # ])
-        # return m
         m = super().media
         return Media(
             js= m._js + [
