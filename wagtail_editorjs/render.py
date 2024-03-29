@@ -1,6 +1,7 @@
 from typing import Any, Union
 from collections import defaultdict
 from django.template.loader import render_to_string
+from django.template.context import Context
 from django.utils.safestring import mark_safe
 from . import settings
 from .registry import (
@@ -55,14 +56,12 @@ def render_editorjs_html(
         # Build the actual block.
         element: EditorJSElement = feature_mapping.render_block_data(block, context)
 
-        # if element.tag != "div":
-        #     new = EditorJSElement("div", [element], attrs=element.attrs)
-        #     element.attrs = {}
-        #     element = new
-
         # Tune the element.
         for tune_name, tune_value in tunes.items():
             element = feature_mappings[tune_name].tune_element(element, tune_value, context)
+
+        if settings.ADD_BLOCK_ID:
+            element.attrs[settings.BLOCK_ID_ATTR] = block.get("id", "")
         
         html.append(element)
 
@@ -99,6 +98,11 @@ def render_editorjs_html(
         if whitelist_tags:
             allowed_tags.update(whitelist_tags)
 
+        if "*" in allowed_attributes:
+            allowed_attributes["*"].add(settings.BLOCK_ID_ATTR)
+        else:
+            allowed_attributes["*"] = {settings.BLOCK_ID_ATTR}
+
         if whitelist_attrs:
             if isinstance(whitelist_attrs, dict):
                 for key, value in whitelist_attrs.items():
@@ -114,9 +118,14 @@ def render_editorjs_html(
             css_sanitizer=NullSanitizer,
         )
 
+    ctx = context or {}
+    ctx["html"] = html
+
+    if isinstance(context, Context):
+        ctx = context.flatten()
+
     return render_to_string(
-        "wagtail_editorjs/rich_text.html",
-        {"html": mark_safe(html)}
+        "wagtail_editorjs/rich_text.html", ctx
     )
 
 
