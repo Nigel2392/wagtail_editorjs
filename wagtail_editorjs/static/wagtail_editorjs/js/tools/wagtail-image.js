@@ -33,6 +33,7 @@ class Setting {
         button.addEventListener('click', () => {
             this.onClick();
             button.classList.toggle('cdx-settings-button--active', this.isActive());
+            this.block.dispatchChange();
         });
         return button;
     }

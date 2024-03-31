@@ -40,6 +40,12 @@ class EditorJSField(models.JSONField):
         )
         return super().get_prep_value(value)
     
+    def to_python(self, value: Any) -> Any:
+        value = super().to_python(value)
+        return EDITOR_JS_FEATURES.to_python(
+            self.features, value
+        )
+    
     def formfield(self, **kwargs):
         return super().formfield(**{
             'form_class': EditorJSFormField,

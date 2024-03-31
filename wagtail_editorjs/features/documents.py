@@ -17,7 +17,9 @@ from wagtail.documents.forms import (
 )
 if TYPE_CHECKING:
     from wagtail.documents.models import AbstractDocument
-
+from ..settings import (
+    USE_FULL_URLS,
+)
 from ..registry import (
     EditorJSFeature,
     EditorJSBlock,
@@ -86,7 +88,10 @@ class AttachesFeature(FeatureViewMixin, EditorJSFeature):
         document = Document.objects.get(pk=document_id)
         url = document.url
 
-        if not any([url.startswith(i) for i in ["http://", "https://", "//"]]) and context:
+        if not any([url.startswith(i) for i in ["http://", "https://", "//"]])\
+                and context\
+                and "request" in context\
+                and USE_FULL_URLS:
             request = context.get("request")
             if request:
                 url = request.build_absolute_uri(url)

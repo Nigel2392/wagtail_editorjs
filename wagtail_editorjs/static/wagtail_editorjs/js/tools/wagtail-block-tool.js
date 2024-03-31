@@ -62,6 +62,7 @@ class BaseToolSetting {
     }
 
     onSave() {
+        this.tool.block.dispatchChange();
         return this.getState();
     }
 }

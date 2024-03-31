@@ -86,7 +86,6 @@ class BaseWagtailChooserTool {
     }
     
     wrap(range, state) {
-
         let selectedText = range.extractContents();
 
         const previousWrapperTag = this.api.selection.findParentTag(this.tag);

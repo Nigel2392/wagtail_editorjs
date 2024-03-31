@@ -73,21 +73,24 @@
         padding-right: var(--richtext-margin);
     }
 }
-
+.wagtail-editorjs-richtext > *:has(figure, img) {
+    padding-top: 0;
+    padding-bottom: 0;
+}
 .wagtail-editorjs-richtext figure {
     margin: 0;
     display: flex;
     flex-direction: column;
-    padding: 0.5em 0;
 }
-.wagtail-editorjs-richtext figure.with-background {
-    padding: 0.5em;
+.wagtail-editorjs-richtext .with-background > img {
+    padding: 0.5rem;
 }
-.wagtail-editorjs-richtext figure:not(.stretched):has(img) {
+.wagtail-editorjs-richtext .with-background > figure {
+    padding-top: 0.5em;
+    background-color: var(--figure-bg);
+}
+.wagtail-editorjs-richtext :not(.stretched) > figure img {
     width: 60%;
-}
-.wagtail-editorjs-richtext figure:not(.stretched):has(img) img {
-    width: 100%;
     height: auto;
 }
 .wagtail-editorjs-richtext figure figcaption {
@@ -97,8 +100,8 @@
     color: #f3f3f3;
     background-color: rgba(var(--accent-color-rgb), 0.4);
 }
-.wagtail-editorjs-richtext > img.with-background,
-.wagtail-editorjs-richtext :not(figure) > img.with-background {
+.wagtail-editorjs-richtext .with-background > img,
+.wagtail-editorjs-richtext .with-background:not(figure) > img {
     padding: 1rem;
 }
 .wagtail-editorjs-richtext > img,
@@ -114,8 +117,9 @@
 .wagtail-editorjs-richtext img {
     width: 60%;
 }
-.wagtail-editorjs-richtext figure.stretched img,
-.wagtail-editorjs-richtext img.stretched {
+.wagtail-editorjs-richtext .stretched figure,
+.wagtail-editorjs-richtext .stretched figure img,
+.wagtail-editorjs-richtext .stretched img {
     width: 100%;
     max-height: 500px;
     overflow: hidden;
@@ -132,22 +136,22 @@
     text-align: right;
 }
 
-.wagtail-editorjs-richtext figure.align-content-left,
-.wagtail-editorjs-richtext img.align-content-left {
+.wagtail-editorjs-richtext .align-content-left figure,
+.wagtail-editorjs-richtext .align-content-left img {
     display: block;
     margin-left: 0;
     margin-right: auto;
 }
 
-.wagtail-editorjs-richtext figure.align-content-right,
-.wagtail-editorjs-richtext img.align-content-right {
+.wagtail-editorjs-richtext .align-content-right figure,
+.wagtail-editorjs-richtext .align-content-right img {
     margin-left: auto;
     margin-right: 0;
 
 }
 
-.wagtail-editorjs-richtext figure.align-content-center,
-.wagtail-editorjs-richtext img.align-content-center {
+.wagtail-editorjs-richtext .align-content-center figure,
+.wagtail-editorjs-richtext .align-content-center img {
     display: block;
     margin-left: auto;
     margin-right: auto;

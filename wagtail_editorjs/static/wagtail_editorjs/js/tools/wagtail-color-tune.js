@@ -82,6 +82,7 @@ class BaseWagtailColorTune {
         this.colorInput.value = this.data.color || '#000000';
         this.colorInput.addEventListener('input', () => {
             this.data.color = this.colorInput.value;
+            this.block.dispatchChange();
             this.onChange();
         });
         this.clearButton = document.createElement('button');
@@ -90,6 +91,7 @@ class BaseWagtailColorTune {
         this.clearButton.addEventListener('click', () => {
             this.colorInput.value = '#000000';
             this.data.color = null;
+            this.block.dispatchChange();
             this.onChange();
         });
         this.wrapper.appendChild(this.colorInput);

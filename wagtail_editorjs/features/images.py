@@ -16,7 +16,9 @@ from wagtail.images.models import SourceImageIOError
 if TYPE_CHECKING:
     from wagtail.images.models import Image as AbstractImage
 
-
+from ..settings import (
+    USE_FULL_URLS,
+)
 from ..registry import (
     EditorJSFeature,
     EditorJSBlock,
@@ -73,9 +75,16 @@ class ImageFeature(BaseImageFeature):
         "figcaption": ["class"],
     }
     klass = "WagtailImageTool"
-    js = [
-        "wagtail_editorjs/js/tools/wagtail-image.js",
-    ]
+
+    @property
+    def js(self):
+        return [
+            *(AdminImageChooser().media._js or []),
+            "wagtail_editorjs/js/tools/wagtail-image.js",
+        ]
+    
+    @js.setter
+    def js(self, value): pass
 
     def get_config(self, context: dict[str, Any]):
         config = super().get_config() or {}
@@ -114,7 +123,7 @@ class ImageFeature(BaseImageFeature):
             classlist.append("stretched")
 
         if block["data"].get("backgroundColor"):
-            styles["background-color"] = block["data"]["backgroundColor"]
+            styles["--figure-bg"] = block["data"]["backgroundColor"]
             classlist.append("with-background")
 
         attrs = {}
@@ -125,7 +134,10 @@ class ImageFeature(BaseImageFeature):
             attrs["style"] = styles
 
         url = image.file.url
-        if not any([url.startswith(i) for i in ["http://", "https://", "//"]]) and context:
+        if not any([url.startswith(i) for i in ["http://", "https://", "//"]])\
+                and context\
+                and "request" in context\
+                and USE_FULL_URLS:
             request = context.get("request")
             if request:
                 url = request.build_absolute_uri(url)
@@ -187,9 +199,19 @@ class ImageRowFeature(BaseImageFeature):
     allowed_tags = ["div", "img"]
     allowed_attributes = ["class", "style"]
     klass = "ImageRowTool"
-    js = [
-        "wagtail_editorjs/js/tools/wagtail-image-row.js",
-    ]
+    # js = [
+        # "wagtail_editorjs/js/tools/wagtail-image-row.js",
+    # ]
+
+    @property
+    def js(self):
+        return [
+            *(AdminImageChooser().media._js or []),
+            "wagtail_editorjs/js/tools/wagtail-image-row.js",
+        ]
+    
+    @js.setter
+    def js(self, value): pass
 
     def get_config(self, context: dict[str, Any]):
         config = super().get_config() or {}
@@ -241,10 +263,14 @@ class ImageRowFeature(BaseImageFeature):
                 pass
             image = images[id]
             url = image.file.url
-            if not any([url.startswith(i) for i in ["http://", "https://", "//"]]) and context:
+            if not any([url.startswith(i) for i in ["http://", "https://", "//"]])\
+                    and context\
+                    and "request" in context\
+                    and USE_FULL_URLS:
                 request = context.get("request")
                 if request:
                     url = request.build_absolute_uri(url)
+
 
             s.append(EditorJSElement(
                 "div",

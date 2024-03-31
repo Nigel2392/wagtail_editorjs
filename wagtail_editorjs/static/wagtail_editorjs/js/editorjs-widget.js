@@ -100,3 +100,5 @@ class EditorJSWidget {
         this.editor.destroy();
     }
 }
+
+window.EditorJSWidget = EditorJSWidget;

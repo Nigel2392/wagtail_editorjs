@@ -23,3 +23,8 @@ This is only used if `ADD_BLOCK_ID` is True.
 """
 BLOCK_ID_ATTR = getattr(django_settings, 'EDITORJS_BLOCK_ID_ATTR', 'data-editorjs-block-id')
 
+"""
+Use full urls if the request
+is available in the EditorJS rendering context.
+"""
+USE_FULL_URLS = getattr(django_settings, 'EDITORJS_USE_FULL_URLS', False)

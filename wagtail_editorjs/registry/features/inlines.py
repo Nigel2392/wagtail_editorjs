@@ -1,6 +1,7 @@
 from typing import Any, Union
 from django.utils.functional import cached_property
 
+from ...settings import USE_FULL_URLS
 from .base import BaseEditorJSFeature
 
 import bs4
@@ -189,7 +190,7 @@ class ModelInlineEditorJSFeature(InlineEditorJSFeature):
             del item[key]
 
         request = None
-        if context:
+        if context and "request" in context and USE_FULL_URLS:
             request = context.get("request")
             item["href"] = self.get_full_url(obj, request)
         else:
