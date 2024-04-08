@@ -1,6 +1,6 @@
 # Integrating Text Alignment Tune in EditorJS
 
-Let's walk through the process of adding a text alignment tune to EditorJS. This tune allows content creators to align text within blocks. We'll break down the implementation into digestible steps, explaining the purpose and functionality of each method involved.
+Let's walk through the process of adding a text alignment tune to EditorJS. This tune allows content creators to align text within blocks. We'll break down the implementation into digestible steps, explaining the purpose and functionality of each method involved. It does already exist in `wagtail_editorjs`, so we highly recommend you experiment with your own custom tunes!
 
 ## Step 1: Import Required Modules
 
@@ -39,7 +39,8 @@ This method ensures the provided alignment value is valid. It checks if the alig
 
 ### The `tune_element` Method
 
-This method applies the alignment tune to an element. It adjusts the class attribute of the element to include the specified alignment, dynamically adding styling to align content as desired:
+This method applies the alignment tune to an element. It adjusts the class attribute of the element to include the specified alignment, dynamically adding styling to align content as desired.
+The element returned from the tune is what gets used further in processing. You can add classes to the element; or return a different element entirely, for example by wrapping it.
 
 ```python
     def tune_element(self, element: EditorJSElement, tune_value: Any, context=None) -> EditorJSElement:
@@ -65,10 +66,10 @@ def register_editor_js_features(registry: EditorJSFeatures):
             },
         ),
     )
-    
+  
     # To apply globally to all features
     registry.register_tune("text-alignment-tune")
-    
+  
     # Or optionally for a specific feature remove the wildcard above
     # and use the following (given the features "header" and "paragraph" are used in the editor)
     # registry.register_tune("text-alignment-tune", "header")
