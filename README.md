@@ -29,55 +29,54 @@ Quick start
    ```
 3. Add the field to your model:
 
-    ```python
-    ...
-    from wagtail_editorjs.fields import EditorJSField
-    from wagtail_editorjs.blocks import EditorJSBlock
-    
-    
-    class HomePage(Page):
-        content_panels = [
-            FieldPanel("editor_field"),
-            FieldPanel("content"),
-        ]
-        editor_field = EditorJSField(
-            # All supported features
-            features=[
-                 'attaches',
-                 'checklist',
-                 'code',
-                 'delimiter',
-                 'document',
-                 'drag-drop',
-                 'header',
-                 'image',
-                 'images',
-                 'inline-code',
-                 'link',
-                 'marker',
-                 'nested-list',
-                 'paragraph',
-                 'quote',
-                 'raw',
-                 'table',
-                 'text-alignment-tune',
-                 'text-variant-tune',
-                 'underline',
-                 'undo-redo',
-                 'warning',
-             ],
-            blank=True,
-            null=True,
-        )
-    
-        # Or as a block
-        content = fields.StreamField([
-            ('editorjs', EditorJSBlock(features=[
-                # ... same as before
-            ])),
-        ], blank=True, use_json_field=True)
-    ```
+   ```python
+   ...
+   from wagtail_editorjs.fields import EditorJSField
+   from wagtail_editorjs.blocks import EditorJSBlock
 
+
+   class HomePage(Page):
+       content_panels = [
+           FieldPanel("editor_field"),
+           FieldPanel("content"),
+       ]
+       editor_field = EditorJSField(
+           # All supported features
+           features=[
+                'attaches',
+                'checklist',
+                'code',
+                'delimiter',
+                'document',
+                'drag-drop',
+                'header',
+                'image',
+                'images',
+                'inline-code',
+                'link',
+                'marker',
+                'nested-list',
+                'paragraph',
+                'quote',
+                'raw',
+                'table',
+                'text-alignment-tune',
+                'text-variant-tune',
+                'underline',
+                'undo-redo',
+                'warning',
+            ],
+           blank=True,
+           null=True,
+       )
+
+       # Or as a block
+       content = fields.StreamField([
+           ('editorjs', EditorJSBlock(features=[
+               # ... same as before
+           ])),
+       ], blank=True, use_json_field=True)
+   ```
 
 ## List features
 
@@ -98,7 +97,6 @@ To find this out - you can:
    dict_keys([... all registered features ...])
    ```
 
-
 ## Settings
 
 ### `EDITORJS_CLEAN_HTML`
@@ -107,3 +105,22 @@ Default: `True`
 Clean the HTML output on rendering.
 This happens every time the field is rendered.
 It might be smart to set up some sort of caching mechanism.
+Optionally; cleaning can be FORCED by passing `clean=True` or `False` to the  `render_editorjs_html` function.
+
+### `EDITORJS_ADD_BLOCK_ID`
+
+Default: `true`
+Add a block ID to each editorJS block when rendering.
+This is useful for targeting the block with JavaScript,
+or possibly creating some link from frontend to admin area.
+
+### `EDITORJS_BLOCK_ID_ATTR`
+
+Default: `data-editorjs-block-id`
+The attribute name to use for the block ID.
+This is only used if  `ADD_BLOCK_ID` is True.
+
+### `EDITORJS_USE_FULL_URLS`
+
+Default: `False`
+Use full urls if the request is available in the EditorJS rendering context.

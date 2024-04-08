@@ -131,7 +131,9 @@ def render_editorjs_html(
         ctx = context.flatten()
 
     return render_to_string(
-        "wagtail_editorjs/rich_text.html", ctx
+        "wagtail_editorjs/rich_text.html",
+        context=ctx,
+        request=ctx.get("request", None)
     )
 
 

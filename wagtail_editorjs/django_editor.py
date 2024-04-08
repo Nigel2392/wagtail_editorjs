@@ -18,19 +18,12 @@ class EditorJSDjangoWidget(EditorJSWidget):
     """
         Taken from wagtail.
         This class is deprecated in wagtail 7.0
-        This might still be useful if we are hooking into the wagtail_fedit library.
+        This might still be useful if we have wagtail installed
+        but would like to use the editorjs widget in a non-wagtailadmin form.
     """
     def render_html(self, name, value, attrs):
         """Render the HTML (non-JS) portion of the field markup"""
         return super().render(name, value, attrs)
-
-    def get_value_data(self, value):
-        # Perform any necessary preprocessing on the value passed to render() before it is passed
-        # on to render_html / render_js_init. This is a good place to perform database lookups
-        # that are needed by both render_html and render_js_init. Return value is arbitrary
-        # (we only care that render_html / render_js_init can accept it), but will typically be
-        # a dict of data needed for rendering: id, title etc.
-        return value
 
     def render(self, name, value, attrs=None, renderer=None):
         # no point trying to come up with sensible semantics for when 'id' is missing from attrs,
