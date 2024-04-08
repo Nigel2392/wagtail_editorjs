@@ -7,8 +7,8 @@ A Wagtail EditorJS widget with page/image chooser support, document support and 
 
 ## Add features:
 
-* [Add an already defined EditorJS feature](https://github.com/Nigel2392/wagtail_editorjs/blob/main/docs/editorjs_feature.md "Simple Image Feature")
-* [Add an already defined EditorJS tune](https://github.com/Nigel2392/wagtail_editorjs/blob/main/docs/tunes.md "text-alignment-tune") (Already exists in `wagtail_editorjs`, just an example.)
+* [Add an EditorJS feature](https://github.com/Nigel2392/wagtail_editorjs/blob/main/docs/editorjs_feature.md "Simple Image Feature")
+* [Add an EditorJS tune](https://github.com/Nigel2392/wagtail_editorjs/blob/main/docs/tunes.md "text-alignment-tune") (Already exists in `wagtail_editorjs`, just an example.)
 
 Quick start
 -----------
