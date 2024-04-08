@@ -10,7 +10,7 @@ Start by importing the necessary Python classes and modules. This setup involves
 from typing import Any
 from django import forms
 from wagtail_editorjs.hooks import REGISTER_HOOK_NAME
-from wagtail_editorjs.registry import EditorJSFeature, EditorJSFeatures, EditorJSTune, EditorJSElement
+from wagtail_editorjs.registry import EditorJSFeatures, EditorJSTune, EditorJSElement
 from wagtail import hooks
 ```
 
