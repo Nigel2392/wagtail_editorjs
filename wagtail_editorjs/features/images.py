@@ -208,6 +208,7 @@ class ImageRowFeature(BaseImageFeature):
         return [
             *(AdminImageChooser().media._js or []),
             "wagtail_editorjs/js/tools/wagtail-image-row.js",
+            "wagtail_editorjs/vendor/sortable/sortable.min.js",
         ]
     
     @js.setter
