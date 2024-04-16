@@ -176,17 +176,18 @@ class EditorJSFormField(formfields.JSONField):
             if "version" not in value:
                 raise forms.ValidationError("Invalid EditorJS JSON object, missing version")
             
-            time = value["time"]
-            if not isinstance(time, int):
+            time = value["time"] # 1713272305659
+            if not isinstance(time, (int, float)):
                 raise forms.ValidationError("Invalid EditorJS JSON object, time is not an integer")
             
+            time_invalid = "Invalid EditorJS JSON object, time is invalid"
             try:
-                time = datetime.fromtimestamp(time)
-            except ValueError:
-                raise forms.ValidationError("Invalid EditorJS JSON object, time is not a valid timestamp")
-            
+                time = datetime.fromtimestamp(time / 1000)
+            except:
+                raise forms.ValidationError(time_invalid)
+
             if time is None:
-                raise forms.ValidationError("Invalid EditorJS JSON object, time is invalid")
+                raise forms.ValidationError(time_invalid)
 
         if value and self.required:
             if "blocks" not in value:
