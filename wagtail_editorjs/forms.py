@@ -160,12 +160,16 @@ class EditorJSFormField(formfields.JSONField):
     
     def validate(self, value) -> None:
         super().validate(value)
+
         if value is None and self.required:
             raise forms.ValidationError("This field is required")
 
-        if not isinstance(value, dict):
+        if value and not isinstance(value, dict):
             raise forms.ValidationError("Invalid JSON object")
-        
+                
+        if value and not value["blocks"] and self.required:
+            raise forms.ValidationError("This field is required")
+
         EDITOR_JS_FEATURES.validate_for_tools(
             self.features, value
         )

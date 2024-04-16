@@ -90,10 +90,9 @@ class EditorJSValue(dict):
         if start == end:
             return
         
-        for i, block in enumerate(blocks):
-            blocks[i] = self._verify_block(block)
-        
-        b[start:end] = blocks
+        b[start:end] = list(
+            map(self._verify_block, blocks),
+        )
         self["blocks"] = b
 
     def insert(self, index: int, block: "EditorJSBlock"):

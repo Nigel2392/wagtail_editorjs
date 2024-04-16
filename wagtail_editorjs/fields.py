@@ -1,6 +1,7 @@
 from typing import Any
 from django.db import models
 from django.utils.functional import cached_property
+from django.core.exceptions import ValidationError
 
 from .forms import EditorJSFormField
 from .registry import EDITOR_JS_FEATURES, get_features
