@@ -98,7 +98,7 @@ class BaseWagtailColorTune {
         this.wrapper.appendChild(this.clearButton);
 
         this.api.tooltip.onHover(this.colorInput, this.pickTooltipText, {
-            placement: 'left',
+            placement: 'right',
             hidingDelay: 200,
         });
         this.api.tooltip.onHover(this.clearButton, this.api.i18n.t('Clear Color'), {
@@ -172,6 +172,7 @@ class WagtailBackgroundColorTune extends BaseWagtailColorTune {
     }
 
     onChange() {
+        this.block.dispatchChange();
 
         if (this.stretchBlockButton && this.stretchTextElement) {
             this.stretchTextElement.innerHTML = this.stretchedTooltipText;
