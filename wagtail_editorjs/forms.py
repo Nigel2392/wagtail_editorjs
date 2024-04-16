@@ -6,6 +6,8 @@ from django.forms import (
 )
 from wagtail import hooks
 
+from datetime import datetime
+
 from .hooks import (
     BUILD_CONFIG_HOOK,
 )
@@ -164,11 +166,34 @@ class EditorJSFormField(formfields.JSONField):
         if value is None and self.required:
             raise forms.ValidationError("This field is required")
 
-        if value and not isinstance(value, dict):
-            raise forms.ValidationError("Invalid JSON object")
-                
-        if value and not value["blocks"] and self.required:
-            raise forms.ValidationError("This field is required")
+        if value:
+            if not isinstance(value, dict):
+                raise forms.ValidationError("Invalid EditorJS JSON object, expected a dictionary")
+
+            if "time" not in value:
+                raise forms.ValidationError("Invalid EditorJS JSON object, missing time")
+            
+            if "version" not in value:
+                raise forms.ValidationError("Invalid EditorJS JSON object, missing version")
+            
+            time = value["time"]
+            if not isinstance(time, int):
+                raise forms.ValidationError("Invalid EditorJS JSON object, time is not an integer")
+            
+            try:
+                time = datetime.fromtimestamp(time)
+            except ValueError:
+                raise forms.ValidationError("Invalid EditorJS JSON object, time is not a valid timestamp")
+            
+            if time is None:
+                raise forms.ValidationError("Invalid EditorJS JSON object, time is invalid")
+
+        if value and self.required:
+            if "blocks" not in value:
+                raise forms.ValidationError("Invalid JSON object")
+            
+            if not value["blocks"]:
+                raise forms.ValidationError("This field is required")
 
         EDITOR_JS_FEATURES.validate_for_tools(
             self.features, value
