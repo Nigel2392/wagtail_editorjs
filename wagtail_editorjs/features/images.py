@@ -207,8 +207,8 @@ class ImageRowFeature(BaseImageFeature):
     def js(self):
         return [
             *(AdminImageChooser().media._js or []),
-            "wagtail_editorjs/js/tools/wagtail-image-row.js",
             "wagtail_editorjs/vendor/sortable/sortable.min.js",
+            "wagtail_editorjs/js/tools/wagtail-image-row.js",
         ]
     
     @js.setter

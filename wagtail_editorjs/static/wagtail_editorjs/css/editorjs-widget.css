@@ -103,6 +103,7 @@
 .wagtail-image-row-wrapper .wagtail-image-row {
     display: flex;
     flex-wrap: wrap;
+    flex-direction: row;
     gap: 0.5rem;
     align-items: center;
     justify-content: center;
@@ -117,7 +118,7 @@
 }
 .wagtail-image-row-wrapper .wagtail-image-row-image-wrapper {
     display: flex;
-    flex: 1;
+    flex: 1 0 15%;
     gap: 0.5rem;
     flex-direction: column;
     border: 1px solid var(--w-color-text-context);

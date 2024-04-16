@@ -389,7 +389,7 @@
 }
 .wagtail-editorjs-richtext .image-row .image-wrapper {
     display: flex;
-    flex: 1;
+    flex: 1 0 15%;
     flex-direction: column;
     overflow: hidden;
     border: 1px solid rgba(var(--accent-color-rgb), 0.1);
