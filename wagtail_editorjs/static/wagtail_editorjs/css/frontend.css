@@ -1,15 +1,18 @@
 :root {
-    --accent-color-rgb: 34, 70, 136;
-    --richtext-margin: 15%;
+    --editor-richtext-padding-vertical: 1rem;
+    --editor-border-radius: 0.25rem;
 
-    --warning-color-rgb: 255, 0, 0;
-    --warning-color-opacity: 5;
+    --editor-accent-color-rgb: 34, 70, 136;
+    --editor-margin-x: 15%;
 
-    --info-color-rgb: 0, 21, 114;
-    --info-color-opacity: 5;
+    --editor-warning-color-rgb: 255, 0, 0;
+    --editor-warning-color-opacity: 5;
 
-    --success-color-rgb: 0, 139, 26;
-    --success-color-opacity: 5;
+    --editor-info-color-rgb: 0, 21, 114;
+    --editor-info-color-opacity: 5;
+
+    --editor-success-color-rgb: 0, 139, 26;
+    --editor-success-color-opacity: 5;
 }
 *, *:before, *:after {
     box-sizing: border-box;
@@ -18,13 +21,12 @@
     /* margin: 0.75rem 0; */
     margin-top: 0;
     margin-bottom: 0;
-    padding-top: 0.5rem;
-    padding-bottom: 0.5rem;
+    padding-top: calc(var(--editor-richtext-padding-vertical) / 2);
+    padding-bottom: calc(var(--editor-richtext-padding-vertical) / 2);
 }
-.bg-stretched 
 .wagtail-editorjs-richtext.wagtail-editorjs-richtext > :not(.stretched, .bg-stretched) {
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
+    padding-left: calc(var(--editor-margin-x) / 5);
+    padding-right: calc(var(--editor-margin-x) / 5);
 }
 
 .wagtail-editorjs-color-tuned {
@@ -37,52 +39,52 @@
 
 @media (min-width: 576px) {
     .wagtail-editorjs-richtext.wagtail-editorjs-richtext > :not(.stretched, .bg-stretched) {
-        margin-left: calc(var(--richtext-margin) / 5);
-        margin-right: calc(var(--richtext-margin) / 5);
+        margin-left: calc(var(--editor-margin-x) / 5);
+        margin-right: calc(var(--editor-margin-x) / 5);
     }
     .wagtail-editorjs-richtext.wagtail-editorjs-richtext > :not(.stretched):is(.bg-stretched) {
-        padding-left: calc(var(--richtext-margin) / 5);
-        padding-right: calc(var(--richtext-margin) / 5);
+        padding-left: calc(var(--editor-margin-x) / 5);
+        padding-right: calc(var(--editor-margin-x) / 5);
     }
 }
 @media (min-width: 768px) {
     .wagtail-editorjs-richtext.wagtail-editorjs-richtext > :not(.stretched, .bg-stretched) {
-        margin-left: calc(var(--richtext-margin) / 4);
-        margin-right: calc(var(--richtext-margin) / 4);
+        margin-left: calc(var(--editor-margin-x) / 4);
+        margin-right: calc(var(--editor-margin-x) / 4);
     }
     .wagtail-editorjs-richtext.wagtail-editorjs-richtext > :not(.stretched):is(.bg-stretched) {
-        padding-left: calc(var(--richtext-margin) / 4);
-        padding-right: calc(var(--richtext-margin) / 4);
+        padding-left: calc(var(--editor-margin-x) / 4);
+        padding-right: calc(var(--editor-margin-x) / 4);
     }
 }
 @media (min-width: 992px) {
     .wagtail-editorjs-richtext.wagtail-editorjs-richtext > :not(.stretched, .bg-stretched) {
-        margin-left: calc(var(--richtext-margin) / 3);
-        margin-right: calc(var(--richtext-margin) / 3);
+        margin-left: calc(var(--editor-margin-x) / 3);
+        margin-right: calc(var(--editor-margin-x) / 3);
     }
     .wagtail-editorjs-richtext.wagtail-editorjs-richtext > :not(.stretched):is(.bg-stretched) {
-        padding-left: calc(var(--richtext-margin) / 3);
-        padding-right: calc(var(--richtext-margin) / 3);
+        padding-left: calc(var(--editor-margin-x) / 3);
+        padding-right: calc(var(--editor-margin-x) / 3);
     }
 }
 @media (min-width: 1200px) {
     .wagtail-editorjs-richtext.wagtail-editorjs-richtext > :not(.stretched, .bg-stretched) {
-        margin-left: calc(var(--richtext-margin) / 2);
-        margin-right: calc(var(--richtext-margin) / 2);
+        margin-left: calc(var(--editor-margin-x) / 2);
+        margin-right: calc(var(--editor-margin-x) / 2);
     }
     .wagtail-editorjs-richtext.wagtail-editorjs-richtext > :not(.stretched):is(.bg-stretched) {
-        padding-left: calc(var(--richtext-margin) / 2);
-        padding-right: calc(var(--richtext-margin) / 2);
+        padding-left: calc(var(--editor-margin-x) / 2);
+        padding-right: calc(var(--editor-margin-x) / 2);
     }
 }
 @media (min-width: 1400px) {
     .wagtail-editorjs-richtext.wagtail-editorjs-richtext > :not(.stretched, .bg-stretched) {
-        margin-left: var(--richtext-margin);
-        margin-right: var(--richtext-margin);
+        margin-left: var(--editor-margin-x);
+        margin-right: var(--editor-margin-x);
     }
     .wagtail-editorjs-richtext.wagtail-editorjs-richtext > :not(.stretched):is(.bg-stretched) {
-        padding-left: var(--richtext-margin);
-        padding-right: var(--richtext-margin);
+        padding-left: var(--editor-margin-x);
+        padding-right: var(--editor-margin-x);
     }
 }
 .wagtail-editorjs-richtext > *:has(figure, img) {
@@ -110,7 +112,7 @@
     font-size: 0.8rem;
     text-align: center;
     color: #f3f3f3;
-    background-color: rgba(var(--accent-color-rgb), 0.4);
+    background-color: rgba(var(--editor-accent-color-rgb), 0.4);
 }
 .wagtail-editorjs-richtext .with-background > img,
 .wagtail-editorjs-richtext .with-background:not(figure) > img {
@@ -118,8 +120,8 @@
 }
 .wagtail-editorjs-richtext > img,
 .wagtail-editorjs-richtext :not(figure) > img {
-    padding-top: 1rem;
-    padding-bottom: 1rem;
+    padding-top: 0;
+    padding-bottom: 0;
     max-height: 500px;
     overflow: hidden;
 }
@@ -178,16 +180,16 @@
 .wagtail-editorjs-richtext table th,
 .wagtail-editorjs-richtext table td {
     padding: 0.5rem;
-    border: 1px solid rgba(var(--accent-color-rgb), 0.1);
+    border: 1px solid rgba(var(--editor-accent-color-rgb), 0.1);
 }
 .wagtail-editorjs-richtext table th {
-    background-color: rgba(var(--accent-color-rgb), 0.1);
+    background-color: rgba(var(--editor-accent-color-rgb), 0.1);
 }
 .wagtail-editorjs-richtext table tr:nth-child(even) {
-    background-color: rgba(var(--accent-color-rgb), 0.01);
+    background-color: rgba(var(--editor-accent-color-rgb), 0.01);
 }
 .wagtail-editorjs-richtext table tr:nth-child(odd) {
-    background-color: rgba(var(--accent-color-rgb), 0.03);
+    background-color: rgba(var(--editor-accent-color-rgb), 0.03);
 }
 
 
@@ -195,10 +197,10 @@
     padding: 1rem 1.5rem;
     margin: 0.5rem 0;
     font-size: 0.9rem;
-    background-color: rgba(var(--warning-color-rgb), calc(var(--warning-color-opacity) / 100));
-    border: 1px solid rgba(var(--warning-color-rgb), calc(var(--warning-color-opacity) / 10));
-    color: rgb(var(--warning-color-rgb));
-    border-radius: 0.25rem;
+    background-color: rgba(var(--editor-warning-color-rgb), calc(var(--editor-warning-color-opacity) / 100));
+    border: 1px solid rgba(var(--editor-warning-color-rgb), calc(var(--editor-warning-color-opacity) / 10));
+    color: rgb(var(--editor-warning-color-rgb));
+    border-radius: var(--editor-border-radius);
 }
 
 .wagtail-editorjs-richtext .warning h2 {
@@ -219,15 +221,15 @@
 .wagtail-editorjs-richtext hr {
     margin: 2rem 0;
     border: 0;
-    border-top: 1px solid rgba(var(--accent-color-rgb), 0.1);
+    border-top: 1px solid rgba(var(--editor-accent-color-rgb), 0.1);
 
 }
 
 .wagtail-editorjs-richtext .inline-code {
     padding: 0.25rem;
     margin: 0.5rem 0.25rem;
-    background-color: rgba(var(--accent-color-rgb), 0.1);
-    border-radius: 0.25rem;
+    background-color: rgba(var(--editor-accent-color-rgb), 0.1);
+    border-radius: var(--editor-border-radius);
     font-family: monospace;
     font-size: 0.9rem;
 }
@@ -236,8 +238,8 @@
     padding: 0.25rem;
     margin: 0.5rem 0;
     display: flex;
-    background-color: rgba(var(--accent-color-rgb), 0.1);
-    border-radius: 0.25rem;
+    background-color: rgba(var(--editor-accent-color-rgb), 0.1);
+    border-radius: var(--editor-border-radius);
     font-family: monospace;
     font-size: 0.9rem;
     white-space: pre-wrap;
@@ -249,8 +251,8 @@
     padding: 0.5rem 1rem;
     margin-top: 0.75rem;
     margin-bottom: 0.75rem;
-    border: 1px solid rgba(var(--accent-color-rgb), 0.1);
-    border-radius: 0.25rem;
+    border: 1px solid rgba(var(--editor-accent-color-rgb), 0.1);
+    border-radius: var(--editor-border-radius);
     position: relative;
 }
 .wagtail-editorjs-richtext .attaches .attaches-title {
@@ -261,14 +263,14 @@
 }
 .wagtail-editorjs-richtext .attaches .attaches-size {
     font-size: 0.8rem;
-    color: rgba(var(--accent-color-rgb), 0.5);
+    color: rgba(var(--editor-accent-color-rgb), 0.5);
 }
 .wagtail-editorjs-richtext .attaches .attaches-link {
     display: inline-block;
     padding: 0.2rem 0.5rem;
     margin: 0;
-    border: 2px solid rgba(var(--accent-color-rgb), 0.1);
-    border-radius: 0.25rem;
+    border: 2px solid rgba(var(--editor-accent-color-rgb), 0.1);
+    border-radius: var(--editor-border-radius);
     text-decoration: none;
     color: inherit;
     position: absolute;
@@ -297,18 +299,18 @@
     top: 0;
     width: 1em;
     height: 1em;
-    border: 1px solid rgba(var(--accent-color-rgb), 0.1);
-    border-radius: 0.25em;
-    background-color: rgba(var(--accent-color-rgb), 0.1);
+    border: 1px solid rgba(var(--editor-accent-color-rgb), 0.1);
+    border-radius: var(--editor-border-radius);
+    background-color: rgba(var(--editor-accent-color-rgb), 0.1);
 }
 .wagtail-editorjs-richtext .checklist li.checked:before {
     content: "✔";
     display: flex;
     justify-content: center;
     align-items: center;
-    color: rgba(var(--success-color-rgb), 1);
-    background-color: rgba(var(--success-color-rgb), calc(var(--success-color-opacity) / 100));
-    border: 1px solid rgba(var(--success-color-rgb), calc(var(--success-color-opacity) / 10));
+    color: rgba(var(--editor-success-color-rgb), 1);
+    background-color: rgba(var(--editor-success-color-rgb), calc(var(--editor-success-color-opacity) / 100));
+    border: 1px solid rgba(var(--editor-success-color-rgb), calc(var(--editor-success-color-opacity) / 10));
 }
 
 
@@ -316,19 +318,19 @@
 .wagtail-editorjs-richtext .text-variant-details {
     margin: 1rem 0;
     padding: 0.5rem 1rem;
-    border-radius: 0.25rem;
-    border: 1px solid rgba(var(--info-color-rgb), calc(var(--info-color-opacity) / 10));
-    background-color: rgba(var(--info-color-rgb), calc(var(--info-color-opacity) / 100));
-    color: rgba(var(--info-color-rgb), 1);
+    border-radius: var(--editor-border-radius);
+    border: 1px solid rgba(var(--editor-info-color-rgb), calc(var(--editor-info-color-opacity) / 10));
+    background-color: rgba(var(--editor-info-color-rgb), calc(var(--editor-info-color-opacity) / 100));
+    color: rgba(var(--editor-info-color-rgb), 1);
     font-size: 0.9rem;
 }
 .wagtail-editorjs-richtext .text-variant-call-out {
     font-size: 1.1rem;
     margin: 1rem 0;
     padding: 1rem 1.5rem;
-    border-radius: 0.25rem;
-    border: 1px solid rgba(var(--warning-color-rgb), calc(var(--warning-color-opacity) / 10));
-    box-shadow: 0 0 0 5px rgba(var(--warning-color-rgb), calc(var(--warning-color-opacity) / 50));
+    border-radius: var(--editor-border-radius);
+    border: 1px solid rgba(var(--editor-warning-color-rgb), calc(var(--editor-warning-color-opacity) / 10));
+    box-shadow: 0 0 0 5px rgba(var(--editor-warning-color-rgb), calc(var(--editor-warning-color-opacity) / 50));
 }
 
 
@@ -336,27 +338,27 @@
 .wagtail-editorjs-richtext .text-variant-citation {
     margin: 1rem 0;
     padding: 0.5rem;
-    border-radius: 0.25rem;
-    border: 1px solid rgba(var(--accent-color-rgb), 0.5);
+    border-radius: var(--editor-border-radius);
+    border: 1px solid rgba(var(--editor-accent-color-rgb), 0.5);
     position: relative;
 }
 .wagtail-editorjs-richtext blockquote {
     padding: 0.5rem 1rem;
     margin: 0.5rem 0;
-    border-left: 0.25rem solid rgba(var(--accent-color-rgb), 0.1);
-    background-color: rgba(var(--accent-color-rgb), 0.05);
-    border-radius: 0.25rem;
+    border-left: 0.25rem solid rgba(var(--editor-accent-color-rgb), 0.1);
+    background-color: rgba(var(--editor-accent-color-rgb), 0.05);
+    border-radius: var(--editor-border-radius);
     position: relative;
 }
 .wagtail-editorjs-richtext blockquote footer {
     font-size: 0.8rem;
-    color: rgba(var(--accent-color-rgb), 0.5);
+    color: rgba(var(--editor-accent-color-rgb), 0.5);
 }
 .wagtail-editorjs-richtext .text-variant-citation:before,
 .wagtail-editorjs-richtext blockquote:before {
     content: "“";
     font-size: 2rem;
-    color: rgba(var(--accent-color-rgb), 0.5);
+    color: rgba(var(--editor-accent-color-rgb), 0.5);
     position: absolute;
     top: 0;
     right: 1rem;
@@ -400,7 +402,7 @@
     flex: 1 0 15%;
     flex-direction: column;
     overflow: hidden;
-    border: 1px solid rgba(var(--accent-color-rgb), 0.1);
+    border: 1px solid rgba(var(--editor-accent-color-rgb), 0.1);
     min-width: 150px;
     min-height: 200px;
     max-height: 200px;
