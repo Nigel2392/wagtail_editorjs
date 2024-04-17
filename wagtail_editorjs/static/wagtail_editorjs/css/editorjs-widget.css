@@ -155,8 +155,25 @@
     align-items: center;
     gap: 0.25rem;
     padding: 0.25rem;
-    background-color: var(--w-color-surface-page);
-    border-top: 1px solid var(--w-color-text-context);
+}
+.wagtail-image-row-wrapper .wagtail-image-row-image-actions button {
+    background-color: var(--w-color-secondary);
+    color: var(--w-color-white-80);
+    border: 1px solid var(--w-color-grey-200);
+    border-radius: 0.25rem;
+    padding: unset;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    width: 34px;
+    height: 34px;
+}
+.wagtail-image-row-wrapper .wagtail-image-row-image-actions button:hover {
+    background-color: var(--w-color-secondary-400);
+}
+.wagtail-image-row-wrapper .wagtail-image-row-image-actions button svg {
+    vertical-align: middle;
 }
 .wagtail-image-row-wrapper .wagtail-image-row-image-wrapper:hover .wagtail-image-row-image-actions {
     display: flex;

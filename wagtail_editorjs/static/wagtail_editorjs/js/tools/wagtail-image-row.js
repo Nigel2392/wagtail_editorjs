@@ -132,10 +132,6 @@ class ImageRowTool extends window.BaseWagtailEditorJSTool {
         imageDelete.addEventListener('click', () => {
             imageWrapper.remove();
         });
-
-        imageWrapper.addEventListener('dblclick', () => {
-            imageActions.classList.toggle('wagtail-image-row-image-actions-visible');
-        });
     }
 
     render() {
