@@ -1,3 +1,8 @@
+.bi.bi path {
+    stroke: unset;
+}
+
+
 .wagtail-editorjs-widget-container {
     /* max-width: 840px; */
     border-radius: 0.25rem;
@@ -120,6 +125,7 @@
     display: flex;
     flex: 1 0 15%;
     gap: 0.5rem;
+    position: relative;
     flex-direction: column;
     border: 1px solid var(--w-color-text-context);
     overflow: hidden;
@@ -137,6 +143,25 @@
     object-fit: cover;
     object-position: center;
 }
+
+.wagtail-image-row-wrapper .wagtail-image-row-image-actions {
+    display: none;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem;
+    background-color: var(--w-color-surface-page);
+    border-top: 1px solid var(--w-color-text-context);
+}
+.wagtail-image-row-wrapper .wagtail-image-row-image-wrapper:hover .wagtail-image-row-image-actions {
+    display: flex;
+}
+
 .wagtail-editorjs-widget-container .ce-popover {
     --max-height: 450px;
 }
