@@ -1,6 +1,7 @@
 from typing import Any
 from django import forms
 from django.utils.translation import gettext_lazy as _
+from django.utils.functional import cached_property
 
 import bleach
 
@@ -271,5 +272,91 @@ class BlockQuoteFeature(EditorJSFeature):
                 "text": "This is a quote.",
                 "caption": "Anonymous",
             }
+        ]
+
+from wagtail.models import Page
+from wagtail.admin.widgets import AdminPageChooser
+
+class ButtonFeature(EditorJSFeature):
+    allowed_tags:       list[str]            = ["a"]
+    allowed_attributes: dict[str, list[str]] = {
+        "a": ["href", "class"]
+    }
+    chooser_class = AdminPageChooser
+    model         = Page
+    klass         = "PageButtonTool"
+    js            = [
+        "wagtail_editorjs/js/tools/wagtail-button-tool.js",
+    ]
+
+    @cached_property
+    def widget(self):
+        if self.chooser_class is None:
+            return None
+        
+        return self.chooser_class()
+    
+    def validate(self, data: Any):
+        super().validate(data)
+
+        if "pageId" not in data["data"]:
+            raise forms.ValidationError("Invalid id value")
+        
+        if "text" not in data["data"]:
+            raise forms.ValidationError("Invalid text value")
+
+    def get_config(self, context: dict[str, Any]):
+        config = super().get_config() or {}
+        config.setdefault("config", {})
+        config["config"][
+            "chooserId"
+        ] = f"editorjs-{self.model._meta.model_name}-button-chooser-{context['widget']['attrs']['id']}"
+        return config
+    
+    def render_block_data(self, block: EditorJSBlock, context=None) -> EditorJSElement:
+        try:
+            page = self.model.objects.get(id=block["data"]["pageId"])
+        except self.model.DoesNotExist:
+            return None
+
+        request = None
+        if context:
+            request = context.get("request")
+
+        anchor = EditorJSElement(
+            "a",
+            block["data"]["text"],
+            {
+                "href": page.get_url(request),
+                "class": "editor-button",
+            }
+        )
+
+        return EditorJSElement(
+            "div", anchor, {"class": "editor-button-container"},
+        )
+
+    def render_template(self, context: dict[str, Any] = None):
+        if not self.widget:
+            return super().render_template(context)
+        
+        return self.widget.render_html(
+            f"editorjs-{self.model._meta.model_name}-button-chooser-{context['widget']['attrs']['id']}",
+            None,
+            {
+                "id": f"editorjs-{self.model._meta.model_name}-button-chooser-{context['widget']['attrs']['id']}"
+            },
+        )
+
+    @classmethod
+    def get_test_data(cls):
+        pages = cls.model.objects.all()[:5]
+
+        return [
+            {
+                "pageId": page.id,
+                "text": page.title,
+            }
+            for page in pages
         ]
 

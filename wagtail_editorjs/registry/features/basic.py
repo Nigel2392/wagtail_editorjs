@@ -20,6 +20,7 @@ class EditorJSJavascriptFeature(BaseEditorJSFeature):
 
 
 class EditorJSFeature(BaseEditorJSFeature):
+
     def validate(self, data: Any):
         """
             Perform basic validation for an EditorJS block feature.

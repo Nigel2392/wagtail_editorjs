@@ -73,17 +73,7 @@ class ImageRowTool extends window.BaseWagtailEditorJSTool {
     }
 
     addImage() {
-        this.imageChooser.openChooserModal();
-
-
-        let changeEventFunc;
-        changeEventFunc = () => {
-            const data = this.imageChooser.getState();
-            this._createImage(data);
-            this.imageChooser.input.removeEventListener('change', changeEventFunc);
-        };
-
-        this.imageChooser.input.addEventListener('change', changeEventFunc);
+        window.openChooserModal(this.imageChooser, this._createImage.bind(this));
     }
 
     _createImage(imageData) {
@@ -110,18 +100,12 @@ class ImageRowTool extends window.BaseWagtailEditorJSTool {
         });
 
         imageEdit.addEventListener('click', () => {
-            this.imageChooser.openChooserModal(image.dataset.imageId);
-            let changeEventFunc;
-            changeEventFunc = () => {
-                const data = this.imageChooser.getState();
+            openChooserModal(this.imageChooser, (data) => {
                 image.src = `${this.config.getImageUrl}${data.id}/`;
                 image.alt = data.title;
                 image.dataset.imageId = data.id;
                 image.dataset.editUrl = data.edit_url;
-                this.imageChooser.input.removeEventListener('change', changeEventFunc);
-            };
-
-            this.imageChooser.input.addEventListener('change', changeEventFunc);
+            });
         });
 
         const imageDelete = imageActions.addElement('button', {

@@ -6,6 +6,7 @@ from .blocks import (
     WarningFeature,
     TableFeature,
     BlockQuoteFeature,
+    ButtonFeature,
 )
 from .lists import (
     NestedListFeature,

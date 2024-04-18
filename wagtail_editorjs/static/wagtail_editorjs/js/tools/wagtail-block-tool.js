@@ -62,7 +62,7 @@ class BaseToolSetting {
     }
 
     onSave() {
-        this.tool.block.dispatchChange();
+        // this.tool.block.dispatchChange();
         return this.getState();
     }
 }
@@ -324,6 +324,31 @@ class _ElementType extends HTMLElement {
     addElement(tag, attributes = {}, ...children) {}
 }
 
+class _ModalType {
+    openChooserModal() {
+        throw new Error('openChooserModal must be implemented by subclasses');
+    }
+}
+
+
+/**
+ * @param {_ModalType} modal
+ * @param {Object} modalArgs
+ * @param {Function} onChosen
+ * @returns {void}
+ */
+function openChooserModal(modal, onChosen) {
+    modal.openChooserModal();
+    let changeEventFunc;
+    changeEventFunc = () => {
+        modal.input.removeEventListener('change', changeEventFunc);
+        const data = modal.getState();
+        onChosen(data);
+    };
+
+    modal.input.addEventListener('change', changeEventFunc);
+}
+
 
 /**
 * @param {String} tag
@@ -452,6 +477,10 @@ window.BaseButtonSetting = BaseButtonSetting;
 window.BaseInputSetting = BaseInputSetting;
 window.BaseSelectInputSetting = BaseSelectInputSetting;
 window.BaseToolSetting = BaseToolSetting;
+
+window._ModalType = _ModalType;
+window.openChooserModal = openChooserModal;
+
 window.makeElement = makeElement;
 window._ElementType = _ElementType;
 window.addAttributeData = addAttributeData;

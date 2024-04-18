@@ -172,8 +172,6 @@ class WagtailBackgroundColorTune extends BaseWagtailColorTune {
     }
 
     onChange() {
-        this.block.dispatchChange();
-
         if (this.stretchBlockButton && this.stretchTextElement) {
             this.stretchTextElement.innerHTML = this.stretchedTooltipText;
             if (this.data.stretched) {
