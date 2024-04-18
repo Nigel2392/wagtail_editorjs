@@ -311,3 +311,24 @@
     background-color: var(--block-background-color);
 }
 
+.wagtail-button-wrapper {
+    gap: 0.25rem;
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+.wagtail-button-wrapper .wagtail-button {
+    padding: 0 0.5rem;
+}
+.wagtail-button-wrapper svg {
+    vertical-align: middle;
+    width: 16px;
+    height: 16px;
+}
+
+.wagtail-button-wrapper .wagtail-button-icon {
+    background-color: unset;
+    color: var(--w-color-text-link-default);
+    padding: 0;
+}
