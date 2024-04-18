@@ -45,9 +45,8 @@ class WagtailLinkTool extends window.BaseWagtailChooserTool {
 
         let chooseNewPageFunc = null;
         chooseNewPageFunc = (e) => {
-            const data = this.chooser.state;
-            this.setDataOnWrapper(wrapperTag, data);
-            this.pageURLInput.value = data.url;
+            this.setDataOnWrapper(wrapperTag, this.state);
+            this.pageURLInput.value = this.state.url;
             this.chooser.input.removeEventListener('change', chooseNewPageFunc);
         };
 
@@ -62,14 +61,22 @@ class WagtailLinkTool extends window.BaseWagtailChooserTool {
         });
 
         this.targetSelect.onchange = (e) => {
-            this.pageURLInput.target = e.target.value;
+            if (e.target.value) {
+                this.wrapperTag.target = e.target.value;
+                this.wrapperTag.dataset.target = e.target.value;
+            } else if (this.wrapperTag.target) {
+                this.wrapperTag.removeAttribute('target');
+                delete this.wrapperTag.dataset.target;
+            }
         };
 
         this.relSelect.onchange = (e) => {
             if (!e.target.value && this.pageURLInput.rel) {
-                this.pageURLInput.removeAttribute('rel');
+                this.wrapperTag.removeAttribute('rel');
+                delete this.wrapperTag.dataset.rel;
             } else {
-                this.pageURLInput.rel = e.target.value;
+                this.wrapperTag.rel = e.target.value;
+                this.wrapperTag.dataset.rel = e.target.value;
             }
         }
 

@@ -109,11 +109,11 @@ class InlineEditorJSFeature(BaseEditorJSFeature):
                 matches[item][key] = item.get(key)
 
             for key, value in self.can_have_attrs.items():
-                if value:
-                    matches[item][key] = item.get(key)
-                else:
-                    if item.has_attr(key):
-                        matches[item][key] = True
+                v = item.get(key)
+                if v:
+                    matches[item][key] = v
+                elif item.has_attr(key):
+                    matches[item][key] = True
 
         # Build all inlines.
         self.build_elements(list(matches.items()), context=context)
@@ -177,7 +177,7 @@ class ModelInlineEditorJSFeature(InlineEditorJSFeature):
             },
         )
 
-    def build_element(self, item, obj, context: dict[str, Any] = None):
+    def build_element(self, item, obj, context: dict[str, Any] = None, data: dict[str, Any] = None):
         """
         Build the element from the object.
 
@@ -226,16 +226,16 @@ class ModelInlineEditorJSFeature(InlineEditorJSFeature):
             # Item is bs4 tag, attrs are must_have_attrs
 
             id = self.get_id(item, data, context)
-            ids.append((item, id))
+            ids.append((item, id, data))
 
             # delete all attributes
             for key in list(item.attrs.keys()):
                 del item[key]
 
         # Fetch all objects
-        objects = self.model.objects.in_bulk([id for item, id in ids])
-        for item, id in ids:
-            self.build_element(item, objects[id], context)
+        objects = self.model.objects.in_bulk([id for _, id, _ in ids])
+        for item, id, data in ids:
+            self.build_element(item, objects[id], context, data)
 
     def get_css(self):
         return self.widget.media._css.get("all", []) + super().get_css()

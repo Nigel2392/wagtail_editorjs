@@ -15,7 +15,8 @@ class BaseInlineSnippetChooserFeature(ModelInlineEditorJSFeature):
     model: SnippetChooserModel = None
     widget = AdminSnippetChooser
 
-    def build_element(self, soup_elem, obj: SnippetChooserModel, context: dict[str, Any] = None):
+    def build_element(self, soup_elem, obj: SnippetChooserModel, context: dict[str, Any] = None, data: dict[str, Any] = None):
+        """ Build the element from the object. """
         return obj.build_element(soup_elem, context)
 
 

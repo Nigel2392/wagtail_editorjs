@@ -94,6 +94,7 @@ class BaseWagtailChooserTool {
         }
 
         const wrapperTag = document.createElement(this.tag);
+        this.wrapperTag = wrapperTag;
 
         this.setDataOnWrapper(wrapperTag, state);
 
@@ -113,6 +114,7 @@ class BaseWagtailChooserTool {
     
     checkState() {
         const wrapperTag = this.api.selection.findParentTag(this.tag, this.tagClass);
+        this.wrapperTag = wrapperTag;
         if (!wrapperTag) {
             return
         }

@@ -22,6 +22,18 @@ Document = get_document_model()
 
 
 class BasePageLinkMixin(PageChooserURLsMixin):
+    allowed_attributes = ["target", "rel"]
+    can_have_attrs = {
+        "data-target": None,
+        "data-rel": None,
+    }
+
+    def build_element(self, item, obj, context: dict[str, Any] = None, data: dict[str, Any] = None):
+        """Build the element from the object."""
+        super().build_element(item, obj, context, data)
+        item["target"] = data.get("data-target", "_self")
+        item["rel"] = data.get("data-rel", "")
+
     @classmethod
     def get_url(cls, instance):
         return instance.get_url()
@@ -36,7 +48,9 @@ class BasePageLinkMixin(PageChooserURLsMixin):
 
 class LinkFeature(BasePageLinkMixin, ModelInlineEditorJSFeature):
     allowed_tags = ["a"]
-    allowed_attributes = ["class", "href", "data-id"]
+    allowed_attributes = BasePageLinkMixin.allowed_attributes + [
+        "class", "href", "data-id"
+    ]
     must_have_attrs = {
         "data-parent-id": None,
     }
@@ -69,7 +83,9 @@ BUILD_PAGE_DATA = "build_page_data"
 
 class LinkAutoCompleteFeature(FeatureViewMixin, BasePageLinkMixin, ModelInlineEditorJSFeature):
     allowed_tags = ["a"]
-    allowed_attributes = ["class", "href", "data-id"]
+    allowed_attributes = BasePageLinkMixin.allowed_attributes + [
+        "class", "href", "data-id"
+    ]
     must_have_attrs = {
         "data-autocomplete": "page",
     }
