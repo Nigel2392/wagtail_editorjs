@@ -1,4 +1,5 @@
 from .base import (
+    PageChooserURLsMixin,
     TemplateNotSpecifiedError,
     BaseEditorJSFeature,
 )

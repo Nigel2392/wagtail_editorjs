@@ -2,6 +2,7 @@ from .feature_registry import (
     EditorJSFeatures,
 )
 from .features import (
+    PageChooserURLsMixin,
     BaseEditorJSFeature,
     EditorJSFeature,
     EditorJSJavascriptFeature,

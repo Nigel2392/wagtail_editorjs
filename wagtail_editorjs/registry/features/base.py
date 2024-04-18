@@ -1,4 +1,5 @@
 from typing import Any, Union, TYPE_CHECKING
+from django.urls import reverse_lazy
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 from ..value import (
@@ -11,6 +12,30 @@ if TYPE_CHECKING:
 
 class TemplateNotSpecifiedError(Exception):
     pass
+
+
+class PageChooserURLsMixin:
+    def get_config(self, context: dict[str, Any] = None) -> dict:
+        config = super().get_config(context)
+        config.setdefault("config", {})
+        config["config"]["chooserUrls"] = {
+            "pageChooser": reverse_lazy(
+                "wagtailadmin_choose_page",
+            ),
+            "externalLinkChooser": reverse_lazy(
+                "wagtailadmin_choose_page_external_link",
+            ),
+            "emailLinkChooser": reverse_lazy(
+                "wagtailadmin_choose_page_email_link",
+            ),
+            "phoneLinkChooser": reverse_lazy(
+                "wagtailadmin_choose_page_phone_link",
+            ),
+            "anchorLinkChooser": reverse_lazy(
+                "wagtailadmin_choose_page_anchor_link",
+            ),
+        },
+        return config
 
 
 class BaseEditorJSFeature:

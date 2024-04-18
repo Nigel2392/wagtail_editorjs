@@ -8,6 +8,7 @@ from wagtail.documents import get_document_model
 from wagtail import hooks
 
 from ..registry import (
+    PageChooserURLsMixin,
     ModelInlineEditorJSFeature,
     FeatureViewMixin,
 )
@@ -20,7 +21,7 @@ from django.http import (
 Document = get_document_model()
 
 
-class BasePageLinkMixin:
+class BasePageLinkMixin(PageChooserURLsMixin):
     @classmethod
     def get_url(cls, instance):
         return instance.get_url()

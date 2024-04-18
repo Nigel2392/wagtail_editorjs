@@ -31,7 +31,7 @@ class WagtailLinkTool extends window.BaseWagtailChooserTool {
         };
 
         const cfg = {
-            url: window.chooserUrls.pageChooser,
+            url: this.config.chooserUrls.pageChooser,
             urlParams: urlParams,
             onload: window.PAGE_CHOOSER_MODAL_ONLOAD_HANDLERS,
             modelNames: ['wagtailcore.page'],

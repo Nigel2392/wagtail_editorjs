@@ -6,6 +6,7 @@ from django.utils.functional import cached_property
 import bleach
 
 from ..registry import (
+    PageChooserURLsMixin,
     EditorJSFeature,
     EditorJSBlock,
     EditorJSElement,
@@ -277,7 +278,7 @@ class BlockQuoteFeature(EditorJSFeature):
 from wagtail.models import Page
 from wagtail.admin.widgets import AdminPageChooser
 
-class ButtonFeature(EditorJSFeature):
+class ButtonFeature(PageChooserURLsMixin, EditorJSFeature):
     allowed_tags:       list[str]            = ["a"]
     allowed_attributes: dict[str, list[str]] = {
         "a": ["href", "class"]

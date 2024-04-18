@@ -52,7 +52,7 @@ class PageButtonTool extends window.BaseWagtailEditorJSTool {
         };
 
         const cfg = {
-            url: window.chooserUrls.pageChooser,
+            url: this.config.chooserUrls.pageChooser,
             urlParams: urlParams,
             onload: window.PAGE_CHOOSER_MODAL_ONLOAD_HANDLERS,
             modelNames: ['wagtailcore.page'],
@@ -119,15 +119,10 @@ class PageButtonTool extends window.BaseWagtailEditorJSTool {
     }
 
     save(blockContent) {
-        this.data = super.save(blockContent);
-        const button = blockContent.querySelector('.wagtail-button');
-        // this.data.text     = button.innerText;
-        // this.data.url     = button.dataset.url;
-        // this.data.pageId   = button.dataset.pageId;
-        // this.data.parentId = button.dataset.parentPageId;
-        this.data.text = this.buttonElement.innerText;
-        this.data.url = this.wrapperElement.dataset.url;
-        this.data.pageId = this.wrapperElement.dataset.pageId;
+        this.data          = super.save(blockContent);
+        this.data.text     = this.buttonElement.innerText;
+        this.data.url      = this.wrapperElement.dataset.url;
+        this.data.pageId   = this.wrapperElement.dataset.pageId;
         this.data.parentId = this.wrapperElement.dataset.parentPageId;
         return this.data;
     }
