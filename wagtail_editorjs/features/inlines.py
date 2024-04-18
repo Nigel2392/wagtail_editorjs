@@ -31,8 +31,10 @@ class BasePageLinkMixin(PageChooserURLsMixin):
     def build_element(self, item, obj, context: dict[str, Any] = None, data: dict[str, Any] = None):
         """Build the element from the object."""
         super().build_element(item, obj, context, data)
-        item["target"] = data.get("data-target", "_self")
-        item["rel"] = data.get("data-rel", "")
+        if "data-target" in data and data["data-target"]:
+            item["target"] = data["data-target"]
+        if "data-rel" in data and data["data-rel"]:
+            item["rel"] = data["data-rel"]
 
     @classmethod
     def get_url(cls, instance):
