@@ -62,6 +62,9 @@ def render_editorjs_html(
 
         # Tune the element.
         for tune_name, tune_value in tunes.items():
+            if tune_name not in feature_mappings:
+                continue
+
             element = feature_mappings[tune_name].tune_element(element, tune_value, context)
 
         # Add the block ID to each individual block.

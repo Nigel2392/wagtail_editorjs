@@ -261,27 +261,12 @@ def register_editor_js_features(registry: EditorJSFeatures):
         ),
     )
 
-    disallows_tunes = [
-        "images",
-        "raw",
-    ]
-
-    allows_color_tunes = [
-        "attaches",
-    ]
-
-    for feature in registry.features.values():
-        if feature.tool_name in disallows_tunes:
-            continue
-        
 
     # Add tunes
-        registry.register_tune("text-alignment-tune", feature.tool_name)
-        registry.register_tune("text-variant-tune", feature.tool_name)
-
-        if feature.tool_name in allows_color_tunes or not feature.tool_name in disallows_tunes:
-            registry.register_tune("background-color-tune", feature.tool_name)
-            registry.register_tune("text-color-tune", feature.tool_name)
+    registry.register_tune("text-alignment-tune")
+    registry.register_tune("text-variant-tune")
+    registry.register_tune("background-color-tune")
+    registry.register_tune("text-color-tune")
 
 
 # 
