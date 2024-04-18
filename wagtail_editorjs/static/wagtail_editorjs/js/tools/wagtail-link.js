@@ -80,6 +80,9 @@ class WagtailLinkTool extends window.BaseWagtailChooserTool {
             }
         }
 
+        this.relSelect.value = wrapperTag.rel || '';
+        this.targetSelect.value = wrapperTag.target || '';
+
         this.container.hidden = false;
 
 
