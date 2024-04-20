@@ -31,7 +31,7 @@
     padding-top: calc(var(--editor-richtext-padding-vertical) / 2);
     padding-bottom: calc(var(--editor-richtext-padding-vertical) / 2);
 }
-.wagtail-editorjs-richtext.wagtail-editorjs-richtext > :not(.stretched, .bg-stretched) {
+.wagtail-editorjs-richtext.wagtail-editorjs-richtext > :not(.stretched):is(.bg-stretched) {
     padding-left: calc(var(--editor-margin-x) / 5);
     padding-right: calc(var(--editor-margin-x) / 5);
 }
