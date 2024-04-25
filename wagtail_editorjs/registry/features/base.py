@@ -44,6 +44,8 @@ class BaseEditorJSFeature:
     klass: str = None
     js: list[str] = None
     css: list[str] = None
+    frontend_css: list[str] = []
+    frontend_js: list[str] = []
     # cleaner_funcs: dict[str, dict[str, Callable[[str], bool]]] = {}
     
     def __init__(self,
@@ -111,6 +113,18 @@ class BaseEditorJSFeature:
 
         self.allowed_tags = set(allowed_tags)
         self.allowed_attributes = allowed_attributes
+
+    def get_frontend_css(self):
+        """
+            Returns the css files required for the frontend.
+        """
+        return self.frontend_css
+    
+    def get_frontend_js(self):
+        """
+            Returns the js files required for the frontend.
+        """
+        return self.frontend_js
 
     def on_register(self, registry: "EditorJSFeatures"):
         """

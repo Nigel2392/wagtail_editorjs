@@ -17,7 +17,23 @@ from .registry import (
     TemplateNotSpecifiedError,
 )
 
+def _get_feature_scripts(feature, method, *args, list_obj = None, **kwargs):
+    get_scripts = getattr(feature, method, None)
+    if get_scripts is None:
+        raise AttributeError(f"Feature {feature} does not have a {method} method")
+    
+    scripts = get_scripts(*args, **kwargs)
 
+    if list_obj is None:
+        list_obj = []
+
+    for file in get_scripts():
+        if file not in list_obj:
+            if isinstance(file, (list, tuple)):
+                list_obj.extend(file)
+            else:
+                list_obj.append(file)
+    return scripts
 
 class EditorJSWidget(widgets.Input):
     """
@@ -94,19 +110,14 @@ class EditorJSWidget(widgets.Input):
         )
 
         for feature in feature_mapping.values():
-            for js_file in feature.get_js():
-                if js_file not in js:
-                    if isinstance(js_file, (list, tuple)):
-                        js.extend(js_file)
-                    else:
-                        js.append(js_file)
 
-            for css_file in feature.get_css():
-                if css_file not in css:
-                    if isinstance(css_file, (list, tuple)):
-                        css.extend(css_file)
-                    else:
-                        css.append(css_file)
+            js.extend(
+                _get_feature_scripts(feature, "get_js", list_obj=js)
+            )
+
+            css.extend(
+                _get_feature_scripts(feature, "get_css", list_obj=css)
+            )
 
         js.extend([
             "wagtail_editorjs/js/editorjs-widget-controller.js",

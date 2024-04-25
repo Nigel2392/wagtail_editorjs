@@ -26,7 +26,14 @@ Quick start
    ```django-html
    <link rel="stylesheet" href="{% static 'wagtail_editorjs/css/frontend.css' %}">
    {% load editorjs %}
+
+   {# CSS files for features #}
+   {% editorjs_static "css" %}
+
    {% editorjs self.editor_field %}
+
+    {# JS files for features #}
+    {% editorjs_static "js" %}
    ```
 3. Add the field to your model:
 
