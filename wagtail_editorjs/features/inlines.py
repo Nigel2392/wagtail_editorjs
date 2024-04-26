@@ -28,6 +28,7 @@ class TooltipFeature(InlineEditorJSFeature):
         "class",
         "data-tippy-content",
         "data-tippy-placement",
+        "data-tippy-follow-cursor",
     ]
     tag_name = "span"
     must_have_attrs = {
@@ -54,6 +55,8 @@ class TooltipFeature(InlineEditorJSFeature):
 
     def build_elements(self, inline_data: list, context: dict[str, Any] = None) -> list:
         for element, attrs in inline_data:
+
+            element["data-tippy-follow-cursor"] = "horizontal"
 
             for k, v in attrs.items():
                 if not k.startswith("data-w-tooltip-") or not k.endswith("-value"):
