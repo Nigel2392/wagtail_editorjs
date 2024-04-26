@@ -9,6 +9,7 @@ from wagtail import hooks
 
 from ..registry import (
     PageChooserURLsMixin,
+    InlineEditorJSFeature,
     ModelInlineEditorJSFeature,
     FeatureViewMixin,
 )
@@ -19,6 +20,49 @@ from django.http import (
 
 
 Document = get_document_model()
+
+
+class TooltipFeature(InlineEditorJSFeature):
+    allowed_tags = ["span"]
+    allowed_attributes = [
+        "class",
+        "data-tippy-content",
+        "data-tippy-placement",
+    ]
+    tag_name = "span"
+    must_have_attrs = {
+        "class": "wagtail-tooltip",
+        "data-w-tooltip-content-value": None,
+    }
+    can_have_attrs = {
+        "data-w-tooltip-placement-value": None,
+    }
+    
+    klass = "WagtailTooltip"
+    js = [
+        "wagtail_editorjs/js/tools/tooltips/wagtail-tooltips.js",
+    ]
+    frontend_js = [
+        "wagtail_editorjs/vendor/tippy/popper.min.js",
+        "wagtail_editorjs/vendor/tippy/tippy-bundle.min.js",
+        "wagtail_editorjs/js/tools/tooltips/frontend.js",
+    ]
+
+    @classmethod
+    def get_test_data(cls):
+        return []
+
+    def build_elements(self, inline_data: list, context: dict[str, Any] = None) -> list:
+        for element, attrs in inline_data:
+
+            for k, v in attrs.items():
+                if not k.startswith("data-w-tooltip-") or not k.endswith("-value"):
+                    continue
+
+                k = k.replace("data-w-tooltip-", "data-tippy-")
+                k = k[:-6]
+
+                element[k] = v
 
 
 class BasePageLinkMixin(PageChooserURLsMixin):

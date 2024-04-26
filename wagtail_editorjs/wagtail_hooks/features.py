@@ -23,6 +23,7 @@ from ..features import (
     ImageFeature,
     ImageRowFeature,
     ButtonFeature,
+    TooltipFeature,
     LinkFeature,
     LinkAutoCompleteFeature,
     DocumentFeature,
@@ -173,6 +174,12 @@ def register_editor_js_features(registry: EditorJSFeatures):
         ButtonFeature(
             "button",
         )
+    )
+    registry.register(
+        "tooltip",
+        TooltipFeature(
+            "tooltip",
+        ),
     )
     registry.register(
         "link",

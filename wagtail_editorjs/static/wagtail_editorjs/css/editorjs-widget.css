@@ -333,3 +333,8 @@
     color: var(--w-color-text-link-default);
     padding: 0;
 }
+
+span.wagtail-tooltip {
+    color: var(--w-color-text-link-default);
+    text-decoration: dotted underline;
+}

@@ -10,11 +10,12 @@ import bs4
 class InlineEditorJSFeature(BaseEditorJSFeature):
     must_have_attrs = None
     can_have_attrs = None
+    tag_name = None
 
     def __init__(
         self,
         tool_name: str,
-        tag_name: str,
+        tag_name: str = None,
         klass: str = None,
         must_have_attrs: dict = None,
         can_have_attrs: dict = None,
@@ -49,7 +50,7 @@ class InlineEditorJSFeature(BaseEditorJSFeature):
         if self.can_have_attrs:
             can_have_attrs.update(self.can_have_attrs)
 
-        self.tag_name = tag_name
+        self.tag_name = tag_name or self.tag_name
         self.must_have_attrs = must_have_attrs
         self.can_have_attrs = can_have_attrs
 
@@ -220,10 +221,8 @@ class ModelInlineEditorJSFeature(InlineEditorJSFeature):
             # data: dict[str, Any] # Block data.
             item, data = data
 
-            # # Store element and soup for later replacement of content.
-            # element_soups.append((soup, element))
 
-            # Item is bs4 tag, attrs are must_have_attrs
+            # Item is bs4 tag, attrs are must_have_attrs and can_have_attrs
 
             id = self.get_id(item, data, context)
             ids.append((item, id, data))

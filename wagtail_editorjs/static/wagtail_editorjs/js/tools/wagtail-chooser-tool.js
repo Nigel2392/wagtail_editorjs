@@ -114,12 +114,7 @@ class BaseWagtailChooserTool {
     
     checkState() {
         const wrapperTag = this.api.selection.findParentTag(this.tag, this.tagClass);
-        this.wrapperTag = wrapperTag;
-        if (!wrapperTag) {
-            return
-        }
         
-
         this.state = !!wrapperTag;
 
         if (this.state) {

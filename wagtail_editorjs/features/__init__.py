@@ -20,6 +20,7 @@ from .images import (
     ImageRowFeature,
 )
 from .inlines import (
+    TooltipFeature,
     LinkFeature,
     LinkAutoCompleteFeature,
     DocumentFeature,

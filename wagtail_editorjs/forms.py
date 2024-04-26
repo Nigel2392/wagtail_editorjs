@@ -99,6 +99,7 @@ class EditorJSWidget(widgets.Input):
             "wagtail_editorjs/vendor/editorjs/editorjs.umd.js",
             "wagtail_editorjs/js/editorjs-widget.js",
             "wagtail_editorjs/js/tools/wagtail-block-tool.js",
+            "wagtail_editorjs/js/tools/wagtail-inline-tool.js",
         ]
         css = [
             "wagtail_editorjs/css/editorjs-widget.css",
@@ -110,14 +111,8 @@ class EditorJSWidget(widgets.Input):
         )
 
         for feature in feature_mapping.values():
-
-            js.extend(
-                _get_feature_scripts(feature, "get_js", list_obj=js)
-            )
-
-            css.extend(
-                _get_feature_scripts(feature, "get_css", list_obj=css)
-            )
+            _get_feature_scripts(feature, "get_js", list_obj=js)
+            _get_feature_scripts(feature, "get_css", list_obj=css)
 
         js.extend([
             "wagtail_editorjs/js/editorjs-widget-controller.js",

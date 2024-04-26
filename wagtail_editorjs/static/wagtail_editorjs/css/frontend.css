@@ -437,3 +437,10 @@
     background-color: rgba(var(--editor-button-bg-hover), calc(var(--editor-button-bg-hover-opacity) / 100));
     color: var(--editor-button-text-hover);
 }
+
+.wagtail-tooltip {
+    cursor: help;
+    color: rgba(var(--editor-accent-color-rgb), 1);
+    text-decoration: dotted underline;
+    text-underline-offset: 0.15em;
+}

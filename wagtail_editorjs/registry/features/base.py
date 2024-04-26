@@ -114,18 +114,6 @@ class BaseEditorJSFeature:
         self.allowed_tags = set(allowed_tags)
         self.allowed_attributes = allowed_attributes
 
-    def get_frontend_css(self):
-        """
-            Returns the css files required for the frontend.
-        """
-        return self.frontend_css
-    
-    def get_frontend_js(self):
-        """
-            Returns the js files required for the frontend.
-        """
-        return self.frontend_js
-
     def on_register(self, registry: "EditorJSFeatures"):
         """
             Called when the feature is registered.
@@ -188,6 +176,9 @@ class BaseEditorJSFeature:
         """
             Return any javascript files required for this feature to work.
         """
+        if not self.js:
+            return []
+            
         if isinstance(self.js, str):
             return [self.js]
         return self.js
@@ -196,10 +187,25 @@ class BaseEditorJSFeature:
         """
             Return any css files required for this feature to work.
         """
+        if not self.css:
+            return []
+            
         if isinstance(self.css, str):
             return [self.css]
         return self.css
     
+    def get_frontend_css(self):
+        """
+            Returns the css files required for the frontend.
+        """
+        return self.frontend_css
+    
+    def get_frontend_js(self):
+        """
+            Returns the js files required for the frontend.
+        """
+        return self.frontend_js
+
     def validate(self, data: Any):
         """
             Validate any data coming from editorJS
