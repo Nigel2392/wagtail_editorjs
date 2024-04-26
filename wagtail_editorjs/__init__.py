@@ -7,5 +7,9 @@ Includes support for custom blocks, inline tools, and more.
 Everything is dynamic and customizable.
 """
 
-__version__ = '1.6.1rc1'
-VERSION = tuple([int(v) for v in __version__.split('.')])
+import packaging.version as pv
+
+
+
+__version__ = '1.6.1rc2'
+VERSION = pv.parse(__version__)
