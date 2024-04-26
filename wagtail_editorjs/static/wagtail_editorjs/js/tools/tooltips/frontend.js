@@ -30,8 +30,25 @@ class TippyTooltip {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    const tooltips = document.querySelectorAll(".wagtail-tooltip");
-    for (const tooltip of tooltips) {
-        new TippyTooltip(tooltip);
-    }
+    const initTippyNode = (node) => {
+        if (node.classList && node.classList.contains("wagtail-tooltip") && !node._tippy) {
+            node._tippy = new TippyTooltip(node);
+        }
+    };
+
+    const observerFunc = (mutationsList, observer) => {
+        for (const mutation of mutationsList) {
+            if (mutation.type === "childList") {
+                for (const node of mutation.addedNodes) {
+                    initTippyNode(node);
+                }
+            }
+        }
+    };
+ 
+    const observer = new MutationObserver(observerFunc);
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    const tooltipNodes = document.querySelectorAll(".wagtail-tooltip");
+    tooltipNodes.forEach(initTippyNode);
 });
