@@ -58,6 +58,9 @@ class TooltipFeature(InlineEditorJSFeature):
 
             element["data-tippy-follow-cursor"] = "horizontal"
 
+            # As per wagtail documentation default is bottom.
+            attrs.setdefault("data-w-tooltip-placement-value", "bottom")
+
             for k, v in attrs.items():
                 if not k.startswith("data-w-tooltip-") or not k.endswith("-value"):
                     continue

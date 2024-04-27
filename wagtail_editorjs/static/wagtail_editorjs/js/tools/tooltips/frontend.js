@@ -13,7 +13,7 @@ class TippyTooltip {
             console.debug("Tippy tooltips disabled");
             return;
         }
-        tippy(this.element, this.tooltipConfig);
+        this.tippy = tippy(this.element, this.tooltipConfig);
     }
 
     makeConfig() {
@@ -48,6 +48,11 @@ class TippyTooltip {
         const initTippyNode = (node) => {
             if (node.classList && node.classList.contains("wagtail-tooltip") && !node._tippy) {
                 node._tippy = new TippyTooltip(node);
+            }
+
+            const tooltipNodes = node.querySelectorAll(".wagtail-tooltip");
+            if (tooltipNodes.length) {
+                tooltipNodes.forEach(initTippyNode);
             }
         };
     
