@@ -51,10 +51,22 @@ class TooltipFeature(InlineEditorJSFeature):
 
     @classmethod
     def get_test_data(cls):
-        return []
+        return [
+            (
+                f"<span class='wagtail-tooltip' data-w-tooltip-content-value='Tooltip content'></span>",
+                f"<span class='wagtail-tooltip' data-tippy-content='Tooltip content' data-tippy-placement='bottom' data-tippy-follow-cursor='horizontal'></span>",
+            ),
+            (
+                f"<span class='wagtail-tooltip' data-w-tooltip-content-value='Tooltip content' data-w-tooltip-placement-value='top'></span>",
+                f"<span class='wagtail-tooltip' data-tippy-content='Tooltip content' data-tippy-placement='top' data-tippy-follow-cursor='horizontal'></span>",
+            ),
+        ]
 
     def build_elements(self, inline_data: list, context: dict[str, Any] = None) -> list:
         for element, attrs in inline_data:
+
+            element.attrs.clear()
+            element["class"] = "wagtail-tooltip"
 
             element["data-tippy-follow-cursor"] = "horizontal"
 
