@@ -75,7 +75,6 @@ class EditorJSSoupElement(EditorJSElement):
         self.raw_html = raw_html
         self.soup = bs4.BeautifulSoup(raw_html, "html.parser")
         self.soupContent = self.soup.contents[0]
-        
 
     @property
     def content(self):
