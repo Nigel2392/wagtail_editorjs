@@ -148,7 +148,7 @@ class TextBlock(EditorJSFeatureStructBlock):
 
     class Meta:
         template = "myapp/text_block.html"
-        allowed_tags = ["div", "h1", "h2", "p"]
+        allowed_tags = ["h1", "h2", "p"]
         # Html looks like:
         #  <h1>{{ self.heading.title }}</h1>
         #  <h2>{{ self.heading.subtitle }}</h2>
@@ -165,6 +165,18 @@ def register_editor_js_features(registry: EditorJSFeatures):
         ),
     )
 ```
+
+The block will then be rendered as any structblock, but it will be wrapped in a div with the class `wagtail-text-block` (the feature name).
+
+Example:
+    
+    ```html
+    <div class="wagtail-text-block">
+        <h1>My title</h1>
+        <h2>My subtitle</h2>
+        <p>My body</p>
+    </div>
+    ```
 
 ## Settings
 

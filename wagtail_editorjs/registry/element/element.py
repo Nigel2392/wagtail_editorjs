@@ -104,9 +104,15 @@ class EditorJSSoupElement(EditorJSElement):
         
     def add_attributes(self, **attrs: Union[str, list[str], dict[str, Any]]):
         for key, value in attrs.items():
-            if key == "class_":
-                key = "class"
-            self.soupContent[key] = str(value)
+            if key == "class_" or key == "class":
+                classList = self.soupContent.get("class", [])
+                if isinstance(value, str):
+                    classList.append(value)
+                elif isinstance(value, list):
+                    classList.extend(value)
+                self.soupContent["class"] = classList
+            else:
+                self.soupContent[key] = value
 
 
 def wrapper(element: EditorJSElement, attrs: dict[str, EditorJSElementAttribute] = None, tag: str = "div"):

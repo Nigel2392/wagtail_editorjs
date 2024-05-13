@@ -356,10 +356,21 @@ class WagtailBlockFeature(EditorJSFeature):
     @property
     def allowed_attributes(self):
         if hasattr(self.block, "allowed_attributes"):
-            return self.block.allowed_attributes or {}
-        if hasattr(self.block.meta, "allowed_attributes"):
-            return self.block.meta.allowed_attributes or {}
-        return super().allowed_attributes or {}
+            d = self.block.allowed_attributes
+        elif hasattr(self.block.meta, "allowed_attributes"):
+            d = self.block.meta.allowed_attributes
+        else:
+            d = super().allowed_attributes
+        
+        d = d or {}
+
+        class_d = d.setdefault("class", [])
+        if isinstance(class_d, str):
+            class_d = [class_d]
+        
+        class_d.append(self.tool_name)
+
+        return d
     
     @property
     def js(self):
@@ -371,7 +382,7 @@ class WagtailBlockFeature(EditorJSFeature):
     def render_block_data(self, block: EditorJSBlock, context=None) -> EditorJSElement:
         prefix = block["data"].get("__prefix__") or ""
         value: blocks.StructValue = self.block.value_from_datadict(block["data"].get("block", {}), {}, prefix)
-        return EditorJSSoupElement(f"<div>{ self.block.render(value) }</div>")
+        return EditorJSSoupElement(f"<div class=\"{self.tool_name}\">{ self.block.render(value) }</div>")
     
     @property
     def css(self):
