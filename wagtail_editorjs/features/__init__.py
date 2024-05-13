@@ -6,6 +6,8 @@ from .blocks import (
     WarningFeature,
     TableFeature,
     BlockQuoteFeature,
+    WagtailBlockFeature,
+    EditorJSFeatureStructBlock,
     ButtonFeature,
 )
 from .lists import (

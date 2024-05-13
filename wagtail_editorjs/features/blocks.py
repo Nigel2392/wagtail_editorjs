@@ -379,6 +379,24 @@ class WagtailBlockFeature(EditorJSFeature):
             mark_safe(f"<script src=\"{ static('wagtail_editorjs/js/tools/wagtail-block.js') }\" data-name=\"{ self.block.name }\" data-title=\"{ self.block.label }\"></script>"),
         ]
     
+    def validate(self, data: Any):
+        super().validate(data)
+
+        prefix = data["data"].get("__prefix__") or ""
+
+        if not prefix:
+            raise forms.ValidationError("Invalid prefix value")
+        
+        if "block" not in data["data"]:
+            raise forms.ValidationError("Invalid block value")
+
+        value: blocks.StructValue = self.block.value_from_datadict(
+            data["data"].get("block", {}), {}, prefix,
+        )
+        data["data"]["block"] = self.block.clean(
+            value,
+        )
+    
     def render_block_data(self, block: EditorJSBlock, context=None) -> EditorJSElement:
         prefix = block["data"].get("__prefix__") or ""
         value: blocks.StructValue = self.block.value_from_datadict(block["data"].get("block", {}), {}, prefix)
