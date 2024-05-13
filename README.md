@@ -123,7 +123,7 @@ It is **not** allowed to be or include:
 * Any type of `ChooserBlock` (cannot initialize)
 * A `RichTextBlock` (cannot initialize)
 
-Help with these issues is highly appreciated!
+*Help with these issues is highly appreciated!*
 
 Example:
 
