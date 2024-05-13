@@ -1,6 +1,7 @@
 from typing import Any, Union, TypeVar
 from .attrs import EditorJSElementAttribute
 from .utils import add_attributes, wrap_tag, _make_attr
+import bs4
 
 
 ElementType = TypeVar("ElementType", bound="EditorJSElement")
@@ -67,6 +68,46 @@ class EditorJSElement:
             content = self.content,
             close_tag = self.close_tag
         )
+    
+
+class EditorJSSoupElement(EditorJSElement):
+    def __init__(self, raw_html: str):
+        self.raw_html = raw_html
+        self.soup = bs4.BeautifulSoup(raw_html, "html.parser")
+        self.soupContent = self.soup.contents[0]
+        
+
+    @property
+    def content(self):
+        return str(self.soup)
+    
+    @content.setter
+    def content(self, value):
+        self.soup = bs4.BeautifulSoup(value, "html.parser")
+        self.soupContent = self.soup.contents[0]
+
+    @property
+    def attrs(self):
+        return self.soupContent.attrs            
+
+    def __str__(self):
+        return str(self.soup)
+    
+    def append(self, element: "EditorJSElement"):
+        if isinstance(element, EditorJSSoupElement):
+            self.soupContent.append(element.soup)
+        elif isinstance(element, str):
+            self.soupContent.append(element)
+        elif isinstance(element, EditorJSElement):
+            self.soupContent.append(str(element))
+        else:
+            raise TypeError(f"Invalid type {type(element)}")
+        
+    def add_attributes(self, **attrs: Union[str, list[str], dict[str, Any]]):
+        for key, value in attrs.items():
+            if key == "class_":
+                key = "class"
+            self.soupContent[key] = str(value)
 
 
 def wrapper(element: EditorJSElement, attrs: dict[str, EditorJSElementAttribute] = None, tag: str = "div"):

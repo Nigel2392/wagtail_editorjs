@@ -12,6 +12,7 @@ from ..registry import (
     EditorJSFeature,
     EditorJSBlock,
     EditorJSElement,
+    EditorJSSoupElement,
     wrap_tag,
 )
 
@@ -452,7 +453,7 @@ class WagtailBlockFeature(EditorJSFeature):
     def render_block_data(self, block: EditorJSBlock, context=None) -> EditorJSElement:
         prefix = block["data"].get("__prefix__") or ""
         value: blocks.StructValue = self.block.value_from_datadict(block["data"].get("block", {}), {}, prefix)
-        return EditorJSElement("div", value.render_as_block(context=context))
+        return EditorJSSoupElement(value.render_as_block(context=context))
     
     @property
     def css(self):

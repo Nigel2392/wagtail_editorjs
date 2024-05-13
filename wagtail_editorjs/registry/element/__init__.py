@@ -8,6 +8,7 @@ from .utils import (
 )
 from .element import (
     EditorJSElement,
+    EditorJSSoupElement,
     EditorJSWrapper,
     wrapper,
 )
