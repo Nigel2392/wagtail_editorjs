@@ -327,6 +327,9 @@ class WagtailBlockFeature(EditorJSFeature):
             tool_name, klass, None, None, None, config, weight, allowed_tags, allowed_attributes, **kwargs
         )
 
+    def init_static(self, css, js):
+        pass
+
     @cached_property
     def widget(self):
         return blocks.BlockWidget(self.block)
@@ -393,6 +396,7 @@ class WagtailBlockFeature(EditorJSFeature):
         value: blocks.StructValue = self.block.value_from_datadict(
             data["data"].get("block", {}), {}, prefix,
         )
+        
         data["data"]["block"] = self.block.clean(
             value,
         )

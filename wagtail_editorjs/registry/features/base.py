@@ -61,15 +61,6 @@ class BaseEditorJSFeature:
             **kwargs
         ):
 
-        css = css or []
-        js = js or []
-
-        if self.css:
-            css.extend(self.css)
-
-        if self.js:
-            js.extend(self.js)
-
         if not klass and not self.klass:
             raise ValueError("klass must be provided")
         
@@ -78,12 +69,14 @@ class BaseEditorJSFeature:
         
         self.tool_name = tool_name
         self.klass = klass
-        self.js = js
-        self.css = css
         self.config = config or dict()
         self.kwargs = kwargs
         self.weight = weight
         self.include_template = include_template
+
+        self.init_static(
+            css, js,
+        )
 
         if not isinstance(allowed_tags, (list, tuple, set)) and allowed_tags is not None:
             raise ValueError("allowed_tags must be a list, tuple or set")
@@ -113,6 +106,19 @@ class BaseEditorJSFeature:
 
         self.allowed_tags = set(allowed_tags)
         self.allowed_attributes = allowed_attributes
+
+    def init_static(self, css, js):
+        css = css or []
+        js = js or []
+
+        if self.css:
+            css.extend(self.css)
+
+        if self.js:
+            js.extend(self.js)
+            
+        self.js = js
+        self.css = css
 
     def on_register(self, registry: "EditorJSFeatures"):
         """
