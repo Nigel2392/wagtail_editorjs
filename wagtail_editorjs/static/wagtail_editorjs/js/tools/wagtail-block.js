@@ -38,36 +38,36 @@
                 className: 'wagtail-block-feature-wrapper',
             });
 
-            this.blockPrefix = this.data.__prefix__ || `${blockName}-${Math.random().toString(36).substring(7)}`;
+            this.blockPrefix = `${blockName}-${Math.random().toString(36).substring(7)}`;
 
             const html = this.config.rendered.replace(
-                /__ID__/g,
+                /__PREFIX__/g,
                 this.blockPrefix,
             );
 
             this.wrapperElement.innerHTML = html;
 
-            this.block = this.wrapperElement.firstChild;
-            this.inputs = [];
+            const element = this.wrapperElement.querySelector(`#${this.blockPrefix}`);
+            const id = element.id;
 
-            setTimeout(() => {
+            if (!window.telepath) {
+                console.error('Telepath is not defined');
+                return;
+            }
 
-                const inputs = this.wrapperElement.querySelectorAll('input, textarea, select');
-                for (let i = 0; i < inputs.length; i++) {
-                    const inp = inputs[i];
-                    if (inp.name.startsWith(this.blockPrefix)) {
-                        this.inputs.push(inp);
-                    }
-                }
+            // const dataValue = JSON.parse(element.getAttribute('data-w-block-data-value'));
+            // const argumentsValue = JSON.parse(element.getAttribute('data-w-block-arguments-value'));
+            const dataValue = JSON.parse(element.dataset.wBlockDataValue);
+            const argumentsValue = JSON.parse(element.dataset.wBlockArgumentsValue);
+            this.blockDef = telepath.unpack(dataValue);
 
-                if (this.data) {
-                    console.log(this.data);
-                    for (let i = 0; i < this.inputs.length; i++) {
-                        this.inputs[i].value = this.data["block"][this.inputs[i].name] || '';
-                    }
-                }
+            this.block = this.blockDef.render(
+                element, id, ...argumentsValue,
+            )
 
-            }, 0);
+            if (this.data) {
+                this.block.setState(this.data["block"]);
+            }
 
             return super.render();
         }
@@ -78,18 +78,11 @@
 
         save(blockContent) {
             this.data = super.save(blockContent);
-
-            if (!this.data["block"]) {
-                this.data["block"] = {};
+            if (!this.block.getState) {
+                console.error('Block does not have a getState method', this.block)
+            } else {
+                this.data["block"] = this.block.getState();
             }
-
-            for (let i = 0; i < this.inputs.length; i++) {
-                let inp = this.inputs[i];
-                this.data["block"][inp.name] = inp.value || '';
-            }
-
-            this.data["__prefix__"] = this.blockPrefix;
-
             return this.data || {};
         }
     }

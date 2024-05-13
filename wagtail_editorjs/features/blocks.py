@@ -338,10 +338,11 @@ class WagtailBlockFeature(EditorJSFeature):
         data = super().get_config(context)
         config = data.get("config", {})
         config["rendered"] = self.widget.render_with_errors(
-            "__ID__", self.block.get_default(),
+            "__PREFIX__", self.block.get_default(),
         )
         data["config"] = config
         return data
+    
     
     @property
     def allowed_tags(self):
@@ -393,26 +394,20 @@ class WagtailBlockFeature(EditorJSFeature):
     def validate(self, data: Any):
         super().validate(data)
 
-        prefix = data["data"].get("__prefix__") or ""
-
-        if not prefix:
-            raise forms.ValidationError("Invalid prefix value")
-        
         if "block" not in data["data"]:
             raise forms.ValidationError("Invalid block value")
-
-        value: blocks.StructValue = self.block.value_from_datadict(
-            data["data"].get("block", {}), {}, prefix,
-        )
         
         self.block.clean(
-            value,
+            data["data"]["block"],
         )
     
     def render_block_data(self, block: EditorJSBlock, context=None) -> EditorJSElement:
-        prefix = block["data"].get("__prefix__") or ""
-        value: blocks.StructValue = self.block.value_from_datadict(block["data"].get("block", {}), {}, prefix)
+        value: blocks.StructValue = self.block.to_python(block["data"]["block"])
         return EditorJSSoupElement(f"<div class=\"{self.tool_name}\">{ self.block.render(value) }</div>")
+    
+    @classmethod
+    def get_test_data(cls):
+        return []
     
     @property
     def css(self):

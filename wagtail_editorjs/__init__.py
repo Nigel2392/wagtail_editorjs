@@ -11,5 +11,5 @@ import distutils.version as pv
 
 
 
-__version__ = '1.6.3'
+__version__ = '1.6.4'
 VERSION = pv.LooseVersion(__version__)

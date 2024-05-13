@@ -48,10 +48,12 @@ class TestWagtailBlockFeature(BaseEditorJSTest):
 
     def test_wagtail_block_feature(self):
         test_data = {
-            "test_feature-title": "Test Title",
-            "test_feature-text": "Test Text",
-            "test_feature-sub_block-sub_title": "Sub Title",
-            "test_feature-sub_block-sub_text": "Sub Text",
+            "title": "Test Title",
+            "text": "Test Text",
+            "sub_block": {
+                "sub_title": "Sub Title",
+                "sub_text": "Sub Text",
+            },
         }
 
         feature_value = {
