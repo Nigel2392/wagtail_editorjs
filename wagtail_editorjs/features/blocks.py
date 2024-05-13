@@ -2,6 +2,8 @@ from typing import Any
 from django import forms
 from django.utils.translation import gettext_lazy as _
 from django.utils.functional import cached_property
+from django.templatetags.static import static
+from django.utils.safestring import mark_safe
 
 import bleach
 
@@ -361,3 +363,116 @@ class ButtonFeature(PageChooserURLsMixin, EditorJSFeature):
             for page in pages
         ]
 
+
+from wagtail import blocks
+
+
+class EditorJSFeatureStructBlock(blocks.StructBlock):
+    MUTABLE_META_ATTRIBUTES = blocks.StructBlock.MUTABLE_META_ATTRIBUTES + [
+        "allowed_tags", "allowed_attributes"
+    ]
+
+    def __init__(self, *args, allowed_tags: list[str] = None, allowed_attributes: dict[str, list[str]] = None, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.set_meta_options({
+            "allowed_tags": allowed_tags,
+            "allowed_attributes": allowed_attributes,
+        })
+
+        for _, block in self.child_blocks.items():
+            if isinstance(block, (blocks.StreamBlock, blocks.ListBlock)):
+                raise ValueError("StreamBlock and ListBlock are not allowed in StructBlock children for the EditorJSFeatureStructBlock")
+        
+
+class WagtailBlockFeature(EditorJSFeature):
+    def __init__(self, 
+            tool_name: str,
+            block: blocks.Block,
+            klass: str = None,
+            config: dict = None,
+            weight: int = 0, # Weight is used to manage which features.js files are loaded first.
+            allowed_tags: list[str] = None,
+            allowed_attributes: dict[str, list[str]] = None,
+            **kwargs
+        ):
+
+        if not isinstance(block, blocks.Block) and issubclass(block, blocks.Block):
+            block = block()
+
+        if not isinstance(block, (EditorJSFeatureStructBlock, blocks.FieldBlock)):
+            raise TypeError("block must be an instance of EditorJSFeatureStructBlock or FieldBlock")
+
+        self.block = block
+
+        self.block.set_name(
+            self.block.__class__.__name__.lower()
+        )
+
+        super().__init__(
+            tool_name, klass, None, None, None, config, weight, allowed_tags, allowed_attributes, **kwargs
+        )
+
+    @cached_property
+    def widget(self):
+        return blocks.BlockWidget(self.block)
+
+    def get_config(self, context: dict[str, Any] = None) -> dict:
+        data = super().get_config(context)
+        config = data.get("config", {})
+        config["rendered"] = self.widget.render_with_errors(
+            "__ID__", self.block.get_default(),
+        )
+        data["config"] = config
+        return data
+    
+    @property
+    def allowed_tags(self):
+        if hasattr(self.block, "allowed_tags"):
+            return self.block.allowed_tags or []
+        if hasattr(self.block.meta, "allowed_tags"):
+            return self.block.meta.allowed_tags or []
+        return super().allowed_tags or []
+
+    @property
+    def allowed_attributes(self):
+        if hasattr(self.block, "allowed_attributes"):
+            return self.block.allowed_attributes or {}
+        if hasattr(self.block.meta, "allowed_attributes"):
+            return self.block.meta.allowed_attributes or {}
+        return super().allowed_attributes or {}
+    
+    @property
+    def js(self):
+        return [
+            *self.widget.media._js,
+            mark_safe(f"<script src=\"{ static('wagtail_editorjs/js/tools/wagtail-block.js') }\" data-name=\"{ self.block.name }\" data-title=\"{ self.block.label }\"></script>"),
+        ]
+    
+    def render_block_data(self, block: EditorJSBlock, context=None) -> EditorJSElement:
+        prefix = block["data"].get("__prefix__") or ""
+        value: blocks.StructValue = self.block.value_from_datadict(block["data"].get("block", {}), {}, prefix)
+        return EditorJSElement("div", value.render_as_block(context=context))
+    
+    @property
+    def css(self):
+        return self.widget.media._css
+        
+    @property
+    def klass(self):
+        return f"WagtailBlockTool_{ self.block.name }"
+
+    @js.setter
+    def js(self, data: Any): pass
+
+    @css.setter
+    def css(self, data: Any): pass
+
+    @klass.setter
+    def klass(self, data: Any): pass
+
+    @allowed_tags.setter
+    def allowed_tags(self, data: Any): pass
+
+    @allowed_attributes.setter
+    def allowed_attributes(self, data: Any): pass

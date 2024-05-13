@@ -110,6 +110,60 @@ To find this out - you can:
    dict_keys([... all registered features ...])
    ```
 
+##  Register a Wagtail block as a feature
+
+It is also possible to register a Wagtail block as a feature.
+
+This may be a `Fieldblock` (like `Charblock`, or `TextBlock`), or a `StructBlock`.
+
+It is **not** allowed to be:
+
+* A `StreamBlock`
+* A `ListBlock`
+* Any type of `ChooserBlock`
+* A `RichTextBlock`
+
+Example:
+
+```python
+from wagtail import hooks
+from wagtail_editorjs.features import (
+    WagtailBlockFeature,
+    EditorJSFeatureStructBlock,
+)
+from wagtail_editorjs.registry import (
+    EditorJSFeatures,
+)
+from wagtail_editorjs.hooks import REGISTER_HOOK_NAME
+
+from wagtail import blocks
+
+class HeadingBlock(blocks.StructBlock):
+    title = blocks.CharBlock()
+    subtitle = blocks.CharBlock()
+
+class RowBlock(EditorJSFeatureStructBlock):
+    heading = HeadingBlock()
+    body = blocks.TextBlock()
+
+    class Meta:
+        allowed_tags = ["div", "h1", "h2", "h3", "h4", "h5", "h6", "p"]
+
+    def render(self, value, context=None):
+        return f"<div><h1>{value['heading']['title']}</h1><h2>{value['heading']['subtitle']}</h2><p>{value['body']}</p></div>"
+
+@hooks.register(REGISTER_HOOK_NAME)
+def register_editor_js_features(registry: EditorJSFeatures):
+
+    registry.register(
+        "wagtail-row-block",
+        WagtailBlockFeature(
+            "wagtail-row-block",
+            block=RowBlock(),
+        ),
+    )
+```
+
 ## Settings
 
 ### `EDITORJS_CLEAN_HTML`
