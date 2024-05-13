@@ -400,8 +400,8 @@ class WagtailBlockFeature(EditorJSFeature):
         if not isinstance(block, blocks.Block) and issubclass(block, blocks.Block):
             block = block()
 
-        if not isinstance(block, (EditorJSFeatureStructBlock, blocks.FieldBlock)):
-            raise TypeError("block must be an instance of EditorJSFeatureStructBlock or FieldBlock")
+        if not isinstance(block, (blocks.StructBlock, blocks.FieldBlock)):
+            raise TypeError("block must be an instance of StructBlock or FieldBlock")
 
         self.block = block
 
