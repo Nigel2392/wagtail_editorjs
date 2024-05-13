@@ -118,8 +118,8 @@ This may be a `Fieldblock` (like `Charblock`, or `TextBlock`), or a `StructBlock
 
 It is **not** allowed to be or include:
 
-* A `StreamBlock`
-* A `ListBlock`
+* A `StreamBlock` (mainly due to styling issues)
+* A `ListBlock` (mainly due to styling issues)
 * Any type of `ChooserBlock`
 * A `RichTextBlock`
 
