@@ -142,7 +142,7 @@ class HeadingBlock(blocks.StructBlock):
     title = blocks.CharBlock()
     subtitle = blocks.CharBlock()
 
-class RowBlock(EditorJSFeatureStructBlock):
+class TextBlock(EditorJSFeatureStructBlock):
     heading = HeadingBlock()
     body = blocks.TextBlock()
 
@@ -156,10 +156,10 @@ class RowBlock(EditorJSFeatureStructBlock):
 def register_editor_js_features(registry: EditorJSFeatures):
 
     registry.register(
-        "wagtail-row-block",
+        "wagtail-text-block",
         WagtailBlockFeature(
-            "wagtail-row-block",
-            block=RowBlock(),
+            "wagtail-text-block",
+            block=TextBlock(),
         ),
     )
 ```
