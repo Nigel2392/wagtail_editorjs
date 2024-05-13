@@ -120,8 +120,8 @@ It is **not** allowed to be or include:
 
 * A `StreamBlock` (mainly due to styling issues)
 * A `ListBlock` (mainly due to styling issues)
-* Any type of `ChooserBlock`
-* A `RichTextBlock`
+* Any type of `ChooserBlock` (cannot initialize)
+* A `RichTextBlock` (cannot initialize)
 
 Example:
 
