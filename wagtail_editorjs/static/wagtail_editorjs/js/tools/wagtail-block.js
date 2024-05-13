@@ -49,25 +49,36 @@
 
             const element = this.wrapperElement.querySelector(`#${this.blockPrefix}`);
             const id = element.id;
-
+//
             if (!window.telepath) {
-                console.error('Telepath is not defined');
-                return;
+               console.error('Telepath is not defined');
+               return;
             }
-
+//
             // const dataValue = JSON.parse(element.getAttribute('data-w-block-data-value'));
             // const argumentsValue = JSON.parse(element.getAttribute('data-w-block-arguments-value'));
+            if (element.dataset.controller) {
+                delete element.dataset.controller;
+            }
             const dataValue = JSON.parse(element.dataset.wBlockDataValue);
             const argumentsValue = JSON.parse(element.dataset.wBlockArgumentsValue);
             this.blockDef = telepath.unpack(dataValue);
 
-            this.block = this.blockDef.render(
-                element, id, ...argumentsValue,
-            )
+            this.wrapperElement.addEventListener('DOMNodeInserted', (e) => {
+                if (!(e.relatedNode.firstElementChild == this.wrapperElement)) {
+                    return;
+                }
 
-            if (this.data) {
-                this.block.setState(this.data["block"]);
-            }
+                // Wait for the element block to be rendered by the browser
+                setTimeout(() => { 
+                    this.block = this.blockDef.render(
+                        element, id, ...argumentsValue,
+                    )
+                    if (this.data) {
+                        this.block.setState(this.data["block"]);
+                    }
+                }, 0);
+            });
 
             return super.render();
         }
@@ -81,7 +92,7 @@
             if (!this.block.getState) {
                 console.error('Block does not have a getState method', this.block)
             } else {
-                this.data["block"] = this.block.getState();
+                this.data["block"] = this.block.getValue();
             }
             return this.data || {};
         }

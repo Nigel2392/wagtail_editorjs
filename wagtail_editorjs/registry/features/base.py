@@ -107,6 +107,14 @@ class BaseEditorJSFeature:
         self.allowed_tags = set(allowed_tags)
         self.allowed_attributes = allowed_attributes
 
+    def value_for_form(self, value: dict) -> dict:
+        """
+            Prepare the value for the feature.
+            This is useful for when you need to modify the data
+            before it is passed to the frontend.
+        """
+        return value
+
     def init_static(self, css, js):
         css = css or []
         js = js or []

@@ -314,9 +314,6 @@ class WagtailBlockFeature(EditorJSFeature):
         if not isinstance(block, blocks.Block) and issubclass(block, blocks.Block):
             block = block()
 
-        if not isinstance(block, (blocks.StructBlock, blocks.FieldBlock)):
-            raise TypeError("block must be an instance of EditorJSFeatureStructBlock or FieldBlock")
-
         self.block = block
 
         self.block.set_name(
@@ -397,9 +394,25 @@ class WagtailBlockFeature(EditorJSFeature):
         if "block" not in data["data"]:
             raise forms.ValidationError("Invalid block value")
         
-        self.block.clean(
-            data["data"]["block"],
+        try:
+            data["data"]["block"] = self.block.get_prep_value(
+                self.block.clean(self.block.to_python(data["data"]["block"]))
+            )
+        except blocks.StreamBlockValidationError as e:
+            raise e
+        except blocks.list_block.ListBlockValidationError as e:
+            raise e
+        except blocks.struct_block.StructBlockValidationError as e:
+            raise e
+        except Exception as e:
+            raise e
+        
+    def value_for_form(self, value: dict) -> dict:
+        value = super().value_for_form(value)
+        value["data"]["block"] = self.block.get_form_state(
+            self.block.to_python(value["data"]["block"])
         )
+        return value
     
     def render_block_data(self, block: EditorJSBlock, context=None) -> EditorJSElement:
         value: blocks.StructValue = self.block.to_python(block["data"]["block"])

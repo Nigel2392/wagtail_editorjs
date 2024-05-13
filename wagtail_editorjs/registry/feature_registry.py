@@ -185,7 +185,7 @@ class EditorJSFeatures:
                     if key not in tools:
                         del tunes[key]
 
-            blocks[i] = item
+            blocks[i] = self[block_type].value_for_form(item)
 
         data["blocks"] = list(filter(None, blocks))
         return data
@@ -231,6 +231,8 @@ class EditorJSFeatures:
                 else:
                     if item["type"] == tool:
                         tool_mapping.validate(item)
+
+        data["blocks"] = block_list
 
         return data
 
