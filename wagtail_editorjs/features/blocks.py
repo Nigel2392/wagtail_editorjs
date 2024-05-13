@@ -405,7 +405,7 @@ class WagtailBlockFeature(EditorJSFeature):
             data["data"].get("block", {}), {}, prefix,
         )
         
-        data["data"]["block"] = self.block.clean(
+        self.block.clean(
             value,
         )
     
