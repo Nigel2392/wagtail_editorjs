@@ -147,10 +147,12 @@ class TextBlock(EditorJSFeatureStructBlock):
     body = blocks.TextBlock()
 
     class Meta:
+        template = "myapp/text_block.html"
         allowed_tags = ["div", "h1", "h2", "p"]
-
-    def render(self, value, context=None):
-        return f"<h1>{value['heading']['title']}</h1><h2>{value['heading']['subtitle']}</h2><p>{value['body']}</p>"
+        # Html looks like:
+        #  <h1>{{ heading.title }}</h1>
+        #  <h2>{{ heading.subtitle }}</h2>
+        #  <p>{{ body }}</p>
 
 @hooks.register(REGISTER_HOOK_NAME)
 def register_editor_js_features(registry: EditorJSFeatures):
