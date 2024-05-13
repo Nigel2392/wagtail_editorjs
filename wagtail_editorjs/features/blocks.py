@@ -364,14 +364,22 @@ class WagtailBlockFeature(EditorJSFeature):
             d = self.block.meta.allowed_attributes
         else:
             d = super().allowed_attributes
-        
-        d = d or {}
 
-        class_d = d.setdefault("class", [])
-        if isinstance(class_d, str):
-            class_d = [class_d]
+        d = d or {}
         
-        class_d.append(self.tool_name)
+        if isinstance(d, list) and "class" not in d:
+            d.append("class")
+        elif isinstance(d, dict):
+            v = d.get("div", [])
+            if isinstance(v, list) and "class" not in v:
+                v.append("class")
+            elif isinstance(v, set) and "class" not in v:
+                v.add("class")
+            elif isinstance(v, str):
+                v = set(v.split(" "))
+                v.add("class")
+
+            d["div"] = v
 
         return d
     
