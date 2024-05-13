@@ -116,7 +116,7 @@ It is also possible to register a Wagtail block as a feature.
 
 This may be a `Fieldblock` (like `Charblock`, or `TextBlock`), or a `StructBlock`.
 
-It is **not** allowed to be:
+It is **not** allowed to be or include:
 
 * A `StreamBlock`
 * A `ListBlock`
