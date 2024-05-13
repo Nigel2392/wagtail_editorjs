@@ -170,13 +170,13 @@ The block will then be rendered as any structblock, but it will be wrapped in a 
 
 Example:
     
-    ```html
-    <div class="wagtail-text-block">
-        <h1>My title</h1>
-        <h2>My subtitle</h2>
-        <p>My body</p>
-    </div>
-    ```
+```html
+<div class="wagtail-text-block">
+    <h1>My title</h1>
+    <h2>My subtitle</h2>
+    <p>My body</p>
+</div>
+```
 
 ## Settings
 
