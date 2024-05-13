@@ -114,7 +114,7 @@ To find this out - you can:
 
 It is also possible to register a Wagtail block as a feature.
 
-This may be a `Fieldblock` (like `Charblock`, or `TextBlock`), or a `StructBlock`.
+It is important to note that the block must be a `StructBlock` or a subclass of `StructBlock`.
 
 It is **not** allowed to be or include:
 
