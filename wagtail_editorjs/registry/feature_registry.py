@@ -185,6 +185,8 @@ class EditorJSFeatures:
                     if key not in tools:
                         del tunes[key]
 
+            blocks[i] = item
+
         data["blocks"] = list(filter(None, blocks))
         return data
     

@@ -55,6 +55,59 @@ class TestWagtailBlockFeature(BaseEditorJSTest):
             "test_feature",
             self.feature,
         )
+
+    def test_value_for_form(self):
+        test_data = {
+            "title": "Test Title",
+            "subtitle": "Test Text",
+            "sub_block": {
+                "sub_title": "Sub Title",
+                "sub_text": "Sub Text",
+            },
+        }
+
+        feature_value = {
+            "type": "test_feature",
+            "data": {
+                "block": test_data,
+            }
+        }
+
+        editorjs_value = {
+            "time": int(time.time()),
+            "blocks": [feature_value],
+            "version": "0.0.0",
+        }
+
+        tdata_copy = test_data.copy()
+        copied = editorjs_value.copy()
+
+        data = EDITOR_JS_FEATURES.value_for_form(
+            ["test_feature"],
+            EDITOR_JS_FEATURES.prepare_value(
+                ["test_feature"],
+                editorjs_value,
+            )
+        )
+
+        self.assertTrue(isinstance(data, dict))
+        self.assertIn("blocks", data)
+        self.assertTrue(isinstance(data["blocks"], list))
+        self.assertTrue(len(data["blocks"]) == 1, msg=f"Expected 1 block, got {len(data['blocks'])}")
+
+        self.assertDictEqual(
+            data,
+            copied | {
+                "blocks": [
+                    {
+                        "type": "test_feature",
+                        "data": {
+                            "block": tdata_copy,
+                        }
+                    }
+                ]
+            }
+        )
         
 
     def test_wagtail_block_feature(self):
