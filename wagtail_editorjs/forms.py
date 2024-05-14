@@ -160,7 +160,7 @@ class EditorJSFormField(formfields.JSONField):
         if not isinstance(value, dict):
             return value
         
-        value = EDITOR_JS_FEATURES.prepare_value(
+        value = EDITOR_JS_FEATURES.value_for_form(
             self.features, value
         )
 

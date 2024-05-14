@@ -78,6 +78,32 @@ class BaseEditorJSFeature:
             css, js,
         )
 
+        self.init_attrs(
+            allowed_tags, allowed_attributes,
+        )
+
+    def value_for_form(self, value: dict) -> dict:
+        """
+            Prepare the value for the feature.
+            This is useful for when you need to modify the data
+            before it is passed to the frontend.
+        """
+        return value
+
+    def init_static(self, css, js):
+        css = css or []
+        js = js or []
+
+        if self.css:
+            css.extend(self.css)
+
+        if self.js:
+            js.extend(self.js)
+            
+        self.js = js
+        self.css = css
+
+    def init_attrs(self, allowed_tags, allowed_attributes):
         if not isinstance(allowed_tags, (list, tuple, set)) and allowed_tags is not None:
             raise ValueError("allowed_tags must be a list, tuple or set")
         
@@ -106,27 +132,6 @@ class BaseEditorJSFeature:
 
         self.allowed_tags = set(allowed_tags)
         self.allowed_attributes = allowed_attributes
-
-    def value_for_form(self, value: dict) -> dict:
-        """
-            Prepare the value for the feature.
-            This is useful for when you need to modify the data
-            before it is passed to the frontend.
-        """
-        return value
-
-    def init_static(self, css, js):
-        css = css or []
-        js = js or []
-
-        if self.css:
-            css.extend(self.css)
-
-        if self.js:
-            js.extend(self.js)
-            
-        self.js = js
-        self.css = css
 
     def on_register(self, registry: "EditorJSFeatures"):
         """

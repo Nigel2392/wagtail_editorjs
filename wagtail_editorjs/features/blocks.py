@@ -297,7 +297,56 @@ class EditorJSFeatureStructBlock(blocks.StructBlock):
         for _, block in self.child_blocks.items():
             if isinstance(block, (blocks.StreamBlock, blocks.ListBlock)):
                 raise ValueError("StreamBlock and ListBlock are not allowed in StructBlock children for the EditorJSFeatureStructBlock")
-        
+
+def get_allowed_tags(instance: EditorJSFeatureStructBlock, block: blocks.Block, l = None) -> list[str]:
+
+    if hasattr(block, "allowed_tags"):
+        l = block.allowed_tags
+    elif hasattr(block.meta, "allowed_tags"):
+        l = block.meta.allowed_tags
+
+    l = l or []
+
+    if isinstance(block, blocks.StructBlock):
+        for _, b in block.child_blocks.items():
+            l += get_allowed_tags(instance, b, l)
+
+    return list(set(list(l) + ["div"]))
+
+def get_allowed_attributes(instance: EditorJSFeatureStructBlock, block: blocks.Block, d = None) -> dict[str, list[str]]:
+    if hasattr(block, "allowed_attributes"):
+        obj_dict = block.allowed_attributes
+    elif hasattr(block.meta, "allowed_attributes"):
+        obj_dict = block.meta.allowed_attributes
+    else:
+        obj_dict = {}
+
+    if d is None:
+        d = obj_dict
+    else:
+        for key, value in obj_dict.items():
+            d[key] = set(list(d.get(key, [])) + list(value))
+    
+    if isinstance(d, list) and "class" not in d:
+        d.append("class")
+    elif isinstance(d, dict):
+        v = d.get("div", [])
+        if isinstance(v, list) and "class" not in v:
+            v.append("class")
+        elif isinstance(v, set) and "class" not in v:
+            v.add("class")
+        elif isinstance(v, str):
+            v = set(v.split(" "))
+            v.add("class")
+
+        d["div"] = v
+
+    if isinstance(block, blocks.StructBlock):
+        for _, b in block.child_blocks.items():
+            d = get_allowed_attributes(instance, b, d)
+
+    return d
+
 
 class WagtailBlockFeature(EditorJSFeature):
     def __init__(self, 
@@ -314,6 +363,7 @@ class WagtailBlockFeature(EditorJSFeature):
         if not isinstance(block, blocks.Block) and issubclass(block, blocks.Block):
             block = block()
 
+
         self.block = block
 
         self.block.set_name(
@@ -325,6 +375,9 @@ class WagtailBlockFeature(EditorJSFeature):
         )
 
     def init_static(self, css, js):
+        pass
+
+    def init_attrs(self, allowed_tags, allowed_attributes):
         pass
 
     @cached_property
@@ -341,45 +394,13 @@ class WagtailBlockFeature(EditorJSFeature):
         return data
     
     
-    @property
+    @cached_property
     def allowed_tags(self):
-        if hasattr(self.block, "allowed_tags"):
-            l = self.block.allowed_tags
-        elif hasattr(self.block.meta, "allowed_tags"):
-            l = self.block.meta.allowed_tags
-        else:
-            l = super().allowed_tags
+        return get_allowed_tags(self, self.block)
 
-        l = l or []
-
-        return list(set(list(l) + ["div"]))
-
-    @property
+    @cached_property
     def allowed_attributes(self):
-        if hasattr(self.block, "allowed_attributes"):
-            d = self.block.allowed_attributes
-        elif hasattr(self.block.meta, "allowed_attributes"):
-            d = self.block.meta.allowed_attributes
-        else:
-            d = super().allowed_attributes
-
-        d = d or {}
-        
-        if isinstance(d, list) and "class" not in d:
-            d.append("class")
-        elif isinstance(d, dict):
-            v = d.get("div", [])
-            if isinstance(v, list) and "class" not in v:
-                v.append("class")
-            elif isinstance(v, set) and "class" not in v:
-                v.add("class")
-            elif isinstance(v, str):
-                v = set(v.split(" "))
-                v.add("class")
-
-            d["div"] = v
-
-        return d
+        return get_allowed_attributes(self, self.block)
     
     @property
     def js(self):
@@ -438,13 +459,6 @@ class WagtailBlockFeature(EditorJSFeature):
 
     @klass.setter
     def klass(self, data: Any): pass
-
-    @allowed_tags.setter
-    def allowed_tags(self, data: Any): pass
-
-    @allowed_attributes.setter
-    def allowed_attributes(self, data: Any): pass
-
 
     
 

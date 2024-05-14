@@ -13,20 +13,31 @@ from wagtail_editorjs.registry import (
 
 from .base import BaseEditorJSTest
 
+class SubBlock(blocks.StructBlock):
+    sub_title = blocks.CharBlock()
+    sub_text = blocks.CharBlock()
+
+    class Meta:
+        allowed_tags = ["h3", "p"]
+        allowed_attributes = {
+            "h3": ["class"],
+            "p": ["class"],
+        }
 
 class TestWagtailBlockFeatureBlock(blocks.StructBlock):
     title = blocks.CharBlock()
-    text = blocks.CharBlock()
-    sub_block = blocks.StructBlock([
-        ("sub_title", blocks.CharBlock()),
-        ("sub_text", blocks.CharBlock()),
-    ])
+    subtitle = blocks.CharBlock()
+    sub_block = SubBlock()
 
     class Meta:
-        allowed_tags = ["h1", "h2", "p"]
+        allowed_tags = ["h1", "h2"]
+        allowed_attributes = {
+            "h1": ["class"],
+            "h2": ["class"],
+        }
 
     def render(self, value, context=None):
-        return f"<h1>{value['title']}</h1><p>{value['text']}</p><h2>{value['sub_block']['sub_title']}</h2><p>{value['sub_block']['sub_text']}</p>"
+        return f"<h1 class='test1'>{value['title']}</h1><h2 class='test2'>{value['subtitle']}</h2><h3 class='test3'>{value['sub_block']['sub_title']}</h3><p class='test4'>{value['sub_block']['sub_text']}</p>"
 
 
 class TestWagtailBlockFeature(BaseEditorJSTest):
@@ -49,7 +60,7 @@ class TestWagtailBlockFeature(BaseEditorJSTest):
     def test_wagtail_block_feature(self):
         test_data = {
             "title": "Test Title",
-            "text": "Test Text",
+            "subtitle": "Test Text",
             "sub_block": {
                 "sub_title": "Sub Title",
                 "sub_text": "Sub Text",
@@ -59,7 +70,6 @@ class TestWagtailBlockFeature(BaseEditorJSTest):
         feature_value = {
             "type": "test_feature",
             "data": {
-                "__prefix__": "test_feature",
                 "block": test_data,
             }
         }
@@ -73,6 +83,7 @@ class TestWagtailBlockFeature(BaseEditorJSTest):
         html = render_editorjs_html(features=["test_feature"], data=editorjs_value)
         feature_html = str(self.feature.render_block_data(feature_value))
         
+        
         self.assertHTMLEqual(
             html,
             render_to_string(
@@ -82,22 +93,22 @@ class TestWagtailBlockFeature(BaseEditorJSTest):
         )
 
         self.assertInHTML(
-            "<h1>Test Title</h1>",
+            "<h1 class='test1'>Test Title</h1>",
             feature_html,
         )
 
         self.assertInHTML(
-            "<p>Test Text</p>",
+            "<h2 class='test2'>Test Text</h2>",
             feature_html,
         )
 
         self.assertInHTML(
-            "<h2>Sub Title</h2>",
+            "<h3 class='test3'>Sub Title</h3>",
             feature_html,
         )
 
         self.assertInHTML(
-            "<p>Sub Text</p>",
+            "<p class='test4'>Sub Text</p>",
             feature_html,
         )
 

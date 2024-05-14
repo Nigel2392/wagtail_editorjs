@@ -185,10 +185,15 @@ class EditorJSFeatures:
                     if key not in tools:
                         del tunes[key]
 
-            blocks[i] = self[block_type].value_for_form(item)
-
         data["blocks"] = list(filter(None, blocks))
         return data
+    
+    def value_for_form(self, tools: list[str], data: dict):
+        for i, item in enumerate(data["blocks"]):
+            block_type = item.get("type")
+            data["blocks"][i] = self[block_type].value_for_form(item)
+        return data
+
 
     def get_by_weight(self, tools: list[str]) -> OrderedDict[str, EditorJSFeature]:
         """
