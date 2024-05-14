@@ -84,10 +84,7 @@ class TestWagtailBlockFeature(BaseEditorJSTest):
 
         data = EDITOR_JS_FEATURES.value_for_form(
             ["test_feature"],
-            EDITOR_JS_FEATURES.prepare_value(
-                ["test_feature"],
-                editorjs_value,
-            )
+            editorjs_value
         )
 
         self.assertTrue(isinstance(data, dict))
