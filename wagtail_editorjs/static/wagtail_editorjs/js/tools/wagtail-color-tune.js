@@ -48,10 +48,25 @@ class BaseWagtailColorTune {
         }
 
         setTimeout(() => {
-            if (this.data.color) {
-                this.onChange();
+            this.api.listeners.on(this.block.holder, 'keydown', (e) => {
+                if (e.key === 'Enter') {
+                    this.constructor.defaultColor = this.data.color;
+                }
+            });
+
+            if (this.constructor.defaultColor && !this.data.color) {
+                this.onChange({
+                    color: this.constructor.defaultColor,
+                    stretched: this.data.stretched,
+                });
+            } else if (this.data.color) {
+                this.onChange({
+                    color: this.data.color,
+                    stretched: this.data.stretched,
+                });
             }
-        }, 10);
+            this.constructor.defaultColor = null;
+        }, 0);
     }
 
     static get isTune() {
@@ -83,7 +98,10 @@ class BaseWagtailColorTune {
         this.colorInput.addEventListener('input', () => {
             this.data.color = this.colorInput.value;
             this.block.dispatchChange();
-            this.onChange();
+            this.onChange({
+                color: this.data.color,
+                stretched: this.data.stretched,
+            });
         });
         this.clearButton = document.createElement('button');
         this.clearButton.type = 'button';
@@ -92,7 +110,10 @@ class BaseWagtailColorTune {
             this.colorInput.value = '#000000';
             this.data.color = null;
             this.block.dispatchChange();
-            this.onChange();
+            this.onChange({
+                color: this.data.color,
+                stretched: this.data.stretched,
+            });
         });
         this.wrapper.appendChild(this.colorInput);
         this.wrapper.appendChild(this.clearButton);
@@ -109,7 +130,12 @@ class BaseWagtailColorTune {
         return this.wrapper;
     }
 
-    onChange() {
+    /**
+     * Method to be called on color change
+     * @param {object} data
+     * @param {string} data.color - color value
+     */
+    onChange(data) {
 
     }
 
@@ -157,7 +183,10 @@ class WagtailBackgroundColorTune extends BaseWagtailColorTune {
         this.stretchBlockButton.innerHTML = this.data.stretched ? btnUnstretched : btnStretched;
         this.stretchBlockButton.addEventListener('click', () => {
             this.data.stretched = !this.data.stretched;
-            this.onChange();
+            this.onChange({
+                color: this.data.color,
+                stretched: this.data.stretched,
+            });
         });
 
         this.api.tooltip.onHover(this.stretchBlockButton, this.stretchTextElement, {
@@ -171,17 +200,17 @@ class WagtailBackgroundColorTune extends BaseWagtailColorTune {
         return wrapper;
     }
 
-    onChange() {
+    onChange({color, stretched}) {
         if (this.stretchBlockButton && this.stretchTextElement) {
             this.stretchTextElement.innerHTML = this.stretchedTooltipText;
-            if (this.data.stretched) {
+            if (stretched) {
                 this.stretchBlockButton.innerHTML = btnUnstretched;
             } else {
                 this.stretchBlockButton.innerHTML = btnStretched;
             }
         }
 
-        if (this.data.color === null || this.data.color === undefined) {
+        if (color === null || color === undefined) {
             if ("backgroundColor" in this.blockContent.dataset) {
                 delete this.blockContent.dataset.backgroundColor;
             }
@@ -193,21 +222,24 @@ class WagtailBackgroundColorTune extends BaseWagtailColorTune {
             return;
         }
 
-        if (this.data.stretched) {
+        if (stretched) {
             if ("backgroundColor" in this.blockContent.dataset) {
                 delete this.blockContent.dataset.backgroundColor;
             }
             this.blockContent.style.removeProperty("--block-background-color");
-            this.blockHolder.dataset.backgroundColor = this.data.color;
-            this.blockHolder.style.setProperty("--block-background-color", this.data.color);
+            this.blockHolder.dataset.backgroundColor = color;
+            this.blockHolder.style.setProperty("--block-background-color", color);
         } else {
             if ("backgroundColor" in this.blockHolder.dataset) {
                 delete this.blockHolder.dataset.backgroundColor;
             }
             this.blockHolder.style.removeProperty("--block-background-color");
-            this.blockContent.dataset.backgroundColor = this.data.color;
-            this.blockContent.style.setProperty("--block-background-color", this.data.color);
+            this.blockContent.dataset.backgroundColor = color;
+            this.blockContent.style.setProperty("--block-background-color", color);
         }
+
+        this.data.color = color;
+        this.data.stretched = stretched;
     }
 
     save(){
@@ -223,8 +255,8 @@ class WagtailTextColorTune extends BaseWagtailColorTune {
         return btnTextColor;
     }
 
-    onChange() {
-        if (this.data.color === null || this.data.color === undefined) {
+    onChange({color}) {
+        if (color === null || color === undefined) {
             if ("color" in this.block.holder.dataset) {
                 delete this.block.holder.dataset.color;
             }
@@ -232,8 +264,8 @@ class WagtailTextColorTune extends BaseWagtailColorTune {
             return;
         }
 
-        this.block.holder.dataset.color = this.data.color;
-        this.block.holder.style.setProperty("--block-color", this.data.color);
+        this.block.holder.dataset.color = color;
+        this.block.holder.style.setProperty("--block-color", color);
     }
 }
 
