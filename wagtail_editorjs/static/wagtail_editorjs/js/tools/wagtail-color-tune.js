@@ -50,22 +50,22 @@ class BaseWagtailColorTune {
         setTimeout(() => {
             this.api.listeners.on(this.block.holder, 'keydown', (e) => {
                 if (e.key === 'Enter') {
-                    this.constructor.defaultColor = this.data.color;
+                    this.constructor[`defaultColor${this.constructor.name}`] = this.data.color;
                 }
             });
 
-            if (this.constructor.defaultColor && !this.data.color) {
+            if (this.constructor[`defaultColor${this.constructor.name}`] && !this.data.color) {
                 this.onChange({
-                    color: this.constructor.defaultColor,
+                    color: this.constructor[`defaultColor${this.constructor.name}`],
                     stretched: this.data.stretched,
                 });
+                this.constructor[`defaultColor${this.constructor.name}`] = null;
             } else if (this.data.color) {
                 this.onChange({
                     color: this.data.color,
                     stretched: this.data.stretched,
                 });
             }
-            this.constructor.defaultColor = null;
         }, 0);
     }
 
@@ -130,12 +130,7 @@ class BaseWagtailColorTune {
         return this.wrapper;
     }
 
-    /**
-     * Method to be called on color change
-     * @param {object} data
-     * @param {string} data.color - color value
-     */
-    onChange(data) {
+    onChange({color, stretched}) {
 
     }
 
