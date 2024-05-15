@@ -55,6 +55,7 @@ class BaseWagtailColorTune {
             });
 
             if (this.constructor[`defaultColor${this.constructor.name}`] && !this.data.color) {
+                this.data.color = this.constructor[`defaultColor${this.constructor.name}`];
                 this.onChange({
                     color: this.constructor[`defaultColor${this.constructor.name}`],
                     stretched: this.data.stretched,
