@@ -47,25 +47,18 @@ class BaseWagtailColorTune {
             this.data.stretched = this.config.defaultStretched;
         }
 
-        setTimeout(() => {
-            this.api.listeners.on(this.block.holder, 'keydown', (e) => {
-                if (e.key === 'Enter') {
-                    this.constructor[`defaultColor${this.constructor.name}`] = this.data.color;
-                }
-            });
+        this.data.color = this.data.color || this.constructor[`defaultColor${this.constructor.name}`] || null;
 
-            if (this.constructor[`defaultColor${this.constructor.name}`] && !this.data.color) {
-                this.data.color = this.constructor[`defaultColor${this.constructor.name}`];
-                this.onChange({
-                    color: this.constructor[`defaultColor${this.constructor.name}`],
-                    stretched: this.data.stretched,
-                });
-                this.constructor[`defaultColor${this.constructor.name}`] = null;
-            } else if (this.data.color) {
+        setTimeout(() => {
+            this.api.listeners.on(this.block.holder, 'keydown', this.handleKeyDown.bind(this));
+
+            if (this.data.color) {
                 this.onChange({
                     color: this.data.color,
                     stretched: this.data.stretched,
                 });
+
+                this.constructor[`defaultColor${this.constructor.name}`] = null;
             }
         }, 0);
     }
@@ -88,6 +81,25 @@ class BaseWagtailColorTune {
 
     get blockContent() {
         return this.block.holder.querySelector('.ce-block__content');
+    }
+
+    handleKeyDown(event) {
+        if (event.key === 'Enter' && this.data.color && !e.ctrlKey) {
+            this.constructor[`defaultColor${this.constructor.name}`] = this.data.color;
+        }
+
+        // CTRL ALT R - reset color
+        if (event.key === 'r' && event.ctrlKey && event.altKey && this.data.color) {
+            if (this.colorInput) {
+                this.colorInput.value = '#000000';
+            }
+            this.data.color = null;
+            this.block.dispatchChange();
+            this.onChange({
+                color: this.data.color,
+                stretched: this.data.stretched,
+            });
+        }
     }
 
     render() {
