@@ -1,4 +1,4 @@
-from typing import Any, Union, TYPE_CHECKING
+from typing import Any, Union, Mapping, Literal, TYPE_CHECKING
 from django.urls import reverse_lazy
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
@@ -13,6 +13,11 @@ if TYPE_CHECKING:
 class TemplateNotSpecifiedError(Exception):
     pass
 
+
+I18nDictionary = Mapping[
+    Literal["ui", "toolNames", "tools", "blockTunes"],
+    Mapping[str, str]
+]
 
 class PageChooserURLsMixin:
     def get_config(self, context: dict[str, Any] = None) -> dict:
@@ -190,6 +195,9 @@ class BaseEditorJSFeature:
             config.update(self.kwargs)
 
         return config
+    
+    def get_translations(self) -> I18nDictionary:
+        return {}
 
     def get_js(self):
         """

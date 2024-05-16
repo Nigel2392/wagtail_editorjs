@@ -67,6 +67,7 @@ class EditorJSWidget(widgets.Input):
         config["holder"] = f"{context['widget']['attrs']['id']}-wagtail-editorjs-widget"
 
         tools = config.get('tools', {})
+
         for tool_name, tool_config in self.tools_config.items():
             if tool_name in tools:
                 cfg = tools[tool_name]

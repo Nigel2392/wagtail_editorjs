@@ -6,14 +6,18 @@ function registerInitializer(initializer) {
 
 window.registerInitializer = registerInitializer;
 
+function newEvent(eventName, data) {
+    return new CustomEvent(`editorjs:${eventName}`, {detail: data});
+}
+
 class EditorJSWidget {
     constructor(elementWrapper, hiddenInput, config) {
         this.element = hiddenInput;
         this.id = elementWrapper.id;
         this.config = config;
 
-        hiddenInput.widgetInstance = this;
-        elementWrapper.widgetInstance = this;
+        hiddenInput.CurrentWidget = this;
+        elementWrapper.CurrentWidget = this;
 
         this.initEditor();
     }
@@ -22,9 +26,17 @@ class EditorJSWidget {
         this.editorConfig = {
             ...this.config,
             onReady: async () => {
-                this.element.value = JSON.stringify(await this.editor.save());
+                const editorData = await this.editor.save();
+                this.element.value = JSON.stringify(editorData);
+
+                this.dispatchEvent('ready', {
+                    data: editorData,
+                });
 
                 for (let i = 0; i < window.RegisteredEditorJSInitializers.length; i++) {
+
+                    console.log(this.editor, window.RegisteredEditorJSInitializers[i]);
+
                     const initializer = window.RegisteredEditorJSInitializers[i];
                     try {
                         initializer(this);
@@ -34,7 +46,12 @@ class EditorJSWidget {
                 }
             },
             onChange: async () => {
-                this.element.value = JSON.stringify(await this.editor.save());
+                const editorData = await this.editor.save();
+                this.element.value = JSON.stringify(editorData);
+
+                this.dispatchEvent('change', {
+                    data: editorData,
+                });
             },
         };
 
@@ -67,13 +84,32 @@ class EditorJSWidget {
         });
 
         this.editor = new EditorJS(this.editorConfig);
+        this.element.setAttribute('data-editorjs-initialized', 'true');
+        this.element.CurrentEditor = this.editor;
 
-        this.editor.isReady.then(() => {
+        this.editor.isReady.then(() => {}).catch((reason) => {
 
-        }).catch((reason) => {
+            this.dispatchEvent('error', {reason: reason});
             console.error(`Editor.js failed to initialize: ${reason}`);
             console.log(this.editorConfig)
+        
         });
+    }
+
+    dispatchEvent(eventName, data = null) {
+        if (!data) {
+            data = {};
+        };
+
+        data.editor = this.editor;
+        data.widget = this;
+
+        const event = new CustomEvent(
+            `editorjs:${eventName}`,
+            {detail: data},
+        );
+
+        this.element.dispatchEvent(event);
     }
 
     async getState() {

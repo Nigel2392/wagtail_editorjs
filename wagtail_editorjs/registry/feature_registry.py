@@ -21,6 +21,12 @@ from .features import (
     InlineEditorJSFeature,
 )
 
+def safe_merge(target: dict, source: dict):
+    for key, value in source.items():
+        if key in target and isinstance(value, dict):
+            target[key].update(value)
+        else:
+            target[key] = value
 
 class EditorJSFeatures:
     def __init__(self):
@@ -99,6 +105,11 @@ class EditorJSFeatures:
         editorjs_config = {}
         editorjs_config_tools = {}
         self._look_for_features()
+        
+        t_ui = {}
+        t_toolNames = {}
+        t_blockTunes = {}
+        t_tools = defaultdict(dict)
 
         for tool in tools:
             if tool not in self.features:
@@ -118,7 +129,44 @@ class EditorJSFeatures:
             if tunes:
                 tool_config["tunes"] = tunes
 
+            translations = tool_mapping.get_translations()
+            if translations:
+                translations_ui = translations.get("ui")
+                if translations_ui:
+                    safe_merge(t_ui, translations_ui)
+
+                t_toolNames.update(
+                    translations.get("toolNames"),
+                )
+
+                t_blockTunes.update(
+                    translations.get("blockTunes"),
+                )
+
+                t_tools[tool].update(
+                    translations.get("tools"),
+                )
+
             editorjs_config_tools[tool] = tool_config
+
+
+        i18n = {}
+        if t_ui:
+            i18n["ui"] = t_ui
+
+        if t_toolNames:
+            i18n["toolNames"] = t_toolNames
+
+        if t_tools:
+            i18n["tools"] = t_tools
+
+        if t_blockTunes:
+            i18n["blockTunes"] = t_blockTunes
+
+        if i18n:
+            editorjs_config["i18n"] = {
+                "messages": i18n
+            }
 
         if self.tunes_for_all:
             editorjs_config["tunes"] = list(
