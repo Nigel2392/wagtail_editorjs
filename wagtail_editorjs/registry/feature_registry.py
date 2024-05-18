@@ -149,7 +149,6 @@ class EditorJSFeatures:
 
             editorjs_config_tools[tool] = tool_config
 
-
         i18n = {}
         if t_ui:
             i18n["ui"] = t_ui

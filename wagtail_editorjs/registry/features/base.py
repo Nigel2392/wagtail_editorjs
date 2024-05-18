@@ -46,6 +46,7 @@ class PageChooserURLsMixin:
 class BaseEditorJSFeature:
     allowed_tags: list[str] = None
     allowed_attributes: dict[str, list[str]] = None
+    translations: I18nDictionary = {}
     klass: str = None
     js: list[str] = None
     css: list[str] = None
@@ -197,7 +198,7 @@ class BaseEditorJSFeature:
         return config
     
     def get_translations(self) -> I18nDictionary:
-        return {}
+        return self.translations
 
     def get_js(self):
         """

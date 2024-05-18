@@ -71,7 +71,6 @@ class BaseToolSetting {
 class BaseButtonSetting extends BaseToolSetting {
     setTool(api, config, tool) {
         super.setTool(api, config, tool);
-        console.log('setTool', this.tool);
     }
 
     isActive() {

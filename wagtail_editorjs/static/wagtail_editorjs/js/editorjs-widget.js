@@ -35,8 +35,6 @@ class EditorJSWidget {
 
                 for (let i = 0; i < window.RegisteredEditorJSInitializers.length; i++) {
 
-                    console.log(this.editor, window.RegisteredEditorJSInitializers[i]);
-
                     const initializer = window.RegisteredEditorJSInitializers[i];
                     try {
                         initializer(this);

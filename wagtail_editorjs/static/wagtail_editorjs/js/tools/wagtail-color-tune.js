@@ -84,7 +84,7 @@ class BaseWagtailColorTune {
     }
 
     handleKeyDown(event) {
-        if (event.key === 'Enter' && this.data.color && !e.ctrlKey) {
+        if (event.key === 'Enter' && this.data.color && !event.ctrlKey) {
             this.constructor[`defaultColor${this.constructor.name}`] = this.data.color;
         }
 
