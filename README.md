@@ -5,7 +5,7 @@ wagtail_editorjs
 
 A Wagtail EditorJS widget with page/image chooser support, document support and more!
 
-## Add features:
+## Add features
 
 * [Add an EditorJS feature](https://github.com/Nigel2392/wagtail_editorjs/blob/main/docs/editorjs_feature.md "Simple Image Feature")
 * [Add an EditorJS tune](https://github.com/Nigel2392/wagtail_editorjs/blob/main/docs/tunes.md "text-alignment-tune") (Already exists in `wagtail_editorjs`, just an example.)
@@ -21,6 +21,7 @@ Quick start
    'wagtail_editorjs',
    ]
    ```
+
 2. Add the HTML to your template:
 
    ```django-html
@@ -35,6 +36,7 @@ Quick start
     {# JS files for features #}
     {% editorjs_static "js" %}
    ```
+
 3. Add the field to your model:
 
    ```python
@@ -102,6 +104,7 @@ To find this out - you can:
    ```bash
    py ./manage.py shell
    ```
+
 2. Print all the available features:
 
    ```python
@@ -110,7 +113,9 @@ To find this out - you can:
    dict_keys([... all registered features ...])
    ```
 
-##  Register a Wagtail block as a feature
+## Register a Wagtail block as a feature
+
+**Warning, this is not available after wagtail 6.2 due to validation errors, TODO: fix this**
 
 It is also possible to register a Wagtail block as a feature.
 
@@ -170,7 +175,7 @@ def register_editor_js_features(registry: EditorJSFeatures):
 The block will then be rendered as any structblock, but it will be wrapped in a div with the class `wagtail-text-block` (the feature name).
 
 Example:
-    
+
 ```html
 <div class="wagtail-text-block">
     <h1>My title</h1>

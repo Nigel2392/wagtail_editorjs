@@ -189,7 +189,7 @@ class EditorJSFeatures:
         block_list = data.get("blocks", [])
         features = {
             tool: self.features[tool]
-            for tool in tools
+            for tool in tools if tool in self.features
         }
 
         for i, item in enumerate(block_list):
@@ -237,10 +237,12 @@ class EditorJSFeatures:
         data["blocks"] = list(filter(None, blocks))
         return data
     
+    
     def value_for_form(self, tools: list[str], data: dict):
         for i, item in enumerate(data["blocks"]):
             block_type = item.get("type")
-            data["blocks"][i] = self[block_type].value_for_form(item)
+            if block_type in tools and block_type in self.features:
+                data["blocks"][i] = self.features[block_type].value_for_form(item)
         return data
 
 
